@@ -15,9 +15,20 @@ URI: postgres://u1rgtufv8k5u6r:p8ddbe35503faf38bad49b9b4847d89cec84b1a019dc2141d
 Heroku CLI: heroku pg:psql postgresql-objective-43160 --app postgres-app1
 
 # Project Setup
+### CSV file with database credentials
 When you pull the code you will need to make a csv file called 'credentials'. This will be inside the model folder. Inside the file they will put the database credentials as follows:
 
 ![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/83214ec8-01b5-43a6-a08b-dc98b2246fda)
+
+### It may be necessary to add a path in the system environment variables.
+From what I understood when configuring the project, this has to do with importing the python packages. Adding your project's root path to the system's PYTHONPATH is a common practice for solving module import problems in Python, especially in complex projects with a deep directory structure or when working with modules that need to import between subdirectories. If I'm not mistaken, this is not the best solution since it can cause complications when taking the application to production. However, to work locally developing the project logic it is an acceptable solution.
+
+![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/907459be-68ce-4952-abf6-e402785a148d)
+
+In the name variable you are going to put 'PYTHONPATH' and in the value variable you are going to put the path where your project is located.
+![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/5e6bfaf3-7ce2-4973-97aa-46a3a74ba905)
+
+
 
 # Test Driven Development (TDD)
 In this project we adopted the TDD (Test-Driven Development) methodology to ensure high code quality and facilitate long-term maintenance. This helps so that with each code update, it can be safely monitored that difficult-to-detect problems or total malfunctions of features have not been caused. Here is how to follow this methodology:
