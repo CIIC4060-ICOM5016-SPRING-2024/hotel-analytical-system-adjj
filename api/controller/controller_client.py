@@ -1,4 +1,6 @@
-from model.client import ClientDAO
+# from model.client import ClientDAO
+from api.model.model_client import ClientDAO
+
 from flask import jsonify
 
 class ClientContoller:

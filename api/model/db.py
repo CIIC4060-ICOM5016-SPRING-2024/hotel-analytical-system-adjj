@@ -1,7 +1,7 @@
 import configparser
 import csv
-
 import psycopg2
+import os
 
 class Database:
     def __init__(self):
@@ -15,7 +15,10 @@ class Database:
         )
 
     def connect_db(self):
-        with open("credentials.csv", 'r', newline='') as credencial:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        credentials_path = os.path.join(current_dir, 'credentials.csv')
+
+        with open(credentials_path, 'r', newline='') as credencial:
             reader = csv.reader(credencial)
             next(reader)
             host, db, user, password, port = next(reader)
