@@ -45,8 +45,6 @@ def create_app(test_config=None):
         # GET:
         #     Returns a table element equal to an id as a parameter. Path='/chains/:id'
     # TODO:
-        # GET:
-        #     Returns a table element equal to an id as a parameter. Path='/chains/:id'
         # POST:
         #     Add a elements to the chains table. Path='/chains'
         # PUT:
