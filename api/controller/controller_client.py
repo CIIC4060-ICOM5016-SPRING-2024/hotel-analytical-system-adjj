@@ -21,6 +21,7 @@ class ClientContoller:
         for element in au_dict:
             result.append(self.dicBuild(element))
         return jsonify(result)
+<<<<<<< HEAD
 
     def getClientById(self,clid):
         def fict_build(row):
@@ -105,3 +106,7 @@ class ClientContoller:
         for element in au_dict:
             result.append(fict_build(element))
         return jsonify(result)
+=======
+    
+    
+>>>>>>> 40c3240 (CHAINS table: get all chains and returns a table element equal to an id as a parameter DONE)
