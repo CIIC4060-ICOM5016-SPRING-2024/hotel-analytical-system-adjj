@@ -4,21 +4,6 @@ import os
 
 class ETL:
     @staticmethod
-    def compare_csv(file1:any,file2:any):
-        # Read CSV files into pandas DataFrames
-        df1 = pd.read_csv(file1)
-        df2 = pd.read_csv(file2)
-
-        # Compare DataFrames
-        if df1.equals(df2):
-            print("The CSV files are identical.")
-        else:
-            # Find the differences
-            differences = df1.compare(df2)
-            print("Differences between the CSV files:")
-            print(differences)
-
-    @staticmethod
     def clean(file_path:str, clean_file_name:str = "") -> any:      
         if file_path.endswith('.csv'):
             file = pd.read_csv(file_path, index_col=None)               
@@ -63,8 +48,6 @@ class ETL:
         for h in header:
             condition = file[h].isnull() | (file[h] == '')
             file = file[~condition]
-            if  h.endswith("id"):
-                file[h] = file[h].astype(int)
             
         print("\n")
         print("Output file:\n")
@@ -138,19 +121,15 @@ class ETL:
   
 if __name__ == '__main__':
         
-    # ETL.clean(file_path='./Phase#1_data/chain.xlsx', clean_file_name="clean_chain")
-    ETL.clean(file_path='./Phase#1_data/room_unavailable.csv', clean_file_name="clean_rooms_unavailable")
-    # ETL.compare_csv('./Phase#1_data/modified_data/ru_data.csv','./Phase#1_data/modified_data/int_clean_room_unavailable/room_unavailable.csv')
-
-    # # ETL.clean(file_path='./Phase#1_data/employee.json', clean_file_name="clean_employee")
-    # ETL.clean(file_path='./Phase#1_data/employee_updated.json', clean_file_name="clean_employee_updated")
-
-    # ETL.clean(file_path='./Phase#1_data/hotel.csv', clean_file_name="clean_hotel")
-    # ETL.clean(file_path='./Phase#1_data/login.xlsx', clean_file_name="clean_login")
-    # # ETL.clean(file_path='./Phase#1_data/room_unavailable.csv', clean_file_name="clean_room_unavaiable") #!!!! returns float values
-    # ETL.clean(file_path='./Phase#1_data/roomdetails.json', clean_file_name="clean_roomdetails")
-    # ETL.clean(file_path='./Phase#1_data/rooms.db')
-    # ETL.clean(file_path='./Phase#1_data/reserve.db')
+    ETL.clean(file_path='./Phase#1_data/chain.xlsx', clean_file_name="clean_chain")
+    ETL.clean(file_path='./Phase#1_data/client.csv', clean_file_name="clean_client")
+    ETL.clean(file_path='./Phase#1_data/employee.json', clean_file_name="clean_employee")
+    ETL.clean(file_path='./Phase#1_data/hotel.csv', clean_file_name="clean_hotel")
+    ETL.clean(file_path='./Phase#1_data/login.xlsx', clean_file_name="clean_login")
+    ETL.clean(file_path='./Phase#1_data/room_unavailable.csv', clean_file_name="clean_room_unavaiable") #!!!! returns float values
+    ETL.clean(file_path='./Phase#1_data/roomdetails.json', clean_file_name="clean_roomdetails")
+    ETL.clean(file_path='./Phase#1_data/rooms.db')
+    ETL.clean(file_path='./Phase#1_data/reservations.db')
 
     
    # print("No files to clean")
