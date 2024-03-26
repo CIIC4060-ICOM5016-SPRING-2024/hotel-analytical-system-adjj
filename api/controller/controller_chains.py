@@ -31,4 +31,13 @@ class ChainsContoller:
             result.append(self.dicBuild(element))
         return jsonify(result)
     
+    def postChain(self,new_chain:dict):
+        dao = ChainsDAO()
+        au_dict = dao.postChain(new_chain)
+        result=[]
+        for element in au_dict:
+            result.append(self.dicBuild(element))
+        return jsonify(result)
+        
+    
         

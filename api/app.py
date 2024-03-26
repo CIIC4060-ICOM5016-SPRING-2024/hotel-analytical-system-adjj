@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_chains import ChainsContoller
@@ -23,19 +23,28 @@ def create_app(test_config=None):
     def chains():
         return ChainsContoller().getAllChains()
     
-    @app.route('/chains/<id>')
-    def get_chain(id):
-        return ChainsContoller().getChain(id)
+    @app.route('/chains/<chid>')
+    def get_chain(chid):
+        return ChainsContoller().getChain(chid)
     
-    @app.route('/chains')
+    @app.route('/chains/<chid>/',methods=['POST'])
     def post_chain():
-        return 
+        
+        new_chain = {'chid':request.form.get('chid'),
+                  'cname':request.form.get('cname'),
+                  'springmkup':request.form.get('springmkup'),
+                  'summermkup':request.form.get('summermkup'),
+                  'fallmkup':request.form.get('fallmkup'),
+                  'wintermkup':request.form.get('wintermkup')
+                  }
+        
+        return ChainsContoller().postChain(new_chain)
     
-    @app.route('/chains/:id')
+    @app.route('/chains/<id>')
     def put_chain():
         return 
     
-    @app.route('/chains/:id')
+    @app.route('/chains/<id>')
     def delete_chain():
         return 
 
