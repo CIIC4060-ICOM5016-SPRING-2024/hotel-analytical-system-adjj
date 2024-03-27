@@ -1,4 +1,3 @@
-from api import app
 from api.controller.controller_client import ClientContoller
 from flask_cors import CORS
 from flask import Flask
