@@ -106,7 +106,6 @@ trollius==2.1.post2
 typing_extensions==4.10.0
 tzdata==2024.1
 ultralytics==8.1.27
-uprm-rb-core @ git+https://github.com/Roboboat-Mayaguez/packages.git@44867cdd67eed857e0a8b106fe6e8ccde5fa3300
 urllib3==2.2.1
 utm==0.7.0
 webcolors==1.13
