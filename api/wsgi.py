@@ -1,4 +1,5 @@
 from api.run import create_app
+from api.controller.controller_client import ClientContoller
 
 app = create_app()
 
