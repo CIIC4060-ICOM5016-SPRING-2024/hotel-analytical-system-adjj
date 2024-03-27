@@ -15,15 +15,19 @@ class Database:
         )
 
     def connect_db(self):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        credentials_path = os.path.join(current_dir, 'credentials.csv')
+        # current_dir = os.path.dirname(os.path.abspath(__file__))
+        # credentials_path = os.path.join(current_dir, 'credentials.csv')
 
-        with open(credentials_path, 'r', newline='') as credencial:
-            reader = csv.reader(credencial)
-            next(reader)
-            host, db, user, password, port = next(reader)
-            db_dict = {'host':host, 'user':user, 'password':password, 'port':port, 'database':db}
-            return db_dict
+        # with open(credentials_path, 'r', newline='') as credencial:
+        #     reader = csv.reader(credencial)
+        #     next(reader)
+        #     host, db, user, password, port = next(reader)
+        #     db_dict = {'host':host, 'user':user, 'password':password, 'port':port, 'database':db}
+        #     return db_dict
+
+        db_dict = {'host':os.getenv('HOST'), 'user':os.getenv('USER'), 'password':os.getenv('PASSWORD'), 'port':os.getenv('PORT'), 'database':os.getenv('DATABASE')
+        }
+        return db_dict
 
     def close(self):
         self.conexion.close()
