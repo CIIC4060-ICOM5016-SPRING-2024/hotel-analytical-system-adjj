@@ -1,5 +1,5 @@
 import pytest
-from api.run import create_app
+from api.wsgi import create_app
 
 @pytest.fixture
 def app():
