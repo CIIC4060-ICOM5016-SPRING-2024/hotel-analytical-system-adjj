@@ -1,6 +1,7 @@
 from flask_cors import CORS
 from flask import Flask
 from api.controller.controller_client import ClientContoller
+from api.controller.controller_employee import EmployeeContoller
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -14,8 +15,13 @@ def create_app(test_config=None):
         return 'Hello World!'
 
     @app.route('/client')
-    def client():
+    def get_clients():
         return ClientContoller().getAllClients()
+
+
+    @app.route('/employee')
+    def get_employees():
+        return EmployeeContoller().getAllEmployees()
 
     return app
 
