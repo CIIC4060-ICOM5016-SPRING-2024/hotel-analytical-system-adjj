@@ -199,7 +199,7 @@ def test_put_employee(client):
         "lname": "Núñez Updated",
         "age": 22,
         "salary": 19000,
-        "position": "Regular Updated"
+        "position": "Regular"
     }
     update_response = client.put(f'/employee/{eid}', json=updated_employee)
     assert update_response.status_code == 200, "Fallo al actualizar empleado"
