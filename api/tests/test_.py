@@ -152,3 +152,94 @@ def test_post_employee(client):
         # Asegurarse de cerrar el cursor y la conexión
         cur.close()
     db.close()
+
+
+def test_delete_employee(client):
+    # Paso 1: Añadir un nuevo empleado directamente a la base de datos y obtener su eid
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO employee (hid, fname, lname, age, salary, position) 
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING eid""",
+                    (17, "Janiel", "Núñez", 21, 18000, "Regular"))
+        eid = cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
+        db.conexion.commit()
+    except Exception as e:
+        print(f"Error al añadir empleado para prueba de eliminación: {e}")
+        db.conexion.rollback()
+        assert False, "Fallo al añadir empleado para prueba de eliminación"
+    finally:
+        cur.close()
+
+    # Asegúrate de que el empleado fue añadido
+    assert eid is not None, "El empleado no fue añadido correctamente"
+
+    # Paso 2: Probar la eliminación del empleado mediante una petición DELETE
+    delete_response = client.delete(f'/employee/{eid}')
+    assert delete_response.status_code == 200, "Fallo al eliminar empleado"
+
+    # Opcional: Verificar que el empleado haya sido eliminado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT * FROM employee WHERE eid = %s", (eid,))
+        employee = cur.fetchone()
+        assert employee is None, "El empleado no fue eliminado correctamente"
+    finally:
+        cur.close()
+        db.close()
+
+
+
+
+def test_put_employee(client):
+    # Insertar un empleado en la base de datos
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO employee (hid, fname, lname, age, salary, position) 
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING eid""",
+                    (17, "Janiel", "Núñez", 21, 18000, "Regular"))
+        eid = cur.fetchone()[0]
+        db.conexion.commit()
+    finally:
+        cur.close()
+
+    # Asegurarse de que el empleado fue añadido
+    assert eid is not None, "El empleado no fue añadido correctamente"
+
+    # Actualizar el empleado a través de una petición PUT
+    updated_employee = {
+        "hid": 17,
+        "fname": "Janiel Updated",
+        "lname": "Núñez Updated",
+        "age": 22,
+        "salary": 19000,
+        "position": "Regular Updated"
+    }
+    update_response = client.put(f'/employee/{eid}', json=updated_employee)
+    assert update_response.status_code == 200, "Fallo al actualizar empleado"
+
+    # Verificar que los cambios se aplicaron correctamente
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT hid, fname, lname, age, salary, position FROM employee WHERE eid = %s", (eid,))
+        employee = cur.fetchone()
+        assert employee is not None, "El empleado no se encontró después de actualizar"
+        assert employee[1] == updated_employee['fname'], "El nombre del empleado no se actualizó correctamente"
+        assert employee[2] == updated_employee['lname'], "El apellido del empleado no se actualizó correctamente"
+        assert employee[3] == updated_employee['age'], "La edad del empleado no se actualizó correctamente"
+        assert employee[4] == updated_employee['salary'], "El salario del empleado no se actualizó correctamente"
+        assert employee[5] == updated_employee['position'], "La posición del empleado no se actualizó correctamente"
+    finally:
+        cur.close()
+
+    # Eliminar el empleado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("DELETE FROM employee WHERE eid = %s", (eid,))
+        db.conexion.commit()
+    finally:
+        cur.close()
+        db.close()

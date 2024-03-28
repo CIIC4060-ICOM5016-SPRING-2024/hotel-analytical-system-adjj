@@ -2,7 +2,7 @@
 from api.model.model_employee import EmployeeDAO
 from flask import jsonify, request, make_response
 
-class EmployeeContoller:
+class EmployeeController:
 
 
     def dicBuild(self, row):
@@ -42,3 +42,32 @@ class EmployeeContoller:
                 return make_response(jsonify({"message": "Empleado agregado exitosamente"}), 201)
             else:
                 return make_response(jsonify({"error": "Error al agregar empleado"}), 500)
+
+    def deleteEmployee(self, eid):
+        dao = EmployeeDAO()
+        success = dao.deleteEmployee(eid)
+        if success:
+            return make_response(jsonify({"message": "Empleado eliminado exitosamente"}), 200)
+        else:
+            return make_response(jsonify({"error": "Error al eliminar empleado"}), 500)
+
+    def putEmployee(self, eid):
+        if request.method == 'PUT':
+            # Obtener los datos actualizados del cuerpo de la petición
+            data = request.get_json()
+            # Validar que todos los campos necesarios están presentes
+            required_fields = ['hid', 'fname', 'lname', 'age', 'salary', 'position']
+            if not all(field in data for field in required_fields):
+                return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+            # Crear una instancia de EmployeeDAO
+            dao = EmployeeDAO()
+            # Llamar al método para actualizar el empleado
+            success = dao.putEmployee(eid, data['hid'], data['fname'], data['lname'], data['age'], data['salary'],
+                                      data['position'])
+
+            if success:
+                return make_response(jsonify({"message": "Empleado actualizado exitosamente"}), 200)
+            else:
+                # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
+                return make_response(jsonify({"error": "Error al actualizar empleado"}), 500)
