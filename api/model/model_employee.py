@@ -12,3 +12,21 @@ class EmployeeDAO:
         cur.close()
 
         return employee_list
+
+    def postEmployee(self, hid, fname, lname, age, salary, position):
+        cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
+        try:
+            query = """
+                    INSERT INTO employee (hid, fname, lname, age, salary, position) 
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """
+            cur.execute(query, (hid, fname, lname, age, salary, position))
+            self.db.conexion.commit()
+        except Exception as e:
+            print(f"Error al insertar empleado: {e}")
+            self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
+            return False
+        finally:
+            self.db.close()
+            cur.close()
+        return True

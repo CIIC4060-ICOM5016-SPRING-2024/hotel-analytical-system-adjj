@@ -23,6 +23,10 @@ def create_app(test_config=None):
     def get_employees():
         return EmployeeContoller().getAllEmployees()
 
+    @app.route('/employee', methods=['POST'])
+    def add_employee():
+        return EmployeeContoller().addEmployee()
+
     return app
 
 
