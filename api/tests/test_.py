@@ -89,25 +89,8 @@ def test_post_employee(client):
     # Verificar que la respuesta tenga un código de estado 201 (creado)
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
 
-    # Opcional: Verificar el mensaje de la respuesta
     response_data = response.get_json()
     assert response_data['message'] == "Empleado agregado exitosamente", "Expected success message in the response"
-
-    #consulta a la base de datos
-    # response = client.get('/employee')
-    # employees = response.get_json()
-    # # Buscar el empleado recién añadido en la lista
-    # employee_found = any(
-    #     employee['fname'] == new_employee['fname'] and
-    #     employee['lname'] == new_employee['lname'] and
-    #     employee['age'] == new_employee['age'] and
-    #     employee['salary'] == new_employee['salary'] and
-    #     employee['position'] == new_employee['position']
-    #     for employee in employees
-    # )
-    #
-    # assert employee_found, "El empleado añadido no se encontró en la lista de empleados"
-
 
     db = Database()
     #Consulta directa con la base para ver asegurarnos de que si se añadio el elemento

@@ -1,4 +1,5 @@
 from .db import Database
+from api.validate_inputs import employee_inputs_are_correct
 class EmployeeDAO:
     def __init__(self):
         self.db = Database()
@@ -14,6 +15,10 @@ class EmployeeDAO:
         return employee_list
 
     def postEmployee(self, hid, fname, lname, age, salary, position):
+        # Asegurarse de que la posición sea válida
+        if not (employee_inputs_are_correct(position, salary)):
+            return False
+
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
         try:
             query = """
@@ -47,6 +52,10 @@ class EmployeeDAO:
             self.db.close()
 
     def putEmployee(self, eid, hid, fname, lname, age, salary, position):
+
+        if not (employee_inputs_are_correct(position, salary)):
+            return False
+
         cur = self.db.conexion.cursor()
         try:
             # Construye la consulta SQL de actualización
