@@ -18,6 +18,10 @@ def create_app(test_config=None):
     def get_clients():
         return ClientContoller().getAllClients()
 
+    @app.route('/client', methods=['POST'])
+    def add_client():
+        return ClientContoller().addEmployee()
+
 
     @app.route('/employee')
     def get_employees():
