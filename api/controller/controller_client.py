@@ -47,3 +47,23 @@ class ClientContoller:
             return make_response(jsonify({"message": "Client eliminado exitosamente"}), 200)
         else:
             return make_response(jsonify({"error": "Error al eliminar client"}), 500)
+
+    def putClient(self, clid):
+        if request.method == 'PUT':
+            # Obtener los datos actualizados del cuerpo de la petición
+            data = request.get_json()
+            # Validar que todos los campos necesarios están presentes
+            required_fields = ['fname', 'lname', 'age', 'memberyear']
+            if not all(field in data for field in required_fields):
+                return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+            # Crear una instancia de EmployeeDAO
+            dao = ClientDAO()
+            # Llamar al método para actualizar el empleado
+            success = dao.putClient(clid, data['fname'], data['lname'], data['age'], data['memberyear'])
+
+            if success:
+                return make_response(jsonify({"message": "Client actualizado exitosamente"}), 200)
+            else:
+                # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
+                return make_response(jsonify({"error": "Error al actualizar client"}), 500)

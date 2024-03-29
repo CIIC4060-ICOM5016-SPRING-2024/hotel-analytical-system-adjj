@@ -129,6 +129,56 @@ def test_delete_client(client):
         cur.close()
         db.close()
 
+
+def test_put_client(client):
+    # Insertar un empleado en la base de datos
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO client (fname, lname, age, memberyear) 
+            VALUES (%s, %s, %s, %s) RETURNING clid""",
+                    ("Janiel", "Núñez", 21, 2020))
+        clid = cur.fetchone()[0]
+        db.conexion.commit()
+    finally:
+        cur.close()
+
+    # Asegurarse de que el empleado fue añadido
+    assert clid is not None, "El client no fue añadido correctamente"
+
+    # Actualizar el client a través de una petición PUT
+    updated_client = {
+        "fname": "Janiel Updated",
+        "lname": "Núñez Updated",
+        "age": 22,
+        "memberyear": 2023,
+    }
+    update_response = client.put(f'/client/{clid}', json=updated_client)
+    assert update_response.status_code == 200, "Fallo al actualizar client"
+
+    # Verificar que los cambios se aplicaron correctamente
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT fname, lname, age, memberyear FROM client WHERE clid = %s", (clid,))
+        client__ = cur.fetchone()
+        assert client__ is not None, "El empleado no se encontró después de actualizar"
+        assert client__[0] == updated_client['fname'], "El nombre del client no se actualizó correctamente"
+        assert client__[1] == updated_client['lname'], "El apellido del client no se actualizó correctamente"
+        assert client__[2] == updated_client['age'], "La edad del client no se actualizó correctamente"
+        assert client__[3] == updated_client['memberyear'], "El memberyear del client no se actualizó correctamente"
+    finally:
+        cur.close()
+
+    # Eliminar el empleado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("DELETE FROM client WHERE clid = %s", (clid,))
+        db.conexion.commit()
+    finally:
+        cur.close()
+        db.close()
+
 def test_get_all_employees(client):
     response = client.get('/employee')
     assert response.status_code == 200, f"response code should be 200 but got {response.status_code}"
