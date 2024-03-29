@@ -37,3 +37,11 @@ class HotelContoller:
                 return make_response(jsonify({"message": f"Hotel agregado exitosamente"}), 201)
             else:
                 return make_response(jsonify({"error": f"Error al agregar hotel"}), 500)
+
+    def deleteHotel(self, hid):
+        dao = HotelDAO()
+        success = dao.deleteHotel(hid)
+        if success:
+            return make_response(jsonify({"message": "Hotel eliminado exitosamente"}), 200)
+        else:
+            return make_response(jsonify({"error": "Error al eliminar hotel"}), 500)

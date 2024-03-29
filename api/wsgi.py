@@ -56,6 +56,10 @@ def create_app(test_config=None):
     def add_hotel():
         return HotelContoller().addHotel()
 
+    @app.route('/hotel/<int:hid>', methods=['DELETE'])
+    def delete_hotel(hid):
+        return HotelContoller().deleteHotel(hid)
+
     return app
 
 

@@ -73,3 +73,42 @@ def test_post_hotel(client):
         # Asegurarse de cerrar el cursor y la conexión
         cur.close()
     db.close()
+
+
+
+
+
+def test_delete_hotel(client):
+    # Paso 1: Añadir un nuevo empleado directamente a la base de datos y obtener su eid
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO hotel (chid, hname, hcity) 
+            VALUES (%s, %s, %s) RETURNING hid""",
+                    (5, "Hotel de Janiel", "Mayaguez"))
+        hid = cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el hid del nuevo registro
+        db.conexion.commit()
+    except Exception as e:
+        print(f"Error al añadir hotel para prueba de eliminación: {e}")
+        db.conexion.rollback()
+        assert False, "Fallo al añadir hotel para prueba de eliminación"
+    finally:
+        cur.close()
+
+    # Asegúrate de que el empleado fue añadido
+    assert hid is not None, "El hotel no fue añadido correctamente"
+
+    # Paso 2: Probar la eliminación del empleado mediante una petición DELETE
+    delete_response = client.delete(f'/hotel/{hid}')
+    assert delete_response.status_code == 200, "Fallo al eliminar hotel"
+
+    # Opcional: Verificar que el empleado haya sido eliminado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT * FROM hotel WHERE hid = %s", (hid,))
+        hotel = cur.fetchone()
+        assert hotel is None, "El hotel no fue eliminado correctamente"
+    finally:
+        cur.close()
+        db.close()
