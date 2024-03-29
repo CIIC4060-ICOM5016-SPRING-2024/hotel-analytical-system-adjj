@@ -112,3 +112,53 @@ def test_delete_hotel(client):
     finally:
         cur.close()
         db.close()
+
+
+
+def test_put_hotel(client):
+    # Insertar un empleado en la base de datos
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO hotel (chid, hname, hcity) 
+            VALUES (%s, %s, %s) RETURNING hid""",
+                    (5, "Hotel de Janiel", "Mayaguez"))
+        hid = cur.fetchone()[0]
+        db.conexion.commit()
+    finally:
+        cur.close()
+
+    # Asegurarse de que el empleado fue añadido
+    assert hid is not None, "El hotel no fue añadido correctamente"
+
+    # Actualizar el empleado a través de una petición PUT
+    updated_hotel = {
+        "chid": 4,
+        "hname": "Hotel de Janiel actualizado",
+        "hcity": "Mayaguez actualizado",
+    }
+    update_response = client.put(f'/hotel/{hid}', json=updated_hotel)
+    assert update_response.status_code == 200, f"Fallo al actualizar hotel {update_response}"
+
+    # Verificar que los cambios se aplicaron correctamente
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT chid, hname, hcity FROM hotel WHERE hid = %s", (hid,))
+        hotel = cur.fetchone()
+        assert hotel is not None, "El empleado no se encontró después de actualizar"
+        assert hotel[0] == updated_hotel['chid'], "El chid del hotel no se actualizó correctamente"
+        assert hotel[1] == updated_hotel['hname'], "El hname del hotel no se actualizó correctamente"
+        assert hotel[2] == updated_hotel['hcity'], "La hcity del hotel no se actualizó correctamente"
+
+    finally:
+        cur.close()
+
+    # Eliminar el empleado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("DELETE FROM hotel WHERE hid = %s", (hid,))
+        db.conexion.commit()
+    finally:
+        cur.close()
+        db.close()

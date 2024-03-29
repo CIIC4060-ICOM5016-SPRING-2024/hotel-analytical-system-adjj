@@ -60,6 +60,10 @@ def create_app(test_config=None):
     def delete_hotel(hid):
         return HotelContoller().deleteHotel(hid)
 
+    @app.route('/hotel/<int:hid>', methods=['PUT'])
+    def update_hotel(hid):
+        return HotelContoller().putHotel(hid)
+
     return app
 
 

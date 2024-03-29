@@ -45,3 +45,23 @@ class HotelContoller:
             return make_response(jsonify({"message": "Hotel eliminado exitosamente"}), 200)
         else:
             return make_response(jsonify({"error": "Error al eliminar hotel"}), 500)
+
+    def putHotel(self, hid):
+        if request.method == 'PUT':
+            # Obtener los datos actualizados del cuerpo de la petición
+            data = request.get_json()
+            # Validar que todos los campos necesarios están presentes
+            required_fields = ['chid', 'hname', 'hcity']
+            if not all(field in data for field in required_fields):
+                return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+            # Crear una instancia de EmployeeDAO
+            dao = HotelDAO()
+            # Llamar al método para actualizar el empleado
+            success = dao.putHotel(hid, data['chid'], data['hname'], data['hcity'])
+
+            if success:
+                return make_response(jsonify({"message": "Hotel actualizado exitosamente"}), 200)
+            else:
+                # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
+                return make_response(jsonify({"error": "Error al actualizar hotel"}), 500)
