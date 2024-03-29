@@ -22,6 +22,10 @@ def create_app(test_config=None):
     def add_client():
         return ClientContoller().addEmployee()
 
+    @app.route('/client/<int:clid>', methods=['DELETE'])
+    def delete_client(clid):
+        return ClientContoller().deleteClient(clid)
+
 
     @app.route('/employee')
     def get_employees():

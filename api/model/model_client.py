@@ -34,3 +34,19 @@ class ClientDAO:
             self.db.close()
             cur.close()
         return True
+
+
+    def deleteClient(self, clid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "DELETE FROM client WHERE clid = %s"
+            cur.execute(query, (clid,))
+            self.db.conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al eliminar client: {e}")
+            self.db.conexion.rollback()
+            return False
+        finally:
+            cur.close()
+            self.db.close()

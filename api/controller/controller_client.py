@@ -39,3 +39,11 @@ class ClientContoller:
                 return make_response(jsonify({"message": "Client agregado exitosamente"}), 201)
             else:
                 return make_response(jsonify({"error": "Error al agregar client"}), 500)
+
+    def deleteClient(self, clid):
+        dao = ClientDAO()
+        success = dao.deleteClient(clid)
+        if success:
+            return make_response(jsonify({"message": "Client eliminado exitosamente"}), 200)
+        else:
+            return make_response(jsonify({"error": "Error al eliminar client"}), 500)

@@ -94,7 +94,40 @@ def test_post_client(client):
         cur.close()
     db.close()
 
+def test_delete_client(client):
+    # Paso 1: Añadir un nuevo empleado directamente a la base de datos y obtener su eid
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""
+            INSERT INTO client (fname, lname, age, memberyear) 
+            VALUES (%s, %s, %s, %s) RETURNING clid""",
+                    ("Janiel", "Núñez", 21, 2020))
+        clid = cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
+        db.conexion.commit()
+    except Exception as e:
+        print(f"Error al añadir client para prueba de eliminación: {e}")
+        db.conexion.rollback()
+        assert False, "Fallo al añadir client para prueba de eliminación"
+    finally:
+        cur.close()
 
+    # Asegúrate de que el empleado fue añadido
+    assert clid is not None, "El client no fue añadido correctamente"
+
+    # Paso 2: Probar la eliminación del client mediante una petición DELETE
+    delete_response = client.delete(f'/client/{clid}')
+    assert delete_response.status_code == 200, "Fallo al eliminar client"
+
+    # Opcional: Verificar que el client haya sido eliminado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT * FROM client WHERE clid = %s", (clid,))
+        client__ = cur.fetchone()
+        assert client__ is None, "El client no fue eliminado correctamente"
+    finally:
+        cur.close()
+        db.close()
 
 def test_get_all_employees(client):
     response = client.get('/employee')
