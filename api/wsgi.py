@@ -64,6 +64,14 @@ def create_app(test_config=None):
     def update_hotel(hid):
         return HotelContoller().putHotel(hid)
 
+    @app.route('/most/reservation')
+    def get_most_reservations():
+        return HotelContoller().get_most_reservations()
+
+    @app.route('/most/capacity')
+    def get_most_capacity():
+        return HotelContoller().get_most_capacity()
+
     return app
 
 
