@@ -72,6 +72,10 @@ def create_app(test_config=None):
     def get_most_capacity():
         return HotelContoller().get_most_capacity()
 
+    @app.route('/hotel/<int:hid>/highestpaid')
+    def getTopPaidRegularEmployeesByHotel(hid):
+        return EmployeeController().getTopPaidRegularEmployeesByHotel(hid)
+
     return app
 
 

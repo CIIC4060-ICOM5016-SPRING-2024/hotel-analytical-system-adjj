@@ -71,3 +71,11 @@ class EmployeeController:
             else:
                 # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
                 return make_response(jsonify({"error": "Error al actualizar empleado"}), 500)
+
+    def getTopPaidRegularEmployeesByHotel(self, hid):
+        dao = EmployeeDAO()
+        au_dict = dao.getTopPaidRegularEmployeesByHotel(hid)
+        result = []
+        for element in au_dict:
+            result.append(self.dicBuild(element))
+        return jsonify(result)
