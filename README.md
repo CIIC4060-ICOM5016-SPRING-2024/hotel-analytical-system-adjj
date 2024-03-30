@@ -1,3 +1,4 @@
+# [Postman URL](https://jjad-heroku-db.postman.co/workspace/e5f355e3-f951-426b-bd5a-5c48b0992560/request/33934176-5c192629-d700-4598-afe2-905a253068ca)
 # DB-ADJJ Database credentials
 
 REST API HOSTNAME: https://postgres-app1-075e5eddc52e.herokuapp.com
