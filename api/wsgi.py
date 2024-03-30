@@ -2,6 +2,7 @@ from flask_cors import CORS
 from flask import Flask
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
+from api.controller.controller_hotel import HotelContoller
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -46,6 +47,22 @@ def create_app(test_config=None):
     @app.route('/employee/<int:eid>', methods=['PUT'])
     def update_employee(eid):
         return EmployeeController().putEmployee(eid)
+
+    @app.route('/hotel')
+    def get_hotels():
+        return HotelContoller().getAllHotels()
+
+    @app.route('/hotel', methods=['POST'])
+    def add_hotel():
+        return HotelContoller().addHotel()
+
+    @app.route('/hotel/<int:hid>', methods=['DELETE'])
+    def delete_hotel(hid):
+        return HotelContoller().deleteHotel(hid)
+
+    @app.route('/hotel/<int:hid>', methods=['PUT'])
+    def update_hotel(hid):
+        return HotelContoller().putHotel(hid)
 
     return app
 
