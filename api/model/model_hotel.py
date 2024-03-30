@@ -132,3 +132,27 @@ class HotelDAO:
         cur.close()
 
         return hotel_list
+
+    def get_most_capacity(self):
+        cur = self.db.conexion.cursor()
+        query = """ SELECT
+                        h.hid,
+                        h.hname,
+                        SUM(rd.capacity) AS total_capacity
+                    FROM
+                        Hotel h
+                    JOIN Room r ON h.hid = r.hid
+                    JOIN RoomDescription rd ON r.rdid = rd.rdid
+                    GROUP BY 
+                        h.hid
+                    ORDER BY 
+                        total_capacity DESC
+                    LIMIT 5;
+
+                """
+        cur.execute(query)
+        hotel_list = cur.fetchall()
+        self.db.close()
+        cur.close()
+
+        return hotel_list

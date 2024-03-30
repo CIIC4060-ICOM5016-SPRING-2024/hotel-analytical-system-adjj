@@ -85,3 +85,22 @@ class HotelContoller:
         for element in au_dict:
             result.append(fict_build(element))
         return jsonify(result)
+
+
+    def get_most_capacity(self):
+
+        def fict_build(row):
+            # Ajusta los índices de acuerdo a lo que devuelve tu consulta específica
+            a_dict = {
+                'hid': row[0],
+                'hname': row[1],
+                'total_capacity': row[2]  # Asumiendo que este es el orden de los campos devueltos por tu consulta
+            }
+            return a_dict
+
+        dao = HotelDAO()
+        au_dict = dao.get_most_capacity()
+        result = []
+        for element in au_dict:
+            result.append(fict_build(element))
+        return jsonify(result)
