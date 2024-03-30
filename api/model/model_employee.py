@@ -80,3 +80,23 @@ class EmployeeDAO:
         finally:
             cur.close()
             self.db.close()
+
+    def getTopPaidRegularEmployeesByHotel(self, hid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = """
+                    SELECT eid, hid, fname, lname, age, salary, position 
+                    FROM employee 
+                    WHERE position = 'Regular' AND hid = %s
+                    ORDER BY salary DESC 
+                    LIMIT 3
+                    """
+            cur.execute(query, (hid,))
+            employees = cur.fetchall()
+            return employees
+        except Exception as e:
+            print(f"Error al obtener los empleados regulares mejor pagados para el hotel {hid}: {e}")
+            return None
+        finally:
+            cur.close()
+            self.db.close()
