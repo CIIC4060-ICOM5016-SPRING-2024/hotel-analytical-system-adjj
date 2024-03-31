@@ -156,3 +156,18 @@ class HotelDAO:
         cur.close()
 
         return hotel_list
+
+    def getHotelById(self, hid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "SELECT hid, chid, hname, hcity FROM hotel WHERE hid = %s"
+            cur.execute(query, (hid,))
+            hotel = cur.fetchone()
+            return hotel
+        except Exception as e:
+            print(f"Error al obtener el hotel con ID {hid}: {e}")
+            self.db.conexion.rollback()
+            return None
+        finally:
+            self.db.close()
+            cur.close()

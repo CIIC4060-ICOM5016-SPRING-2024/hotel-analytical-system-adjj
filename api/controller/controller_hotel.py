@@ -104,3 +104,14 @@ class HotelContoller:
         for element in au_dict:
             result.append(fict_build(element))
         return jsonify(result)
+
+    def getHotelById(self,hid):
+        dao = HotelDAO()
+        hotel = dao.getHotelById(hid)  # Esto ahora espera una sola fila o None
+        if hotel:
+            # Ya que esperamos un único resultado, no hay necesidad de iterar
+            result = self.dicBuild(hotel)
+            return jsonify(result)
+        else:
+            # Manejar el caso en que no se encuentre el hotel
+            return make_response(jsonify({"error": f"No se encontró el hotel con ID {hid}"}), 404)

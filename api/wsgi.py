@@ -52,6 +52,10 @@ def create_app(test_config=None):
     def get_hotels():
         return HotelContoller().getAllHotels()
 
+    @app.route('/hotel/<int:hid>')
+    def get_hotel(hid):
+        return HotelContoller().getHotelById(hid)
+
     @app.route('/hotel', methods=['POST'])
     def add_hotel():
         return HotelContoller().addHotel()
