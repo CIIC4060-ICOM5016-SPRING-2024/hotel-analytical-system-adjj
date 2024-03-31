@@ -80,3 +80,37 @@ class ClientDAO:
         finally:
             cur.close()
             self.db.close()
+
+
+    def getTop5CreditCardReservations(self, hid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = """
+                            SELECT 
+                                c.clid, c.fname, c.lname, COUNT(re.reid) AS reservation_count
+                            FROM 
+                                Client c
+                            JOIN 
+                                Reserve re ON c.clid = re.clid
+                            JOIN
+                                RoomUnavailable ru ON re.ruid = ru.ruid
+                            JOIN
+                                Room r ON ru.rid = r.rid
+                            WHERE 
+                                c.age < 30 AND re.payment = 'credit card' AND r.hid = %s
+                            GROUP BY 
+                                c.clid
+                            ORDER BY 
+                                reservation_count DESC
+                            LIMIT 5;
+                            """
+            cur.execute(query, (hid,))
+            top_clients = cur.fetchall()
+            return top_clients
+        except Exception as e:
+            print(
+                f"Error al obtener el top 5 de clientes menores de 30 con más reservaciones con tarjeta de crédito para el hotel {hotel_id}: {e}")
+            return None
+        finally:
+            self.db.close()
+            cur.close()

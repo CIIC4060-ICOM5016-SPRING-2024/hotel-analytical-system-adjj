@@ -76,6 +76,10 @@ def create_app(test_config=None):
     def getTopPaidRegularEmployeesByHotel(hid):
         return EmployeeController().getTopPaidRegularEmployeesByHotel(hid)
 
+    @app.route('/hotel/<int:hid>/mostdiscount')
+    def getTop5CreditCardReservations(hid):
+        return ClientContoller().getTop5CreditCardReservations(hid)
+
     return app
 
 
