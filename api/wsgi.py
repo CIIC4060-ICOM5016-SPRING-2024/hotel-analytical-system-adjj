@@ -19,6 +19,10 @@ def create_app(test_config=None):
     def get_clients():
         return ClientContoller().getAllClients()
 
+    @app.route('/client/<int:clid>')
+    def get_client(clid):
+        return ClientContoller().getClientById(clid)
+
     @app.route('/client', methods=['POST'])
     def add_client():
         return ClientContoller().addEmployee()

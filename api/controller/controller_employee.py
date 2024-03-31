@@ -26,12 +26,13 @@ class EmployeeController:
 
     def getEmployeeById(self,eid):
         def fict_build(row):
-            a_dict = {'hid': row[0],
+            a_dict = {'eid': eid,
+                      'hid': row[0],
                       'fname': row[1],
                       'lname': row[2],
                       'position': row[3],
                       'salary': row[4],
-                      'age': row[5]
+                      'age': row[5],
                       }
             return a_dict
 

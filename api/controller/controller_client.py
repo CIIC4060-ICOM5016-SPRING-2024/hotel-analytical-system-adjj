@@ -22,6 +22,26 @@ class ClientContoller:
             result.append(self.dicBuild(element))
         return jsonify(result)
 
+    def getClientById(self,clid):
+        def fict_build(row):
+            a_dict = {'clid':clid,
+                      'fname':row[0],
+                      'lname':row[1],
+                      'age':row[2],
+                      'memberyear':row[3]
+                      }
+            return a_dict
+
+        dao = ClientDAO()
+        employee = dao.getClientById(clid)  # Esto ahora espera una sola fila o None
+        if employee:
+            # Ya que esperamos un único resultado, no hay necesidad de iterar
+            result = fict_build(employee)
+            return jsonify(result)
+        else:
+            # Manejar el caso en que no se encuentre el hotel
+            return make_response(jsonify({"error": f"No se encontró el client con ID {clid}"}), 404)
+
     def addEmployee(self):
         if request.method == 'POST':
             # Obtener datos del cuerpo de la petición

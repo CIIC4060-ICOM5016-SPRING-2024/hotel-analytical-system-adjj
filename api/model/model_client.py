@@ -13,6 +13,21 @@ class ClientDAO:
 
         return client_list
 
+    def getClientById(self, clid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "SELECT fname, lname, age, memberyear FROM client WHERE clid = %s"
+            cur.execute(query, (clid,))
+            client = cur.fetchone()
+            return client
+        except Exception as e:
+            print(f"Error al obtener el client con ID {clid}: {e}")
+            self.db.conexion.rollback()
+            return None
+        finally:
+            self.db.close()
+            cur.close()
+
     def postClient(self, fname, lname, age, memberyear):
         # Asegurarse de que la posición sea válida
         # if not (employee_inputs_are_correct(position, salary)):

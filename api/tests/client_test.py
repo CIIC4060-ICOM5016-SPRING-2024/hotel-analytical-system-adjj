@@ -1,5 +1,24 @@
 from api.model.db import Database
 
+
+def test_get_client_by_id(client):
+
+    for clid in range(1,401):
+        response = client.get(f'/client/{clid}')
+        assert response.status_code == 200, f"El código de respuesta debe ser 200 pero se obtuvo {response.status_code}"
+
+        data = response.get_json()
+        assert isinstance(data, dict), "Los datos deben ser un diccionario"
+        # Verifica que los datos del hotel tengan la estructura y tipos de datos esperados
+        assert 'fname' in data, "'hid' debe estar presente"
+        assert 'lname' in data, "'fname' debe estar presente"
+        assert 'age' in data, "'lname' debe estar presente"
+        assert 'memberyear' in data, "'position' debe estar presente"
+        assert isinstance(data['fname'], str), "fname debe ser un cadena"
+        assert isinstance(data['lname'], str), "lname debe ser un cadena"
+        assert isinstance(data['age'], int), f"age debe ser una entero"
+        assert isinstance(data['memberyear'], int), f"memberyear debe ser una entero"
+
 def test_get_all_clients(client):
     response = client.get('/client')
     assert response.status_code == 200, f"response code should be 200 but got {response.status_code}"

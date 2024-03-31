@@ -1,10 +1,10 @@
 from api.model.db import Database
 
-def test_get_hotel_by_id(client):
+def test_get_employee_by_id(client):
 
-    for eid in range(1,41):
+    for eid in range(1,201):
         response = client.get(f'/employee/{eid}')
-        assert response.status_code == 200, f"El código de respuesta debe ser 200 pero se obtuvo {response.status_code}"
+        assert response.status_code == 200, f"El código de respuesta debe ser 200 pero se obtuvo {response.status_code} y eid={eid}"
 
         data = response.get_json()
         assert isinstance(data, dict), "Los datos deben ser un diccionario"
