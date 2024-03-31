@@ -24,6 +24,27 @@ class EmployeeController:
             result.append(self.dicBuild(element))
         return jsonify(result)
 
+    def getEmployeeById(self,eid):
+        def fict_build(row):
+            a_dict = {'hid': row[0],
+                      'fname': row[1],
+                      'lname': row[2],
+                      'position': row[3],
+                      'salary': row[4],
+                      'age': row[5]
+                      }
+            return a_dict
+
+        dao = EmployeeDAO()
+        employee = dao.getEmployeeById(eid)  # Esto ahora espera una sola fila o None
+        if employee:
+            # Ya que esperamos un único resultado, no hay necesidad de iterar
+            result = fict_build(employee)
+            return jsonify(result)
+        else:
+            # Manejar el caso en que no se encuentre el hotel
+            return make_response(jsonify({"error": f"No se encontró el employee con ID {eid}"}), 404)
+
     def addEmployee(self):
         if request.method == 'POST':
             # Obtener datos del cuerpo de la petición

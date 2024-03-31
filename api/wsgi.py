@@ -36,6 +36,10 @@ def create_app(test_config=None):
     def get_employees():
         return EmployeeController().getAllEmployees()
 
+    @app.route('/employee/<int:eid>')
+    def get_employee(eid):
+        return EmployeeController().getEmployeeById(eid)
+
     @app.route('/employee', methods=['POST'])
     def add_employee():
         return EmployeeController().addEmployee()
