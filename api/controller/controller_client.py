@@ -67,3 +67,21 @@ class ClientContoller:
             else:
                 # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
                 return make_response(jsonify({"error": "Error al actualizar client"}), 500)
+
+    def getTop5CreditCardReservations(self,hid):
+
+        def fict_build(row):
+            a_dict = {
+                'clid': row[0],
+                'fname': row[1],
+                'lname': row[2],
+                'reservation_count': row[3]
+            }
+            return a_dict
+
+        dao = ClientDAO()
+        au_dict = dao.getTop5CreditCardReservations(hid)
+        result = []
+        for element in au_dict:
+            result.append(fict_build(element))
+        return jsonify(result)
