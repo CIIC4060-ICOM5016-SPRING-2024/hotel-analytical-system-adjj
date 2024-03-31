@@ -14,6 +14,21 @@ class EmployeeDAO:
 
         return employee_list
 
+    def getEmployeeById(self, eid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "SELECT hid, fname, lname, position, salary, age FROM employee WHERE eid = %s"
+            cur.execute(query, (eid,))
+            employee = cur.fetchone()
+            return employee
+        except Exception as e:
+            print(f"Error al obtener el employee con ID {eid}: {e}")
+            self.db.conexion.rollback()
+            return None
+        finally:
+            self.db.close()
+            cur.close()
+
     def postEmployee(self, hid, fname, lname, age, salary, position):
         # Asegurarse de que la posición sea válida
         if not (employee_inputs_are_correct(position, salary)):

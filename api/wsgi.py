@@ -19,6 +19,10 @@ def create_app(test_config=None):
     def get_clients():
         return ClientContoller().getAllClients()
 
+    @app.route('/client/<int:clid>')
+    def get_client(clid):
+        return ClientContoller().getClientById(clid)
+
     @app.route('/client', methods=['POST'])
     def add_client():
         return ClientContoller().addEmployee()
@@ -36,6 +40,10 @@ def create_app(test_config=None):
     def get_employees():
         return EmployeeController().getAllEmployees()
 
+    @app.route('/employee/<int:eid>')
+    def get_employee(eid):
+        return EmployeeController().getEmployeeById(eid)
+
     @app.route('/employee', methods=['POST'])
     def add_employee():
         return EmployeeController().addEmployee()
@@ -51,6 +59,10 @@ def create_app(test_config=None):
     @app.route('/hotel')
     def get_hotels():
         return HotelContoller().getAllHotels()
+
+    @app.route('/hotel/<int:hid>')
+    def get_hotel(hid):
+        return HotelContoller().getHotelById(hid)
 
     @app.route('/hotel', methods=['POST'])
     def add_hotel():

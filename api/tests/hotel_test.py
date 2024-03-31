@@ -17,6 +17,25 @@ def test_get_all_hotels(client):
             assert isinstance(data[i]['hname'], str), f"fname has to be string but got {type(data[i]['hname'])}"
             assert isinstance(data[i]['hcity'], str), f"lname has to be string but got {type(data[i]['hcity'])}"
 
+def test_get_hotel_by_id(client):
+    # Asumiendo que ya tienes un hotel en tu base de datos de prueba, utiliza ese ID. De lo contrario, inserta uno y obtén el ID.
+    # Reemplaza esto con un ID válido de tu base de datos de prueba o después de insertar un hotel nuevo
+    for hid in range(1,41):
+        response = client.get(f'/hotel/{hid}')
+        assert response.status_code == 200, f"El código de respuesta debe ser 200 pero se obtuvo {response.status_code}"
+
+        data = response.get_json()
+        assert isinstance(data, dict), "Los datos deben ser un diccionario"
+        # Verifica que los datos del hotel tengan la estructura y tipos de datos esperados
+        assert 'hid' in data, "'hid' debe estar presente"
+        assert 'chid' in data, "'chid' debe estar presente"
+        assert 'hname' in data, "'hname' debe estar presente"
+        assert 'hcity' in data, "'hcity' debe estar presente"
+        assert isinstance(data['hid'], int), "hid debe ser un entero"
+        assert isinstance(data['chid'], int), "chid debe ser un entero"
+        assert isinstance(data['hname'], str), "hname debe ser una cadena"
+        assert isinstance(data['hcity'], str), "hcity debe ser una cadena"
+
 def test_post_hotel(client):
     # Datos del nuevo empleado
     new_hotel = {
