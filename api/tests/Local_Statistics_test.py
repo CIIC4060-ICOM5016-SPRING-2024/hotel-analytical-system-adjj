@@ -25,7 +25,7 @@ def test_get_top_paid_regular_employees_by_hotel(client):
 
 def test_get_top5_credit_card_reservations_by_hotel(client):
     for hid in range(1, 41):  # Asumiendo que quieres probar para hoteles con ID del 1 al 40
-        response = client.get(f'/hotel/{hid}/mostdiscount')
+        response = client.get(f'/hotel/{hid}/mostcreditcard')
         assert response.status_code == 200, f"El código de respuesta debe ser 200 para el hotel {hid}, pero se obtuvo {response.status_code}"
 
         data = response.get_json()
