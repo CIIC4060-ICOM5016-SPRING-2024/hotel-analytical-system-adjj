@@ -3,6 +3,7 @@ from flask import Flask
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
+from api.controller.controller_chains import ChainsContoller
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -11,9 +12,22 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
+
     @app.route('/')
     def hello_world():
         return 'Hello World!'
+    
+    @app.route('/chains')
+    def get_chains():
+        return ChainsContoller().getAllChains()
+    
+    @app.route('/chains/<int:chid>')
+    def get_chain(chid):
+        return ChainsContoller().getChain(chid)
+    
+    
+
+
 
     @app.route('/client')
     def get_clients():
