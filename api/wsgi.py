@@ -3,6 +3,7 @@ from flask import Flask
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
+from api.controller.controller_login import LoginController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -91,6 +92,29 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/mostcreditcard')
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
+
+
+    ############################### Jandel #########
+
+    @app.route('/login')
+    def get_logins():
+        return LoginController().getAllLogins()
+
+    @app.route('/login/<int:lid>')
+    def get_login(lid):
+        return LoginController().getLoginById(lid)
+
+    @app.route('/login', methods=['POST'])
+    def add_login():
+        return LoginController().addLogin()
+
+    @app.route('/login/<int:lid>', methods=['DELETE'])
+    def delete_login(lid):
+        return LoginController().deleteLogin(lid)
+
+    @app.route('/login/<int:lid>', methods=['PUT'])
+    def update_login(lid):
+        return LoginController().putLogin(lid)
 
     return app
 
