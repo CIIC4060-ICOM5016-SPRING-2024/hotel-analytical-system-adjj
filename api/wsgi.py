@@ -4,6 +4,8 @@ from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
 from api.controller.controller_login import LoginController
+from api.controller.controller_roomdescription import RoomDescriptionController
+
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -115,6 +117,18 @@ def create_app(test_config=None):
     @app.route('/login/<int:lid>', methods=['PUT'])
     def update_login(lid):
         return LoginController().putLogin(lid)
+#########################
+    @app.route('/roomdescription')
+    def get_RoomsDescriptions():
+        return RoomDescriptionController().getAllRoomDescriptions()
+
+    @app.route('/roomdescription/<int:rdid>')
+    def get_RoomsDescription(rdid):
+        return RoomDescriptionController().getRoomsDescriptionById(rdid)
+
+    @app.route('/roomdescription', methods=['POST'])
+    def add_roomdescription():
+        return RoomDescriptionController().addRoomDescription()
 
     return app
 
