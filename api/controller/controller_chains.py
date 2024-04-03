@@ -26,16 +26,21 @@ class ChainsContoller:
     
     def getChain(self,id:int):
         dao = ChainsDAO()
-        au_dict = dao.getChain(id)
-        result=[]
-        for element in au_dict:
-            result.append(self.dicBuild(element))
-        return jsonify(result)
+        chain = dao.getChain(id)
+
+        # employee = dao.getClientById(id)  # Esto ahora espera una sola fila o None
+        if chain:
+            # Ya que esperamos un único resultado, no hay necesidad de iterar
+            result = self.dicBuild(chain)
+            return jsonify(result)
+        else:
+            # Manejar el caso en que no se encuentre el hotel
+            return make_response(jsonify({"error": f"No se encontró el chain con ID {id}"}), 404)
     
     def addChain(self):
         data = request.get_json()
         
-        if not all(key in data for key in ('chid', 'cname', 'springmkup','summermkup','fallmkup','wintermkup')):
+        if not all(key in data for key in ('cname', 'springmkup','summermkup','fallmkup','wintermkup')):
             return make_response(jsonify({"error": "Missing Values"}), 400)
 
         dao = ChainsDAO()
@@ -58,7 +63,7 @@ class ChainsContoller:
         dao = ChainsDAO()
         data = request.get_json()
 
-        if not all(key in data for key in ('chid', 'cname', 'springmkup','summermkup','fallmkup','wintermkup')):
+        if not all(key in data for key in ('cname', 'springmkup','summermkup','fallmkup','wintermkup')):
             return make_response(jsonify({"error": "Missing Values"}), 400)
         
         success = dao.putChain(id=id, updated_chain=data)

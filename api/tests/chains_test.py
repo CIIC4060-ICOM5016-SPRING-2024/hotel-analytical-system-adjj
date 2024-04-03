@@ -13,7 +13,7 @@ def test_get_chain_by_id(client):
         assert 'fallmkup' in data, "'summermkup' debe estar presente"
         assert 'wintermkup' in data, "'fallmkup' debe estar presente"
         assert isinstance(data['cname'], str), "cname debe ser un string"
-        assert isinstance(data['springmkup'], str), "springmkup debe ser un float"
+        assert isinstance(data['springmkup'], float), "springmkup debe ser un float"
         assert isinstance(data['summermkup'], float), f"summermkup debe ser un float"
         assert isinstance(data['fallmkup'], float), f"fallmkup debe ser un float"
         assert isinstance(data['wintermkup'], float), f"wintermkup debe ser un float"
@@ -56,7 +56,7 @@ def test_post_chain(client):
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
 
     response_data = response.get_json()
-    assert response_data['message'] == "Chain agregado exitosamente", "Expected success message in the response"
+    assert response_data['message'] == "Chain added", "Expected success message in the response"
 
     db = Database()
     #Consulta directa con la base para ver asegurarnos de que si se añadio el elemento
@@ -109,13 +109,14 @@ def test_delete_chain(client):
         assert False, "Error adding a chain for DELETING test"
     finally:
         cur.close()
-    db.close()
+
 
     assert chid is not None, "Chain was not added correctly"
 
     delete_response = client.delete(f'/chains/{chid}')
 
-    assert delete_response.status == 200, "Failed to eliminate chain"
+    assert delete_response.status_code == 200, "Failed to eliminate chain"
+
 
     try:
         cur = db.conexion.cursor()
@@ -131,7 +132,7 @@ def test_put_chain(client):
     db = Database()
     try:
         cur = db.conexion.cursor()
-        cur.execute("""INSERT INTO chains (cname, springmkup, summermkup, fallmkup, wintermkup) VALUES (%s,%s,%s,%s,%s) RETURNING chid""", ("Gato Blanco",2,2,2,2))
+        cur.execute("""INSERT INTO chains (cname, springmkup, summermkup, fallmkup, wintermkup) VALUES (%s,%s,%s,%s,%s) RETURNING chid""", ("Gato Blanco",3,3,3,3))
         chid = cur.fetchone()[0]
         db.conexion.commit()
     finally:
@@ -160,7 +161,7 @@ def test_put_chain(client):
         assert chain__[1] == updated_chain['springmkup'], "El springmkup del chain no se actualizó correctamente"
         assert chain__[2] == updated_chain['summermkup'], "El summermkup del chain no se actualizó correctamente"
         assert chain__[3] == updated_chain['fallmkup'], "El fallmkup del chain no se actualizó correctamente"
-        assert chain__[3] == updated_chain['wintermkup'], "El wintermkup del chain no se actualizó correctamente"
+        assert chain__[4] == updated_chain['wintermkup'], "El wintermkup del chain no se actualizó correctamente"
     finally:
         cur.close()
 
