@@ -33,6 +33,12 @@ class Database:
         # db_dict = {'host':os.getenv('HOST'), 'user':os.getenv('USER'), 'password':os.getenv('PASSWORD'), 'port':os.getenv('PORT'), 'database':os.getenv('DATABASE')
         # }
         # return db_dict
+    def list_tables(self):
+        cur = self.conexion.cursor()
+        query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
+        cur.execute(query)
+        list = [table[0] for table in cur.fetchall()]
+        return list
 
     def close(self):
         self.conexion.close()
