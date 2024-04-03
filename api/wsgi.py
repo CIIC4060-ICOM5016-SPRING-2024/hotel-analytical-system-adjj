@@ -24,10 +24,17 @@ def create_app(test_config=None):
     @app.route('/chains/<int:chid>')
     def get_chain(chid):
         return ChainsContoller().getChain(chid)
-    
-    
 
-
+    @app.route('/chains', methods=['POST'])
+    def add_chain():
+        return ChainsContoller().addChain()
+    @app.route('/chains/<int:chid>', methods=['DELETE'])
+    def delete_chain(chid):
+        return ChainsContoller().deleteChain(chid)
+    
+    @app.route('/chains/<int:chid>', methods=['PUT'])
+    def update_chain(chid):
+        return ChainsContoller().putChain(chid)
 
     @app.route('/client')
     def get_clients():
