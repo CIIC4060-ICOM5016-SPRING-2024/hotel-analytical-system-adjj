@@ -2,6 +2,8 @@ import pandas as pd
 import sqlite3
 import os
 from api.model.db import Database
+import io
+from psycopg2 import sql
 
 DATA_PATH = os.path.abspath(os.path.join(os.getcwd(), "..", "Phase#1_data"))
 CLEAN_DATA_DIR = os.path.join(DATA_PATH, "cleanData")
@@ -210,18 +212,19 @@ def insert_df_to_table(df, table_name):
     """
     Inserta un DataFrame en una tabla específica en la base de datos.
     """
+    # Crea un buffer de memoria similar a un archivo
+    buffer = io.StringIO()
     db = Database()
-    # Convertir el DataFrame a una lista de tuplas
-    tuples = [tuple(x) for x in df.to_numpy()]
-    # Obtener los nombres de las columnas para construir la consulta SQL
+    # Escribe el DataFrame al buffer en formato CSV, sin el índice
+    df.to_csv(buffer, index=False, header=False)
+    buffer.seek(0)  # Regresa al inicio del buffer para leer desde él
+
     cols = ','.join(list(df.columns))
-    # Crear la cadena de valores de marcadores de posición para la consulta SQL
-    placeholders = ','.join(['%s'] * len(df.columns))
-    sql = f"INSERT INTO {table_name} ({cols}) VALUES({placeholders})"
+    sql_query = sql.SQL("COPY {} ({}) FROM STDIN WITH CSV").format(sql.Identifier(table_name), sql.SQL(cols))
 
     try:
         cursor = db.conexion.cursor()
-        cursor.executemany(sql, tuples)
+        cursor.copy_expert(sql_query, buffer)
         db.conexion.commit()
         cursor.close()
         print(f"Datos insertados correctamente en la tabla {table_name}.")
