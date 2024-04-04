@@ -3,6 +3,7 @@ from flask import Flask
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
+from api.controller.controller_room import RoomController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -92,8 +93,27 @@ def create_app(test_config=None):
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
 
-    return app
+    @app.route('/room')
+    def get_rooms():
+        return RoomController().getAllRooms()
 
+    @app.route('/room/<int:rid>')
+    def get_room(rid):
+        return RoomController().getRoomById(rid)
+
+    @app.route('/room', methods=['POST'])
+    def post_room():
+        return RoomController().postRoom()
+
+    @app.route('/room/<int:rid>', methods=['DELETE'])
+    def delete_room(rid):
+        return RoomController().deleteRoom(rid)
+
+    @app.route('/room/<int:rid>', methods=['PUT'])
+    def put_room(rid):
+        return RoomController().putRoom(rid)
+
+    return app
 
 app = create_app()
 
