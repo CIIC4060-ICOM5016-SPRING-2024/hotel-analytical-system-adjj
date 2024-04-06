@@ -59,7 +59,7 @@ class RoomUnavailableDAO():
         with self.db.conexion.cursor() as cur:
             try:
                 # Verifica si habitacion indisponible existe
-                cur.execute("SELECT COUNT(*) FROM room WHERE ruid = %s", (ruid,))
+                cur.execute("SELECT COUNT(*) FROM roomunavailable WHERE ruid = %s", (ruid,))
                 room_count = cur.fetchone()[0]
                 if room_count == 0:
                     return False, "La habitación no existe"
