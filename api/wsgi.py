@@ -101,16 +101,16 @@ def create_app(test_config=None):
     def get_logins():
         return LoginController().getAllLogins()
 
-    # @app.route('/login/<int:lid>')
-    # def get_login(lid):
-    #     return LoginController().getLoginById(lid)
-    #
-    # @app.route('/login/<int:lid>', methods=['PUT'])
-    # def update_login(lid):
-    #     return LoginController().putLogin(lid)
-    # @app.route('/login/<int:lid>', methods=['DELETE'])
-    # def delete_login(lid):
-    #     return LoginController().deleteEmployee(lid)
+    @app.route('/login/<int:lid>')
+    def get_login(lid):
+        return LoginController().getLoginById(lid)
+
+    @app.route('/login/<int:lid>', methods=['PUT'])
+    def update_login(lid):
+        return LoginController().putLogin(lid)
+    @app.route('/login/<int:lid>', methods=['DELETE'])
+    def delete_login(lid):
+        return LoginController().deleteEmployee(lid)
 
     @app.route('/login/<int:lid>', methods=['POST'])
     def add_login(lid):
