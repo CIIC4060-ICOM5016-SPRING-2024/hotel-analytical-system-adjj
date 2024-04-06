@@ -95,29 +95,28 @@ def create_app(test_config=None):
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
 
-
-    ############################### Jandel #########
+##############################################
 
     @app.route('/login')
     def get_logins():
         return LoginController().getAllLogins()
 
-    @app.route('/login/<int:lid>')
-    def get_login(lid):
-        return LoginController().getLoginById(lid)
+    # @app.route('/login/<int:lid>')
+    # def get_login(lid):
+    #     return LoginController().getLoginById(lid)
+    #
+    # @app.route('/login/<int:lid>', methods=['PUT'])
+    # def update_login(lid):
+    #     return LoginController().putLogin(lid)
+    # @app.route('/login/<int:lid>', methods=['DELETE'])
+    # def delete_login(lid):
+    #     return LoginController().deleteEmployee(lid)
 
-    @app.route('/login', methods=['POST'])
-    def add_login():
-        return LoginController().addLogin()
+    @app.route('/login/<int:lid>', methods=['POST'])
+    def add_login(lid):
+        return LoginController().addLogin(lid)
 
-    @app.route('/login/<int:lid>', methods=['DELETE'])
-    def delete_login(lid):
-        return LoginController().deleteLogin(lid)
 
-    @app.route('/login/<int:lid>', methods=['PUT'])
-    def update_login(lid):
-        return LoginController().putLogin(lid)
-#########################
     @app.route('/roomdescription')
     def get_RoomsDescriptions():
         return RoomDescriptionController().getAllRoomDescriptions()
@@ -129,7 +128,13 @@ def create_app(test_config=None):
     @app.route('/roomdescription', methods=['POST'])
     def add_roomdescription():
         return RoomDescriptionController().addRoomDescription()
-
+    #
+    @app.route('/roomdescription/<int:rdid>', methods=['DELETE'])
+    def delete_roomdescription(rdid):
+        return RoomDescriptionController().deleteRoomDescription(rdid)
+    @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
+    def update_roomdescription(rdid):
+        return RoomDescriptionController().putRoomDescription(rdid)
     return app
 
 

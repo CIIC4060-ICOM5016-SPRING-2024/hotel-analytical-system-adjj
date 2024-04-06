@@ -34,86 +34,6 @@ def test_get_login_by_id(client):
         assert isinstance(data['username'], str), "username debe ser una string"
         assert isinstance(data['password'], str), "password debe ser una string"
 
-
-#
-#
-# def test_post_login(client):
-#     new_login = {"eid": 201,
-#                  "username": "Jandel",
-#                  "password": "password2002"}
-#     response = client.post('/login', json=new_login)
-#     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
-#
-#     response_data = response.get_json()
-#     assert response_data['message'] == "Login agregado exitosamente", "Expected success message in the response"
-#
-#     db = Database()
-#
-#     try:
-#         cur = db.conexion.cursor()
-#         query = """ SELECT *
-#                     FROM login
-#                     WHERE eid = %s AND username = %s AND password = %s
-#                     """
-#
-#         cur.execute(query, (new_login['eid'], new_login['username'], new_login['username'], new_login['password']))
-#         login = cur.fetchone()
-#         assert login is not None, "El login añadido no se encontró en la base de datos"
-#     finally:
-#         cur.close()
-#     try:
-#         cur = db.conexion.cursor()
-#         query = """ DELETE FROM login
-#                     WHERE eid = %s AND username =%s AND password =%s
-#                     """
-#
-#         values = (new_login['eid'],
-#                   new_login['username'],
-#                   new_login['password']
-#                   )
-#         cur.execute(query, values)
-#
-#         db.conexion.commit()
-#     except Exception as e:
-#         print(f"Error al limpiar la base de datos: {e}")
-#         db.conexion.rollback()
-#     finally:
-#         cur.close()
-#     db.close()
-#
-#
-# def test_delete_login(client):
-#     db = Database()
-#     try:
-#         cur = db.conexion.cursor()
-#         cur.execute("""
-#             INSERT INTO login (eid, username, password)
-#             VALUES (%s, %s, %s) RETURNING lid""",
-#                     (201, "Jandel", "password2002"))
-#         lid = cur.fetchone()[0]
-#         db.conexion.commit()
-#     except Exception as e:
-#         print(f"Error al añadir login para prueba de eliminación: {e}")
-#         db.conexion.rollback()
-#         assert False, "Fallo al añadir login para prueba de eliminación"
-#     finally:
-#         cur.close()
-#
-#     assert lid is not None, "El login no fue añadido correctamente"
-#
-#     delete_response = client.delete(f'/login/{lid}')
-#     assert delete_response.status_code == 200, "Fallo al eliminar login"
-#
-#     try:
-#         cur = db.conexion.cursor()
-#         cur.execute("SELECT * FROM login WHERE lid = %s", (lid,))
-#         login = cur.fetchone()
-#         assert login is None, "El login no fue eliminado correctamente"
-#     finally:
-#         cur.close()
-#         db.close()
-
-#
 def test_put_login(client):
     db = Database()
     try:
@@ -129,7 +49,7 @@ def test_put_login(client):
     updated_login = {
         "eid": 1,
         "username": "cbonhome0 actualizado",
-        "password": "tS6M@Qnt actualizado",
+        "password": "tS6M@Qnt actualizado"
     }
     update_response = client.put(f'/login/{lid}', json=updated_login)
     assert update_response.status_code == 200, f"Fallo al actualizar login {update_response}"
@@ -146,11 +66,10 @@ def test_put_login(client):
     finally:
         cur.close()
 
-
     rollback_updated_login = {
         "eid": 1,
         "username": "cbonhome0",
-        "password": "tS6M@Qnt",
+        "password": "tS6M@Qnt"
     }
     rollback_update_response = client.put(f'/login/{lid}', json=rollback_updated_login)
     assert rollback_update_response.status_code == 200, f"Fallo al actualizar login {rollback_update_response}"
@@ -165,3 +84,85 @@ def test_put_login(client):
     finally:
         cur.close()
 
+
+def test_delete_login(client):
+    # Paso 1: Añadir un nuevo empleado directamente a la base de datos y obtener su eid
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+
+        cur.execute("""
+            INSERT INTO employee (hid, fname, lname, age, salary, position) 
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING eid""",
+                    (17, "Jandel", "Rodriguez", 21, 18000, "Regular"))
+
+        eid = cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
+        db.conexion.commit()
+
+         # Asume que INSERT...RETURNING retorna el eid del nuevo registro
+        db.conexion.commit()
+
+    except Exception as e:
+        print(f"Error al añadir login para prueba de eliminación: {e}")
+        db.conexion.rollback()
+        assert False, "Fallo al añadir login para prueba de eliminación"
+    finally:
+        cur.close()
+    try:
+        cur2 = db.conexion.cursor()
+
+        cur2.execute("""
+            INSERT INTO login (eid, username, password)
+            VALUES (%s, %s, %s) RETURNING lid""",
+                    (eid, "Jandel", "abcdefg"))
+
+        lid = cur2.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
+        db.conexion.commit()
+
+    except Exception as e:
+        print(f"Error al añadir login para prueba de eliminación: {e}")
+        db.conexion.rollback()
+        assert False, "Fallo al añadir login para prueba de eliminación"
+    finally:
+        cur2.close()
+
+
+    # Asegúrate de que el empleado fue añadido
+    assert lid is not None, "El login no fue añadido correctamente"
+
+    # Paso 2: Probar la eliminación del empleado mediante una petición DELETE
+    delete_response = client.delete(f'/login/{lid}')
+    assert delete_response.status_code == 200, "Fallo al eliminar login"
+
+    # Opcional: Verificar que el empleado haya sido eliminado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT * FROM login WHERE lid = %s", (lid,))
+        employee = cur.fetchone()
+        assert employee is None, "El login no fue eliminado correctamente"
+    finally:
+        cur.close()
+
+
+    # Asegúrate de que el empleado fue añadido
+    assert eid is not None, "El empleado no fue añadido correctamente"
+
+    # Paso 2: Probar la eliminación del empleado mediante una petición DELETE
+    delete_response = client.delete(f'/employee/{eid}')
+    assert delete_response.status_code == 200, "Fallo al eliminar empleado"
+
+    # Opcional: Verificar que el empleado haya sido eliminado de la base de datos
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT * FROM employee WHERE eid = %s", (eid,))
+        employee = cur.fetchone()
+        assert employee is None, "El empleado no fue eliminado correctamente"
+    finally:
+        cur.close()
+        db.close()
+
+
+
+def test_post_login(client):
+
+    return

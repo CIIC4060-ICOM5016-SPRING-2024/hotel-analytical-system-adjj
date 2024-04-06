@@ -1,6 +1,7 @@
 from api.model.model_roomdescription import RoomDescriptionDAO
 from flask import jsonify, request, make_response
 
+
 class RoomDescriptionController():
     def dicBuild(self, row):
         a_dict = {'rdid': row[0],
@@ -11,7 +12,6 @@ class RoomDescriptionController():
                   }
         return a_dict
 
-
     def getAllRoomDescriptions(self):
         dao = RoomDescriptionDAO()
         au_dict = dao.getAllRoomsDescriptions()
@@ -19,7 +19,6 @@ class RoomDescriptionController():
         for element in au_dict:
             result.append(self.dicBuild(element))
         return jsonify(result)
-
 
     def getRoomsDescriptionById(self, rdid):
         dao = RoomDescriptionDAO()
@@ -31,7 +30,7 @@ class RoomDescriptionController():
             return make_response(jsonify({"error": f"No se encontró la descripcion del cuarto con ID {rdid}"}), 404)
 
     def addRoomDescription(self):
-        if request.method == 'POST':
+        # if request.method == 'POST':
             # Obtener datos del cuerpo de la petición
             data = request.get_json()
             # Validar que todos los campos necesarios están presentes
@@ -42,9 +41,40 @@ class RoomDescriptionController():
             dao = RoomDescriptionDAO()
             # Llamar al método para insertar el nuevo empleado
 
-            success, message = dao.postRoomDescription(data['rname'], data['rtype'], data['capacity'], data['ishandicap'])
-
+            success = dao.postRoomDescription(data['rname'], data['rtype'], data['capacity'], data['ishandicap'])
             if success:
                 return make_response(jsonify({"message": f"Room description agregada exitosamente"}), 201)
             else:
                 return make_response(jsonify({"error": f"Error al agregar room description"}), 500)
+
+
+
+    def deleteRoomDescription(self, rdid):
+        dao = RoomDescriptionDAO()
+        success = dao.deleteRoomDescription(rdid)
+        if success:
+            return make_response(jsonify({"message": "Room description eliminado exitosamente"}), 200)
+        else:
+            return make_response(jsonify({"error": "Error al eliminar room description"}), 500)
+
+
+    def putRoomDescription(self, rdid):
+        if request.method == 'PUT':
+            # Obtener los datos actualizados del cuerpo de la petición
+            data = request.get_json()
+            # Validar que todos los campos necesarios están presentes
+            required_fields = ['rname', 'rtype', 'capacity', 'ishandicap']
+            if not all(field in data for field in required_fields):
+                return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+            # Crear una instancia de EmployeeDAO
+            dao = RoomDescriptionDAO()
+            # Llamar al método para actualizar el empleado
+            success = dao.putRoomDescription(rdid, data['rname'], data['rtype'], data['capacity'], data['ishandicap'])
+
+            if success:
+                return make_response(jsonify({"message": "Descripcion de habitacion actualizado exitosamente"}), 200)
+            else:
+                # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
+                return make_response(jsonify({"error": "Error al actualizar Descripcion de habitacion"}), 500)
+
