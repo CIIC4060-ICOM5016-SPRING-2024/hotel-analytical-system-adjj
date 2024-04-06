@@ -1,0 +1,130 @@
+from .db import Database
+from datetime import datetime
+
+class RoomUnavailableDAO():
+    def __init__(self):
+        self.db = Database()
+
+    def getAllRoomsUnavailable(self):
+        cur = self.db.conexion.cursor()
+        query = "SELECT * FROM roomunavailable"
+        cur.execute(query)
+        roomunavailable = cur.fetchall()
+        self.db.close()
+        cur.close()
+        return roomunavailable
+
+
+    def getRoomUnavailableById(self, ruid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "SELECT * FROM roomunavailable WHERE ruid = %s"
+            cur.execute(query, (ruid,))
+            roomunavailable = cur.fetchone()
+            return roomunavailable
+        except Exception as e:
+            print(f'La habitacion indisponible con el id {ruid} no se encuentra')
+            return False, "La habitacion indisponible no se encuentra'"
+        finally:
+            cur.close()
+
+    def postRoomUnavailable(self, rid, startdate, enddate):
+        # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion
+        if (startdate >= enddate):
+            print("Error al añadir la habitacion indisponible")
+            return False, "La fecha en que comienza debe ser una fecha anterior a la fecha en la que termina"
+
+        date_format = "%Y-%m-%d"
+        with self.db.conexion.cursor() as cur:
+            try:
+                rid = int(rid)
+                try:
+                    startdate = datetime.strptime(startdate, date_format).date()
+                    enddate = datetime.strptime(enddate, date_format).date()
+                except ValueError:
+                    self.db.conexion.rollback()
+                    return False, "Error al insertar la fecha. Asegurate que el formato sea el siguiente: (YYYY-MM-DD)"
+                query = "INSERT INTO roomunavailable (rid, startdate, enddate) VALUES(%s, %s, %s)"
+                cur.execute(query, (rid, startdate,enddate))
+                self.db.conexion.commit()
+                return True, "Habitacion indisponible añadida exitosamente"
+            except Exception as e:
+                print(f"Error al añadir la habitación indisponible: {e}")
+                self.db.conexion.rollback()
+                return False, "Error al agregar habitacion indisponible."
+            finally:
+                cur.close()
+
+    def deleteRoomUnavailable(self, ruid):
+        with self.db.conexion.cursor() as cur:
+            try:
+                # Verifica si habitacion indisponible existe
+                cur.execute("SELECT COUNT(*) FROM room WHERE ruid = %s", (ruid,))
+                room_count = cur.fetchone()[0]
+                if room_count == 0:
+                    return False, "La habitación no existe"
+                #Si existe, elimina
+                query = "DELETE FROM roomunavailable WHERE ruid = %s"
+                cur.execute(query, (ruid,))
+                self.db.conexion.commit()
+                return True, "La habitacion indisponible eliminada exitosamente"
+            except Exception as e:
+                print(f"Error el eliminar habitacion indisponible: {e}")
+                return False, "Error al eliminar habitacion indisponible."
+            finally:
+                cur.close()
+
+    def putRoomUnavailable(self, ruid, rid, startdate, enddate):
+
+        # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion
+        if (startdate >= enddate):
+            print("Error al cambiar la informacion de la habitacion indisponible")
+            return False, "La fecha en que comienza debe ser una fecha anterior a la fecha en la que termina"
+
+        date_format = "%Y-%m-%d"
+        with self.db.conexion.cursor() as cur:
+            # Verifica si la habitacion indisponible existe
+            cur.execute("SELECT COUNT(*) FROM roomunavailable WHERE ruid = %s", (ruid,))
+            room_count = cur.fetchone()[0]
+            if room_count == 0:
+                return False, "La habitación indisponible no existe"
+
+
+            try:
+                rid = int(rid)
+                # Verifica el formato de la fecha
+                try:
+                    startdate = datetime.strptime(startdate, date_format).date()
+                    enddate = datetime.strptime(enddate, date_format).date()
+                except ValueError:
+                    self.db.conexion.rollback()
+                    return False, "Error al insertar la fecha. Asegurate que el formato sea el siguiente: (YYYY-MM-DD)"
+
+                # Actualiza
+                query = "UPDATE  roomunavailable SET rid = %s, startdate = %s, enddate = %s WHERE ruid = %s"
+                cur.execute(query, (rid, startdate, enddate, ruid))
+
+                # Verifica si se actualizó alguna fila
+                if cur.rowcount == 0:
+                    self.db.conexion.rollback()
+                    return False, "No se pudo actualizar la habitación"
+
+                # Confirma la transacción
+                self.db.conexion.commit()
+                return True, "Habitacion indisponible actualizada exitosamente"
+            except Exception as e:
+                print(f"Error al actualizar la habitación indisponible: {e}")
+                self.db.conexion.rollback()
+                return False, "Error al agregar habitacion indisponible."
+            finally:
+                cur.close()
+
+
+
+
+
+
+
+
+
+
