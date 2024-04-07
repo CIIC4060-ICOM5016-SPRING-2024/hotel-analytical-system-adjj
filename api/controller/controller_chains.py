@@ -1,4 +1,3 @@
-# from model.client import ClientDAO
 from api.model.model_chain import ChainsDAO
 from flask import jsonify, request, make_response
 import json
