@@ -15,7 +15,7 @@ class ReserveDAO:
         cur = self.db.conexion.cursor()
         query=f"SELECT * FROM reserve WHERE reid={id}"
         cur.execute(query=query)
-        reservation=cur.fetchall()
+        reservation=cur.fetchone()
         self.db.close()
         cur.close()
         return reservation

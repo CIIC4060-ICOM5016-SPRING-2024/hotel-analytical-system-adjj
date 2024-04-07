@@ -8,6 +8,7 @@ from api.controller.controller_room import RoomController
 from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
+from api.controller.controller_reserve import ReserveController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -202,10 +203,10 @@ def create_app(test_config=None):
     # GET (2)
     @app.route('/reserve')
     def get_all_reservations():
-        return 
-    app.route('/reserve/<int:reid>')
+        return ReserveController().getAllReservations()
+    @app.route('/reserve/<int:reid>')
     def get_reservation(reid):
-        return
+        return ReserveController().getReservation(reid)
 
     # POST
     @app.route('/reserve',methods=['POST'])
