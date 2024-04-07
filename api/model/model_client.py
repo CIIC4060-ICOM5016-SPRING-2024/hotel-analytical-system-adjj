@@ -97,7 +97,11 @@ class ClientDAO:
             self.db.close()
 
 
-    def getTop5CreditCardReservations(self, hid):
+    def getTop5CreditCardReservations(self, hid, eid):
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+
         cur = self.db.conexion.cursor()
         try:
             query = """

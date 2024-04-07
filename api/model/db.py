@@ -33,6 +33,36 @@ class Database:
         # db_dict = {'host':os.getenv('HOST'), 'user':os.getenv('USER'), 'password':os.getenv('PASSWORD'), 'port':os.getenv('PORT'), 'database':os.getenv('DATABASE')
         # }
         # return db_dict
+    def list_tables(self):
+        cur = self.conexion.cursor()
+        query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
+        cur.execute(query)
+        list = [table[0] for table in cur.fetchall()]
+        return list
+
+    def canAccessLocalStats(self, eid, hid):
+        cur = self.conexion.cursor()
+        # Obtener la posición del empleado y el hotel/cadena donde trabaja
+        cur.execute("SELECT position, hid FROM employee WHERE eid = %s", (eid,))
+        employee = cur.fetchone()
+        if employee is None:
+            return False  # El empleado no existe
+
+        position, employee_hid = employee
+
+        if position == 'Regular':
+            return employee_hid == hid
+        elif position == 'Supervisor':
+            # Asumiendo que existe una relación de hotel a cadena que podemos consultar
+            cur.execute("SELECT chid FROM hotel WHERE hid = %s", (hid,))
+            hotel_chain_id = cur.fetchone()[0]
+            cur.execute("SELECT chid FROM hotel WHERE hid = %s", (employee_hid,))
+            employee_chain_id = cur.fetchone()[0]
+            return hotel_chain_id == employee_chain_id
+        elif position == 'Administrator':
+            return True
+        else:
+            return False
 
     def close(self):
         self.conexion.close()
