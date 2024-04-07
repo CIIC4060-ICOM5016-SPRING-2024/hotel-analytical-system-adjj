@@ -6,6 +6,9 @@ from api.controller.controller_hotel import HotelContoller
 from api.controller.controller_chains import ChainsContoller
 from api.controller.controller_room import RoomController
 from api.controller.controller_roomunavailable import RoomUnavailableController
+from api.controller.controller_login import LoginController
+from api.controller.controller_roomdescription import RoomDescriptionController
+
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -14,15 +17,14 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
-
     @app.route('/')
     def hello_world():
         return 'Hello World!'
-    
+
     @app.route('/chains')
     def get_chains():
         return ChainsContoller().getAllChains()
-    
+
     @app.route('/chains/<int:chid>')
     def get_chain(chid):
         return ChainsContoller().getChain(chid)
@@ -33,7 +35,7 @@ def create_app(test_config=None):
     @app.route('/chains/<int:chid>', methods=['DELETE'])
     def delete_chain(chid):
         return ChainsContoller().deleteChain(chid)
-    
+
     @app.route('/chains/<int:chid>', methods=['PUT'])
     def update_chain(chid):
         return ChainsContoller().putChain(chid)
@@ -156,6 +158,46 @@ def create_app(test_config=None):
         return RoomUnavailableController().putRoomUnavailable(ruid)
 
 
+##############################################
+
+    @app.route('/login')
+    def get_logins():
+        return LoginController().getAllLogins()
+
+    @app.route('/login/<int:lid>')
+    def get_login(lid):
+        return LoginController().getLoginById(lid)
+
+    @app.route('/login/<int:lid>', methods=['PUT'])
+    def update_login(lid):
+        return LoginController().putLogin(lid)
+    @app.route('/login/<int:lid>', methods=['DELETE'])
+    def delete_login(lid):
+        return LoginController().deleteEmployee(lid)
+
+    @app.route('/login/<int:lid>', methods=['POST'])
+    def add_login(lid):
+        return LoginController().addLogin(lid)
+
+
+    @app.route('/roomdescription')
+    def get_RoomsDescriptions():
+        return RoomDescriptionController().getAllRoomDescriptions()
+
+    @app.route('/roomdescription/<int:rdid>')
+    def get_RoomsDescription(rdid):
+        return RoomDescriptionController().getRoomsDescriptionById(rdid)
+
+    @app.route('/roomdescription', methods=['POST'])
+    def add_roomdescription():
+        return RoomDescriptionController().addRoomDescription()
+    #
+    @app.route('/roomdescription/<int:rdid>', methods=['DELETE'])
+    def delete_roomdescription(rdid):
+        return RoomDescriptionController().deleteRoomDescription(rdid)
+    @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
+    def update_roomdescription(rdid):
+        return RoomDescriptionController().putRoomDescription(rdid)
     return app
 
 app = create_app()

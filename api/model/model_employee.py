@@ -96,7 +96,12 @@ class EmployeeDAO:
             cur.close()
             self.db.close()
 
-    def getTopPaidRegularEmployeesByHotel(self, hid):
+    def getTopPaidRegularEmployeesByHotel(self, hid, eid):
+
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+
         cur = self.db.conexion.cursor()
         try:
             query = """

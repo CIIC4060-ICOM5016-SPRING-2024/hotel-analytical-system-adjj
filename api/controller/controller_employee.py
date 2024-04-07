@@ -95,8 +95,17 @@ class EmployeeController:
                 return make_response(jsonify({"error": "Error al actualizar empleado"}), 500)
 
     def getTopPaidRegularEmployeesByHotel(self, hid):
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+
         dao = EmployeeDAO()
-        au_dict = dao.getTopPaidRegularEmployeesByHotel(hid)
+        au_dict = dao.getTopPaidRegularEmployeesByHotel(hid, data['eid'])
+        if au_dict == None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas del hotel {hid}.")
         result = []
         for element in au_dict:
             result.append(self.dicBuild(element))
