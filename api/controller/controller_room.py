@@ -48,3 +48,22 @@ class RoomController:
             return make_response(jsonify({"error": message}), 400)
         except Exception as e:
             return make_response(jsonify({"error": f"Error al actualizar habitacion: {e}"}), 500)
+
+    def getTop5HandicapReservedRooms(self, hid):
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+        # Assuming you have a RoomDAO or similar for handling room-related queries
+        dao = RoomDAO()
+        reservations_dict = dao.getTop5HandicapReserved(hid, data['eid'])
+        if reservations_dict is None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas del hotel {hid}.")
+
+        result = []
+        for reservation in reservations_dict:
+            # Assuming you have a method to build a dictionary from each reservation tuple
+            result.append(self.make_json(reservation))
+        return jsonify(result)

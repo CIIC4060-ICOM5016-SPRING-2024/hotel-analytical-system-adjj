@@ -73,6 +73,21 @@ class ChainsContoller:
             return make_response(jsonify({"error":"Error updating chain"},500))
 
 
+    def get_least_rooms_chains(self):
+
+        def dict_build(row):
+            return {
+                'chain_id': row[0],
+                'chain_name': row[1],
+                'room_count': row[2]
+            }
+
+        dao = ChainsDAO()
+        chains_list = dao.get_top_3_chains_with_least_rooms()
+        result = []
+        for chain in chains_list:
+            result.append(dict_build(chain))
+        return jsonify(result)
 
 
 

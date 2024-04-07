@@ -1,3 +1,4 @@
+
 from .db import Database
 
 
@@ -72,6 +73,30 @@ class ChainsDAO:
             self.db.close()
 
         return True
+
+    def get_top_3_chains_with_least_rooms(self):
+        cur = self.db.conexion.cursor()
+        query = """
+                SELECT
+                    C.chid AS Chain_ID,
+                    C.cname AS Chain_Name,
+                    COUNT(RO.rid) AS Room_Count
+                FROM
+                    Chains C
+                    LEFT JOIN Hotel H ON C.chid = H.chid
+                    LEFT JOIN Room RO ON H.hid = RO.hid
+                GROUP BY
+                    C.chid, C.cname
+                ORDER BY
+                    Room_Count ASC
+                LIMIT 3;
+                """
+        cur.execute(query)
+        chains_list = cur.fetchall()
+        cur.close()
+        return chains_list
+
+
 
 
 

@@ -1,5 +1,5 @@
 from flask_cors import CORS
-from flask import Flask
+from flask import Flask, request
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
@@ -198,6 +198,12 @@ def create_app(test_config=None):
     @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
+
+    @app.route('/least/rooms')
+    def get_chains_least_rooms():
+        return ChainsContoller().get_least_rooms_chains()
+
+
     return app
 
 app = create_app()
