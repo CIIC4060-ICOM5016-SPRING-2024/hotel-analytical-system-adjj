@@ -88,6 +88,22 @@ class ChainsContoller:
         for chain in chains_list:
             result.append(dict_build(chain))
         return jsonify(result)
+    def get_highest_revenue_chains(self):
+
+        def dict_build(row):
+            return {
+                'chain_id': row[0],
+                'chain_name': row[1],
+                'total_revenue': row[2]
+            }
+
+        dao = ChainsDAO()
+        chains_list = dao.get_top_3_chains_with_highest_revenue()
+        result = []
+        for chain in chains_list:
+            result.append(dict_build(chain))
+        return jsonify(result)
+
 
 
 

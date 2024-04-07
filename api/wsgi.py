@@ -203,6 +203,9 @@ def create_app(test_config=None):
     def get_chains_least_rooms():
         return ChainsContoller().get_least_rooms_chains()
 
+    @app.route('/most/revenue')
+    def get_chains_highest_revenue():
+        return ChainsContoller().get_highest_revenue_chains()
 
     return app
 
