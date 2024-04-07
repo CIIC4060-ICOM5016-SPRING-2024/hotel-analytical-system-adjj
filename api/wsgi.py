@@ -9,7 +9,6 @@ from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
 
-
 def create_app(test_config=None):
     app = Flask(__name__)
     CORS(app)
@@ -198,6 +197,29 @@ def create_app(test_config=None):
     @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
+
+##############################################
+    # GET (2)
+    @app.route('/reserve')
+    def get_all_reservations():
+        return 
+    app.route('/reserve/<int:reid>')
+    def get_reservation(reid):
+        return
+
+    # POST
+    @app.route('/reserve',methods=['POST'])
+    def add_reservation():
+        return 
+    # PUT 
+    @app.route('/reserve/<int:reid>', methods=['PUT'])
+    def update_reservation(reid):
+        return
+    # DELETE
+    @app.route('/reserve/<int:reid>', methods=['DELETE'])
+    def delete_reservation(reid):    
+        return
+
     return app
 
 app = create_app()
