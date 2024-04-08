@@ -199,7 +199,6 @@ def create_app(test_config=None):
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
 
-
     @app.route('/reserve')
     def get_all_reservations():
         return ReserveController().getAllReservations()
