@@ -198,6 +198,12 @@ def create_app(test_config=None):
     @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
+
+    @app.route('/hotel/<int:hid>/leastreserve', methods=['GET'])
+    def get_top_3_rooms_least_unavailable(hid):
+        return RoomUnavailableController().getTop3LeastUnavailable(hid)
+
+
     return app
 
 app = create_app()

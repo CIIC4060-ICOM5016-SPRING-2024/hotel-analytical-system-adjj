@@ -1,4 +1,4 @@
-
+from api.model.db import Database
 
 def test_get_top_paid_regular_employees_by_hotel(client):
     for hid in range(1,41):
@@ -135,3 +135,20 @@ def test_get_top5_credit_card_reservations_by_hotel(client):
     response = client.get(f'/hotel/{3}/mostcreditcard', json=body)
     assert response.get_json() == f"El empleado {body['eid']} no tiene acceso a las estadísticas del hotel 3.",\
     f"El empleado {body['eid']} no puede ver las estadisticas del hotel 3"
+
+
+def test_get_top3_least_reserve_rooms(client):
+    # Empleado 9 tiene acceso al hotel 1
+    employee_id = 9
+    body = {"eid": employee_id}
+
+    # Acceso al hotel 1
+    response = client.get(f'/hotel/1/leastreserve', json=body)
+    assert response.status_code == 200, "Employee 9 should have access to Hotel 1"
+
+    # Acceso en los demás hoteles
+    for hid in range(2, 41):
+        response = client.get(f'/hotel/{hid}/leastreserve', json=body)
+        expected_status_code = 200
+        assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
+

@@ -52,3 +52,22 @@ class RoomUnavailableController():
             return make_response(jsonify({"error": message}), 400)
         except Exception as e:
             return make_response(jsonify({"error": f"Error al actualizar habitacion indisponible: {e}"}), 500)
+
+    def getTop3LeastUnavailable(self, hid):
+        def make_json1(row):
+            dic = {
+                'hid': row[0],
+                'rid': row[1],
+            }
+            return dic
+        data = request.get_json()
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+        dic = self.dao.getTop3LeastUnavailable(hid, data["eid"])
+        if dic == None:
+            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas del hotel {hid}."))
+        result =[]
+        for element in dic:
+            result.append(make_json1(element))
+        return jsonify(result)
