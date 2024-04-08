@@ -199,8 +199,7 @@ def create_app(test_config=None):
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
 
-##############################################
-    # GET (2)
+
     @app.route('/reserve')
     def get_all_reservations():
         return ReserveController().getAllReservations()
@@ -208,15 +207,14 @@ def create_app(test_config=None):
     def get_reservation(reid):
         return ReserveController().getReservation(reid)
 
-    # POST
     @app.route('/reserve',methods=['POST'])
     def add_reservation():
         return ReserveController().addReservation()
-    # PUT 
+
     @app.route('/reserve/<int:reid>', methods=['PUT'])
     def update_reservation(reid):
         return ReserveController().putReservation(id=reid)
-    # DELETE
+
     @app.route('/reserve/<int:reid>', methods=['DELETE'])
     def delete_reservation(reid):    
         return ReserveController().deleteReservation(id=reid)
