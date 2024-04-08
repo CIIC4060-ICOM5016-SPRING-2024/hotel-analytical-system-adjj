@@ -79,3 +79,42 @@ class RoomDAO:
                 return False, f"Error al actualizar habitación: {e}"
             finally:
                 cur.close()
+
+    def get_top_5_handicap_reserved(self, hid, eid):
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query = """
+                    SELECT
+                        RO.rid AS Room_ID,
+                        RD.rname AS Room_Name,
+                        RD.rtype AS Room_Type,
+                        COUNT(R.reid) AS Reservation_Count
+                    FROM
+                        Reserve R
+                        INNER JOIN RoomUnavailable RU ON R.ruid = RU.ruid
+                        INNER JOIN Room RO ON RU.rid = RO.rid
+                        INNER JOIN RoomDescription RD ON RO.rdid = RD.rdid
+                    WHERE
+                        RD.ishandicap = TRUE AND RO.hid = %s  -- Add the hotel ID filter here
+                    GROUP BY
+                        RO.rid, RD.rname, RD.rtype
+                    ORDER BY
+                        Reservation_Count DESC
+                    LIMIT 5;
+
+                    """
+            cur.execute(query, (hid,))
+            handicaproomsreserved_list = cur.fetchall()
+            return handicaproomsreserved_list
+        except Exception as e:
+            print(f"Error al obtener las top 5 habitaciones handicap mas reservadas del hotel con id {hid} {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()
+
+
+

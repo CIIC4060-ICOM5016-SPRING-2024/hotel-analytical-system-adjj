@@ -207,6 +207,10 @@ def create_app(test_config=None):
     def get_chains_highest_revenue():
         return ChainsContoller().get_highest_revenue_chains()
 
+    @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
+    def get_top_5_handicap_reserved_rooms(hid):
+        return RoomController().get_top_5_handicap_reserved(hid)
+
     return app
 
 app = create_app()

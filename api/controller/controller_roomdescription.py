@@ -78,3 +78,27 @@ class RoomDescriptionController():
                 # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
                 return make_response(jsonify({"error": "Error al actualizar Descripcion de habitacion"}), 500)
 
+
+class RoomController:
+    def get_top_5_handicap_reserved(self, hid, eid):
+        # Access control check
+        if not self.db.canAccessLocalStats(eid, hid):
+            return make_response(
+                jsonify({"error": f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}."}), 403)
+
+        # Data retrieval if access control check passes
+        dao = RoomDAO()
+        rooms_list = dao.get_top_5_handicap_reserved(hid)  # Ensure your DAO method also takes `hid` as a parameter
+
+        def make_json(room):
+            return {
+                'room_id': room[0],
+                'room_name': room[1],
+                'room_type': room[2],
+                'reservation_count': room[3]
+            }
+
+        result = [make_json(room) for room in rooms_list]
+        return jsonify(result)
+
+
