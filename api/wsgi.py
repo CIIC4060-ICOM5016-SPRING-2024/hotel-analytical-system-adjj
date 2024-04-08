@@ -175,9 +175,9 @@ def create_app(test_config=None):
     def delete_login(lid):
         return LoginController().deleteEmployee(lid)
 
-    @app.route('/login/<int:lid>', methods=['POST'])
-    def add_login(lid):
-        return LoginController().addLogin(lid)
+    @app.route('/login', methods=['POST'])
+    def add_login():
+        return LoginController().addLogin()
 
 
     @app.route('/roomdescription')

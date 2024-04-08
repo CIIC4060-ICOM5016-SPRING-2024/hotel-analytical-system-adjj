@@ -34,55 +34,11 @@ def test_get_login_by_id(client):
         assert isinstance(data['username'], str), "username debe ser una string"
         assert isinstance(data['password'], str), "password debe ser una string"
 
-def test_put_login(client):
-    db = Database()
-    try:
-        cur = db.conexion.cursor()
-        cur.execute("""SELECT lid, eid, username, password FROM login""")
-        lid = cur.fetchone()[0]
-        db.conexion.commit()
-    finally:
-        cur.close()
+def test_post_login(client):
 
-    assert lid is not None, "El Login no fue añadido correctamente"
+    return
 
-    updated_login = {
-        "eid": 1,
-        "username": "cbonhome0 actualizado",
-        "password": "tS6M@Qnt actualizado"
-    }
-    update_response = client.put(f'/login/{lid}', json=updated_login)
-    assert update_response.status_code == 200, f"Fallo al actualizar login {update_response}"
 
-    try:
-        cur = db.conexion.cursor()
-        cur.execute("SELECT eid, username, password FROM login WHERE lid = %s", (lid,))
-        login = cur.fetchone()
-        assert login is not None, "El Login no se encontró después de actualizar"
-        assert login[0] == updated_login['eid'], "El eid del login no se actualizó correctamente"
-        assert login[1] == updated_login['username'], "El username del login no se actualizó correctamente"
-        assert login[2] == updated_login['password'], "La password del login no se actualizó correctamente"
-
-    finally:
-        cur.close()
-
-    rollback_updated_login = {
-        "eid": 1,
-        "username": "cbonhome0",
-        "password": "tS6M@Qnt"
-    }
-    rollback_update_response = client.put(f'/login/{lid}', json=rollback_updated_login)
-    assert rollback_update_response.status_code == 200, f"Fallo al actualizar login {rollback_update_response}"
-    try:
-        cur = db.conexion.cursor()
-        cur.execute("SELECT eid, username, password FROM login WHERE lid = %s", (lid,))
-        login = cur.fetchone()
-        assert login is not None, "El Login no se encontró después de actualizar"
-        assert login[0] == rollback_updated_login['eid'], "El eid del login no se actualizó correctamente"
-        assert login[1] == rollback_updated_login['username'], "El username del login no se actualizó correctamente"
-        assert login[2] == rollback_updated_login['password'], "La password del login no se actualizó correctamente"
-    finally:
-        cur.close()
 
 
 def test_delete_login(client):
@@ -161,8 +117,57 @@ def test_delete_login(client):
         cur.close()
         db.close()
 
+def test_put_login(client):
+    db = Database()
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("""SELECT lid, eid, username, password FROM login""")
+        lid = cur.fetchone()[0]
+        db.conexion.commit()
+    finally:
+        cur.close()
+
+    assert lid is not None, "El Login no fue añadido correctamente"
+
+    updated_login = {
+        "eid": 1,
+        "username": "cbonhome0 actualizado",
+        "password": "tS6M@Qnt actualizado"
+    }
+    update_response = client.put(f'/login/{lid}', json=updated_login)
+    assert update_response.status_code == 200, f"Fallo al actualizar login {update_response}"
+
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT eid, username, password FROM login WHERE lid = %s", (lid,))
+        login = cur.fetchone()
+        assert login is not None, "El Login no se encontró después de actualizar"
+        assert login[0] == updated_login['eid'], "El eid del login no se actualizó correctamente"
+        assert login[1] == updated_login['username'], "El username del login no se actualizó correctamente"
+        assert login[2] == updated_login['password'], "La password del login no se actualizó correctamente"
+
+    finally:
+        cur.close()
+
+    rollback_updated_login = {
+        "eid": 1,
+        "username": "cbonhome0",
+        "password": "tS6M@Qnt"
+    }
+    rollback_update_response = client.put(f'/login/{lid}', json=rollback_updated_login)
+    assert rollback_update_response.status_code == 200, f"Fallo al actualizar login {rollback_update_response}"
+    try:
+        cur = db.conexion.cursor()
+        cur.execute("SELECT eid, username, password FROM login WHERE lid = %s", (lid,))
+        login = cur.fetchone()
+        assert login is not None, "El Login no se encontró después de actualizar"
+        assert login[0] == rollback_updated_login['eid'], "El eid del login no se actualizó correctamente"
+        assert login[1] == rollback_updated_login['username'], "El username del login no se actualizó correctamente"
+        assert login[2] == rollback_updated_login['password'], "La password del login no se actualizó correctamente"
+    finally:
+        cur.close()
 
 
-def test_post_login(client):
 
-    return
+
+
