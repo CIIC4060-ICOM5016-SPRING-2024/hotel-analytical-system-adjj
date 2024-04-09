@@ -77,10 +77,10 @@ def test_post_reserve(client):
         # Construye la consulta DELETE utilizando todos los campos para especificar el empleado a eliminar
         query = """
                 DELETE FROM reserve
-                WHERE ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
+                WHERE  reid=%s AND ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
                 """
         # Preparar los valores a utilizar en la consulta DELETE
-        values = (new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests'])
+        values = (new_reserve['reid'],new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests'])
         # Ejecutar la consulta DELETE
         cur.execute(query, values)
         # Hacer commit de los cambios
