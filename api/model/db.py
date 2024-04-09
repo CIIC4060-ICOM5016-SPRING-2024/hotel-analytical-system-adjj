@@ -64,5 +64,16 @@ class Database:
         else:
             return False
 
+    def canAccessGlobalStats(self, eid):
+        cur = self.conexion.cursor()
+        query = "SELECT position, hid FROM employee WHERE position = 'Administrator' AND eid = %s"
+        cur.execute(query, (eid,))
+        employee = cur.fetchone()
+
+        if employee is None:
+            return False
+        else:
+            return True
+
     def close(self):
         self.conexion.close()

@@ -119,12 +119,25 @@ class RoomUnavailableDAO():
             finally:
                 cur.close()
 
-
-
-
-
-
-
-
-
-
+    def getTop3LeastUnavailable(self, hid, eid):
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query = """SELECT hid, rid, SUM(enddate-startdate) as reserve
+                        FROM roomunavailable natural inner join room natural inner join hotel
+                        WHERE hid = %s
+                        GROUP BY hid, rid
+                        ORDER BY reserve
+                        ASC LIMIT 3
+                    """
+            cur.execute(query, (hid,))
+            roomsunavailble_list = cur.fetchall()
+            return roomsunavailble_list
+        except Exception as e:
+            print(f"Error al obtener las tres habitaciones menos reservadas del hotel con id {hid} {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()

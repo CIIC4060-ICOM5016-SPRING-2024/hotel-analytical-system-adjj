@@ -97,7 +97,12 @@ class HotelDAO:
             cur.close()
             self.db.close()
 
-    def get_most_reservations(self):
+    def get_most_reservations(self, eid):
+
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
         cur = self.db.conexion.cursor()
         """
         Para saber en que hotel pertenece un reserve, hay que unir roomUnavailable y room, ya que room contiene el hid.
@@ -148,7 +153,12 @@ class HotelDAO:
 
         return hotel_list
 
-    def get_most_capacity(self):
+    def get_most_capacity(self, eid):
+
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
         cur = self.db.conexion.cursor()
         query = """ SELECT
                         h.hid,

@@ -89,9 +89,16 @@ class HotelContoller:
             }
             return a_dict
 
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
 
         dao = HotelDAO()
-        au_dict = dao.get_most_reservations()
+        au_dict = dao.get_most_reservations(data['eid'])
+        if au_dict == None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas globales.")
         result = []
         for element in au_dict:
             result.append(fict_build(element))
@@ -109,8 +116,16 @@ class HotelContoller:
             }
             return a_dict
 
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
         dao = HotelDAO()
-        au_dict = dao.get_most_capacity()
+        au_dict = dao.get_most_capacity(data['eid'])
+        if au_dict == None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas globales.")
         result = []
         for element in au_dict:
             result.append(fict_build(element))

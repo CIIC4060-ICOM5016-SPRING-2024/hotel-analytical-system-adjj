@@ -8,8 +8,8 @@ def test_get_most_reservations(client):
         for _ in range(num_reservations):
             cur.execute("""
                 INSERT INTO Reserve (ruid, clid, total_cost, payment, guests)
-                VALUES ((SELECT ruid FROM RoomUnavailable WHERE rid IN (SELECT rid FROM Room WHERE hid=%s) LIMIT 1), 
-                        (SELECT clid FROM Client LIMIT 1), 
+                VALUES ((SELECT ruid FROM RoomUnavailable WHERE rid IN (SELECT rid FROM Room WHERE hid=%s) LIMIT 1),
+                        (SELECT clid FROM Client LIMIT 1),
                         100.00, 'Credit Card', 2)
             """, (hotel_id,))
         db.conexion.commit()
@@ -21,7 +21,7 @@ def test_get_most_reservations(client):
         db = Database()
         cur = db.conexion.cursor()
         cur.execute("""
-            DELETE FROM Reserve 
+            DELETE FROM Reserve
             WHERE reid IN (
                 SELECT re.reid FROM Reserve re
                 JOIN RoomUnavailable ru ON re.ruid = ru.ruid
@@ -189,3 +189,143 @@ def test_get_hotels_with_most_capacity(client):
     revert_hotel_capacity_adjustments(hotel_id=28, additional_capacity=1, num_rooms=4)
 
     # (Opcional) Verificar que el estado se haya restaurado efectivamente podría ser parte de otra prueba
+
+
+
+def test_get_highest_revenue_chains(client):
+    def add_revenue(chain_id, amount):
+        """Adds a specific revenue amount to a chain by creating a reservation."""
+        db = Database()
+        cur = db.conexion.cursor()
+        # Find a hotel in the specified chain
+        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+        hotel_id = cur.fetchone()[0]
+        # Find a room in the specified hotel
+        cur.execute("SELECT rid FROM Room WHERE hid=%s LIMIT 1", (hotel_id,))
+        room_id = cur.fetchone()[0]
+        # Find an unavailable room instance
+        cur.execute("SELECT ruid FROM RoomUnavailable WHERE rid=%s LIMIT 1", (room_id,))
+        room_unavailable_id = cur.fetchone()[0]
+        # Find a client
+        cur.execute("SELECT clid FROM Client LIMIT 1")
+        client_id = cur.fetchone()[0]
+        # Insert a reservation with specified revenue
+        cur.execute("""
+            INSERT INTO Reserve (ruid, clid, total_cost, payment, guests)
+            VALUES (%s, %s, %s, 'Credit Card', 2)
+        """, (room_unavailable_id, client_id, amount))
+        db.conexion.commit()
+        cur.close()
+        db.close()
+
+    def remove_revenue(chain_id, amount):
+        """Removes a specific revenue amount from a chain by deleting a reservation."""
+        db = Database()
+        cur = db.conexion.cursor()
+        cur.execute("""
+            DELETE FROM Reserve
+            WHERE reid IN (
+                SELECT re.reid FROM Reserve re
+                JOIN RoomUnavailable ru ON re.ruid = ru.ruid
+                JOIN Room r ON ru.rid = r.rid
+                JOIN Hotel h ON r.hid = h.hid
+                WHERE h.chid = %s AND re.total_cost = %s
+                ORDER BY re.reid DESC LIMIT 1
+            )
+        """, (chain_id, amount))
+        db.conexion.commit()
+        cur.close()
+        db.close()
+
+    # Check the initial state to confirm "Ferry Torp's Logs" has the highest revenue
+    response1 = client.get('/most/revenue')
+    assert response1.status_code == 200
+    data1 = response1.get_json()
+    assert data1[0]['chain_id'] == 5  # Assuming the first item in the list is the highest
+
+    # Add revenue to "Howe-Caroll" (chain_id=4)
+    add_revenue(chain_id=4, amount=300000)  # This amount should be enough to make it the top
+
+    # Check if "Howe-Caroll" now has the highest revenue
+    response2 = client.get('/most/revenue')
+    assert response2.status_code == 200
+    data2 = response2.get_json()
+    assert data2[0]['chain_id'] == 4
+
+    # Remove the added revenue to restore the initial state
+    remove_revenue(chain_id=4, amount=300000)
+
+    # Re-verify the initial state
+    response3 = client.get('/most/revenue')
+    assert response3.status_code == 200
+    data3 = response3.get_json()
+    assert data3[0]['chain_id'] == 5
+
+
+
+def test_get_top_3_chains_with_least_rooms(client):
+    def add_rooms(chain_id, num_rooms):
+        """Adds a specific number of rooms to the first hotel found in the specified chain."""
+        db = Database()
+        cur = db.conexion.cursor()
+        # Find the first hotel in the specified chain
+        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+        hotel_id = cur.fetchone()[0]
+        # Assuming there's at least one RoomDescription to use, add rooms to the hotel
+        for _ in range(num_rooms):
+            cur.execute("""
+                INSERT INTO Room (hid, rdid, rprice)
+                VALUES (%s, (SELECT rdid FROM RoomDescription LIMIT 1), 100.00)
+            """, (hotel_id,))
+        db.conexion.commit()
+        cur.close()
+        db.close()
+
+    def remove_rooms(chain_id, num_rooms):
+        """Removes a specific number of the most recently added rooms from the first hotel found in the specified chain."""
+        db = Database()
+        cur = db.conexion.cursor()
+        # Find the first hotel in the specified chain
+        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+        hotel_id = cur.fetchone()[0]
+        # Remove the specified number of most recently added rooms from the hotel
+        cur.execute("""
+            DELETE FROM Room 
+            WHERE rid IN (
+                SELECT rid FROM Room 
+                WHERE hid = %s
+                ORDER BY rid DESC
+                LIMIT %s
+            )
+        """, (hotel_id, num_rooms))
+        db.conexion.commit()
+        cur.close()
+        db.close()
+
+    # Verify the initial state matches the expected output
+    response1 = client.get('/least/rooms')
+    assert response1.status_code == 200
+    data1 = response1.get_json()
+    assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
+
+    # Add rooms to "Murphy and Boyles" chain to change its ranking
+    add_rooms(chain_id=3, num_rooms=20)
+
+    # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
+    response2 = client.get('/least/rooms')
+    assert response2.status_code == 200
+    data2 = response2.get_json()
+    assert all(chain['chain_id'] != 3 for chain in data2)
+
+    # Remove the added rooms to restore the initial state
+    remove_rooms(chain_id=3, num_rooms=20)
+
+    # Re-verify the initial state to ensure the changes have been reverted
+    response3 = client.get('/least/rooms')
+    assert response3.status_code == 200
+    data3 = response3.get_json()
+    assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
+
+
+
+
