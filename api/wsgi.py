@@ -59,7 +59,7 @@ def create_app(test_config=None):
     @app.route('/client/<int:clid>', methods=['PUT'])
     def update_client(clid):
         return ClientContoller().putClient(clid)
-
+    
 
     @app.route('/employee')
     def get_employees():
@@ -108,6 +108,10 @@ def create_app(test_config=None):
     @app.route('/most/capacity')
     def get_most_capacity():
         return HotelContoller().get_most_capacity()
+    
+    @app.route('/hotel/<int:hid>/roomtype',methods=['GET'])
+    def get_total_reservations_by_room_type(hid):
+        return HotelContoller().get_total_reservations_by_room_type(hid)
 
     @app.route('/hotel/<int:hid>/highestpaid')
     def getTopPaidRegularEmployeesByHotel(hid):
@@ -116,6 +120,10 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/mostcreditcard')
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
+    
+    @app.route('/hotel/<int:hid>/mostdiscount',methods=['GET'])
+    def getTop5ClientsMostDiscount(hid):
+        return ClientContoller().getTop5ClientsMostDiscount(hid)
 
     @app.route('/room')
     def get_rooms():
@@ -243,6 +251,8 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
     def get_top_5_handicap_reserved_rooms(hid):
         return RoomController().get_top_5_handicap_reserved(hid)
+
+  
 
     return app
 

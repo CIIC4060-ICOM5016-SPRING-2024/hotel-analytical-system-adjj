@@ -133,3 +133,43 @@ class ClientDAO:
         finally:
             self.db.close()
             cur.close()
+
+    def getTop5ClientsMostDiscount(self,hid, eid):
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+        try:
+            cur = self.db.conexion.cursor()
+
+            query="""
+                SELECT 
+                    clid, 
+                    fname, 
+                    lname, 
+                    age, 
+                    memberyear,
+                    CASE 
+                        WHEN memberyear BETWEEN 1 AND 4 THEN 2
+                        WHEN memberyear BETWEEN 5 AND 9 THEN 5
+                        WHEN memberyear BETWEEN 10 AND 14 THEN 8
+                        WHEN memberyear >= 15 THEN 12
+                        ELSE 0
+                    END AS discount_percentage
+                FROM 
+                    Client
+                ORDER BY 
+                    discount_percentage DESC, 
+                    memberyear DESC -- En caso de empates en el descuento, se prioriza al miembro más antiguo
+                LIMIT 5;
+            """
+            cur.execute(query, (hid,))
+            top_clients = cur.fetchall()
+            return top_clients
+        except Exception as e:
+            print(
+                f"Error al obtener el top 5 de clientes con mas porcentaje de descuento en el hotel {hid}: {e}")
+            return None
+        finally:
+            self.db.close()
+            cur.close()
+            

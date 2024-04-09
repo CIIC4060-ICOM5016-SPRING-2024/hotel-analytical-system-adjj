@@ -131,3 +131,27 @@ class HotelContoller:
             result.append(fict_build(element))
         return jsonify(result)
 
+    def get_total_reservations_by_room_type(self,hid):
+        def fict_build(row):
+            dict = {
+                "rtype":row[0],
+                "total_reservations":row[1]
+            }
+            return dict
+        data = request.get_json()
+
+        dao = HotelDAO()
+
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
+        result_dict = dao.get_total_reservation_by_room_type(hid,data['eid'])
+        if result_dict == None:
+            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas del hotel {hid}."))
+        result = []
+        for element in result_dict:
+            result.append(fict_build(element))
+        return jsonify(result)
+
+

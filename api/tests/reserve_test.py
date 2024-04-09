@@ -77,10 +77,10 @@ def test_post_reserve(client):
         # Construye la consulta DELETE utilizando todos los campos para especificar el empleado a eliminar
         query = """
                 DELETE FROM reserve
-                WHERE ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
+                WHERE  reid=%s AND ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
                 """
         # Preparar los valores a utilizar en la consulta DELETE
-        values = (new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests'])
+        values = (new_reserve['reid'],new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests'])
         # Ejecutar la consulta DELETE
         cur.execute(query, values)
         # Hacer commit de los cambios
@@ -97,7 +97,7 @@ def test_delete_reserve(client):
     try:
         cur = db.conexion.cursor()
         cur.execute("""
-            INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s,%s,%s,%s,%s) RETURNING chid
+            INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s,%s,%s,%s,%s) RETURNING reid
         """,(4541,2,32.45,'cash',2))
         reid= cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
 
@@ -112,7 +112,7 @@ def test_delete_reserve(client):
 
     assert reid is not None, "Reserve was not added correctly"
 
-    delete_response = client.delete(f'/chains/{reid}')
+    delete_response = client.delete(f'/reserve/{reid}')
 
     assert delete_response.status_code == 200, "Failed to eliminate chain"
 
@@ -139,7 +139,7 @@ def test_put_reserve(client):
 
     assert reid is not None, "Reserve was not added correctly"
 
-    updated_chain ={
+    updated_reserve ={
         "ruid":4541,
         "clid":2,
         "total_cost": 32.45,
@@ -147,7 +147,7 @@ def test_put_reserve(client):
         "guests":2
     }
 
-    updated_response = client.put(f'/chains/{reid}',json=updated_chain)
+    updated_response = client.put(f'/reserve/{reid}',json=updated_reserve)
     assert updated_response.status_code == 200, "Failed to update client"
 
      # Verificar que los cambios se aplicaron correctamente
@@ -156,18 +156,18 @@ def test_put_reserve(client):
         cur.execute("SELECT ruid, clid, total_cost, payment, guests FROM reserve WHERE reid = %s", (reid,))
         chain__ = cur.fetchone()
         assert chain__ is not None, "La reservacion no se encontró después de actualizar"
-        assert chain__[0] == updated_chain['ruid'], "El ruid del chain no se actualizó correctamente"
-        assert chain__[1] == updated_chain['clid'], "El clid del chain no se actualizó correctamente"
-        assert chain__[2] == updated_chain['total_cost'], "El total_cost del chain no se actualizó correctamente"
-        assert chain__[3] == updated_chain['payment'], "El payment del chain no se actualizó correctamente"
-        assert chain__[4] == updated_chain['guests'], "El guests del chain no se actualizó correctamente"
+        assert chain__[0] == updated_reserve['ruid'], "El ruid del chain no se actualizó correctamente"
+        assert chain__[1] == updated_reserve['clid'], "El clid del chain no se actualizó correctamente"
+        assert chain__[2] == updated_reserve['total_cost'], "El total_cost del chain no se actualizó correctamente"
+        assert chain__[3] == updated_reserve['payment'], "El payment del chain no se actualizó correctamente"
+        assert chain__[4] == updated_reserve['guests'], "El guests del chain no se actualizó correctamente"
     finally:
         cur.close()
 
     # Eliminar el empleado de la base de datos
     try:
         cur = db.conexion.cursor()
-        cur.execute("DELETE FROM reserve WHERE chid = %s", (reid,))
+        cur.execute("DELETE FROM reserve WHERE reid = %s", (reid,))
         db.conexion.commit()
     finally:
         cur.close()

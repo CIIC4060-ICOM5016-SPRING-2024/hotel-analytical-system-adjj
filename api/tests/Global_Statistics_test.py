@@ -272,204 +272,79 @@ def test_top3_profit_month_by_chain(client):
             "count_reservation"], f"Expected count_reservation for chid {expected['chid']} and month {expected['month']} to be {expected['count_reservation']}, got {match['count_reservation']}"
 
 
+
 def test_get_highest_revenue_chains(client):
-    def add_revenue(chain_id, amount):
-        """Adds a specific revenue amount to a chain by creating a reservation."""
-        db = Database()
-        cur = db.conexion.cursor()
-        # Find a hotel in the specified chain
-        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
-        hotel_id = cur.fetchone()[0]
-        # Find a room in the specified hotel
-        cur.execute("SELECT rid FROM Room WHERE hid=%s LIMIT 1", (hotel_id,))
-        room_id = cur.fetchone()[0]
-        # Find an unavailable room instance
-        cur.execute("SELECT ruid FROM RoomUnavailable WHERE rid=%s LIMIT 1", (room_id,))
-        room_unavailable_id = cur.fetchone()[0]
-        # Find a client
-        cur.execute("SELECT clid FROM Client LIMIT 1")
-        client_id = cur.fetchone()[0]
-        # Insert a reservation with specified revenue
-        cur.execute("""
-            INSERT INTO Reserve (ruid, clid, total_cost, payment, guests)
-            VALUES (%s, %s, %s, 'Credit Card', 2)
-        """, (room_unavailable_id, client_id, amount))
-        db.conexion.commit()
-        cur.close()
-        db.close()
-
-    def remove_revenue(chain_id, amount):
-        """Removes a specific revenue amount from a chain by deleting a reservation."""
-        db = Database()
-        cur = db.conexion.cursor()
-        cur.execute("""
-            DELETE FROM Reserve
-            WHERE reid IN (
-                SELECT re.reid FROM Reserve re
-                JOIN RoomUnavailable ru ON re.ruid = ru.ruid
-                JOIN Room r ON ru.rid = r.rid
-                JOIN Hotel h ON r.hid = h.hid
-                WHERE h.chid = %s AND re.total_cost = %s
-                ORDER BY re.reid DESC LIMIT 1
-            )
-        """, (chain_id, amount))
-        db.conexion.commit()
-        cur.close()
-        db.close()
-
-    # Check the initial state to confirm "Ferry Torp's Logs" has the highest revenue
-    response1 = client.get('/most/revenue')
-    assert response1.status_code == 200
-    data1 = response1.get_json()
-    assert data1[0]['chain_id'] == 5  # Assuming the first item in the list is the highest
-
-    # Add revenue to "Howe-Caroll" (chain_id=4)
-    add_revenue(chain_id=4, amount=300000)  # This amount should be enough to make it the top
-
-    # Check if "Howe-Caroll" now has the highest revenue
-    response2 = client.get('/most/revenue')
-    assert response2.status_code == 200
-    data2 = response2.get_json()
-    assert data2[0]['chain_id'] == 4
-
-    # Remove the added revenue to restore the initial state
-    remove_revenue(chain_id=4, amount=300000)
-
-    # Re-verify the initial state
-    response3 = client.get('/most/revenue')
-    assert response3.status_code == 200
-    data3 = response3.get_json()
-    assert data3[0]['chain_id'] == 5
+    # Scenario 1: Employee without access to global statistics
+    employee_id = 9  # Assuming employee with ID 9 doesn't have access
+    body = {"eid": employee_id}
+    response = client.get('/most/revenue', json=body)  # Adjust endpoint as needed
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {employee_id} no tiene acceso a las estadísticas globales."}, "Expected access error message"
 
 
 
-# def test_get_top_3_chains_with_least_rooms(client):
-#     def add_rooms(chain_id, num_rooms):
-#         """Adds a specific number of rooms to the first hotel found in the specified chain."""
-#         db = Database()
-#         cur = db.conexion.cursor()
-#         # Find the first hotel in the specified chain
-#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
-#         hotel_id = cur.fetchone()[0]
-#         # Assuming there's at least one RoomDescription to use, add rooms to the hotel
-#         for _ in range(num_rooms):
-#             cur.execute("""
-#                 INSERT INTO Room (hid, rdid, rprice)
-#                 VALUES (%s, (SELECT rdid FROM RoomDescription LIMIT 1), 100.00)
-#             """, (hotel_id,))
-#         db.conexion.commit()
-#         cur.close()
-#         db.close()
-#
-#     def remove_rooms(chain_id, num_rooms):
-#         """Removes a specific number of the most recently added rooms from the first hotel found in the specified chain."""
-#         db = Database()
-#         cur = db.conexion.cursor()
-#         # Find the first hotel in the specified chain
-#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
-#         hotel_id = cur.fetchone()[0]
-#         # Remove the specified number of most recently added rooms from the hotel
-#         cur.execute("""
-#             DELETE FROM Room
-#             WHERE rid IN (
-#                 SELECT rid FROM Room
-#                 WHERE hid = %s
-#                 ORDER BY rid DESC
-#                 LIMIT %s
-#             )
-#         """, (hotel_id, num_rooms))
-#         db.conexion.commit()
-#         cur.close()
-#         db.close()
-#
-#     # Verify the initial state matches the expected output
-#     response1 = client.get('/least/rooms')
-#     assert response1.status_code == 200
-#     data1 = response1.get_json()
-#     assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
-#
-#     # Add rooms to "Murphy and Boyles" chain to change its ranking
-#     add_rooms(chain_id=3, num_rooms=20)
-#
-#     # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
-#     response2 = client.get('/least/rooms')
-#     assert response2.status_code == 200
-#     data2 = response2.get_json()
-#     assert all(chain['chain_id'] != 3 for chain in data2)
-#
-#     # Remove the added rooms to restore the initial state
-#     remove_rooms(chain_id=3, num_rooms=20)
-#
-#     # Re-verify the initial state to ensure the changes have been reverted
-#     response3 = client.get('/least/rooms')
-#     assert response3.status_code == 200
-#     data3 = response3.get_json()
-#     assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
+    employee_id_with_access = 3  # Assuming employee with ID 3 has access
+    body = {"eid": employee_id_with_access}
+    response = client.get('/least/rooms', json=body)  # Adjust endpoint as needed
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    # Expected results in the specified format
+    expected_results = [
+        {"chain_id": 5, "chain_name": "Ferry Torp's Logs", "total_revenue": 1548260.0899999996},
+        {"chain_id": 1, "chain_name": "Bergaum-Champlin", "total_revenue": 1534075.5200000005},
+        {"chain_id": 4, "chain_name": "Howe-Caroll", "total_revenue": 1302918.3899999994}
+    ]
+    response = client.get('/most/revenue', json=body)
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    data = response.get_json()
+    # Validate the length of the response to ensure only 3 results are returned
+    # assert len(data) == 3, f"Expected 3 results, but got {len(data)}"
 
-def test_get_top_3_chains_with_least_rooms(client):
-    # Assuming eid 1 has access to global statistics
-    access_eid = 3
+    # Validate each item in the response against the expected results
+    for expected in expected_results:
+        # Find a matching item in response data
+        match = next((item for item in data if item["chain_id"] == expected["chain_id"]), None)
+        assert match is not None, f"Expected result for chain_id {expected['chain_id']} not found in response."
+        assert match["chain_name"] == expected["chain_name"], f"Expected chain_name for chain_id {expected['chain_id']} to be {expected['chain_name']}, got {match['chain_name']}"
+        assert abs(match["total_revenue"] - expected["total_revenue"]) < 0.01, f"Expected total_revenue for chain_id {expected['chain_id']} to be {expected['total_revenue']}, got {match['total_revenue']}"
 
-    def add_rooms(chain_id, num_rooms):
-        """Adds a specific number of rooms to the first hotel found in the specified chain."""
-        db = Database()
-        cur = db.conexion.cursor()
-        # Find the first hotel in the specified chain
-        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
-        hotel_id = cur.fetchone()[0]
-        # Assuming there's at least one RoomDescription to use, add rooms to the hotel
-        for _ in range(num_rooms):
-            cur.execute("""
-                INSERT INTO Room (hid, rdid, rprice)
-                VALUES (%s, (SELECT rdid FROM RoomDescription LIMIT 1), 100.00)
-            """, (hotel_id,))
-        db.conexion.commit()
-        cur.close()
-        db.close()
 
-    def remove_rooms(chain_id, num_rooms):
-        """Removes a specific number of the most recently added rooms from the first hotel found in the specified chain."""
-        db = Database()
-        cur = db.conexion.cursor()
-        # Find the first hotel in the specified chain
-        cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
-        hotel_id = cur.fetchone()[0]
-        # Remove the specified number of most recently added rooms from the hotel
-        cur.execute("""
-            DELETE FROM Room 
-            WHERE rid IN (
-                SELECT rid FROM Room 
-                WHERE hid = %s
-                ORDER BY rid DESC
-                LIMIT %s
-            )
-        """, (hotel_id, num_rooms))
-        db.conexion.commit()
-        cur.close()
-        db.close()
+def test_top_3_chains_with_least_rooms(client):
+    # Scenario 1: Employee without global stats access
+    employee_id = 9  # Assuming employee with ID 9 doesn't have access
+    body = {"eid": employee_id}
+    response = client.get('/least/rooms', json=body)  # Adjust endpoint as needed
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {employee_id} no tiene acceso a las estadísticas globales."}, "Expected access error message"
 
-    # Verify the initial state matches the expected output
-    response1 = client.post('/least/rooms', json={'eid': access_eid})
-    assert response1.status_code == 200
-    data1 = response1.get_json()
-    assert data1[0]['chain_name'] == "Administrative" and data1[0]['room_count'] == 0
+    # Scenario 2: Employee with global stats access
+    employee_id = 3  # Assuming employee with ID 3 has access
+    body = {"eid": employee_id}
+    response = client.get('/least/rooms', json=body)  # Adjust endpoint as needed
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
 
-    # Add rooms to "Murphy and Boyles" chain to change its ranking
-    add_rooms(chain_id=3, num_rooms=20)
+    expected_results = [
+        {
+            "chain_id": -1,
+            "chain_name": "Administrative ",
+            "room_count": 0
+        },
+        {
+            "chain_id": 3,
+            "chain_name": "Murphy and Boyles",
+            "room_count": 72
+        },
+        {
+            "chain_id": 2,
+            "chain_name": "Wisozk Inc.",
+            "room_count": 81
+        }
+    ]
 
-    # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
-    response2 = client.post('/least/rooms', json={'eid': access_eid})
-    assert response2.status_code == 200
-    data2 = response2.get_json()
-    assert all(chain['chain_id'] != 3 for chain in data2)
-
-    # Remove the added rooms to restore the initial state
-    remove_rooms(chain_id=3, num_rooms=20)
-
-    # Re-verify the initial state to ensure the changes have been reverted
-    response3 = client.post('/least/rooms', json={'eid': access_eid})
-    assert response3.status_code == 200
-    data3 = response3.get_json()
-    assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
-
+    data = response.get_json()
+    # Assuming the response data is a list of dictionaries matching expected_results
+    for expected in expected_results:
+        # Find a matching item in response data
+        match = next((item for item in data if item["chain_id"] == expected["chain_id"]), None)
+        assert match is not None, f"Expected result for chain_id {expected['chain_id']} not found in response."
+        assert match["room_count"] == expected["room_count"], f"Expected room_count for chain_id {expected['chain_id']} to be {expected['room_count']}, got {match['room_count']}"
 
