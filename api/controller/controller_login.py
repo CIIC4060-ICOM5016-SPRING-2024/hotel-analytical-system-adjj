@@ -35,23 +35,6 @@ class LoginController:
         else:
             return make_response(jsonify({"error": f"No se encontró el Login con ID {lid}"}), 404)
 
-    # def addLogin(self):
-    #     if request.method == 'POST':
-    #         # Obtain data from the request body
-    #         data = request.get_json()
-    #         # Validate that all necessary fields are present
-    #         if not all(key in data for key in ['eid', 'username', 'password']):
-    #             return make_response(jsonify({"error": "Missing data"}), 400)
-    #
-    #         # Create an instance of LoginDAO (assuming it exists and works similarly to EmployeeDAO)
-    #         dao = LoginDAO()
-    #         # Call the method to insert new login information
-    #         success = dao.postLogin(data['eid'], data['username'], data['password'])
-    #
-    #         if success:
-    #             return make_response(jsonify({"message": "Login information added successfully"}), 201)
-    #         else:
-    #             return make_response(jsonify({"error": "Error adding login information"}), 500)
 
     def addLogin(self):
         if request.method == 'POST':
@@ -71,7 +54,7 @@ class LoginController:
             elif result == "login_exists":
                 return make_response(jsonify({"error": "Login information already exists for this employee"}), 409)
             else:
-                return make_response(jsonify({"error": "Error adding login information"}), 500)
+                return make_response(jsonify({"error": "Error adding login information, please create an employee before attempting to create a login for this eid."}), 500)
 
     def deleteEmployee(self, lid):
         dao = LoginDAO()
