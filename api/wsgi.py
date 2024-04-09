@@ -108,6 +108,10 @@ def create_app(test_config=None):
     @app.route('/most/capacity')
     def get_most_capacity():
         return HotelContoller().get_most_capacity()
+    
+    @app.route('/hotel/<int:hid>/totalreservations',methods=['GET'])
+    def get_total_reservations_by_room_type(hid):
+        return HotelContoller().get_total_reservations_by_room_type(hid)
 
     @app.route('/hotel/<int:hid>/highestpaid')
     def getTopPaidRegularEmployeesByHotel(hid):
@@ -236,6 +240,8 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
     def get_top_5_handicap_reserved_rooms(hid):
         return RoomController().get_top_5_handicap_reserved(hid)
+
+  
 
     return app
 

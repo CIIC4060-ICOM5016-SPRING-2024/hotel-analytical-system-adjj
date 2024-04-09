@@ -154,9 +154,6 @@ def test_get_top3_least_reserve_rooms(client):
 
 
 
-
-
-
 def test_get_top_5_handicap_reserved(client):
     # Empleado 9 tiene acceso al hotel 1
     employee_id = 9
@@ -169,5 +166,19 @@ def test_get_top_5_handicap_reserved(client):
     # Acceso en los demás hoteles
     for hid in range(2, 41):
         response = client.get(f'/hotel/{hid}/handicaproom', json=body)
+        expected_status_code = 200
+        assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
+
+def test_get_total_reservations_by_room_type(client):
+    employee_id = 9
+    body = {"eid": employee_id}
+
+    # Acceso al hotel 1
+    response = client.get(f'/hotel/1/totalreservations', json=body)
+    assert response.status_code == 200, "Employee 9 should have access to Hotel 1"
+
+     # Acceso en los demás hoteles
+    for hid in range(2, 41):
+        response = client.get(f'/hotel/{hid}/totalreservations', json=body)
         expected_status_code = 200
         assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
