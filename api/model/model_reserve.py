@@ -90,3 +90,35 @@ class ReserveDAO:
         finally:
             self.db.conexion.close()
             cur.close()
+
+    def getTop3RoomsLeastCapacityRatio(self,eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query="""
+                SELECT 
+                    R.rid,
+                    RD.rname,
+                    ROUND(AVG(Res.guests::decimal / RD.capacity) * 100, 2) AS avg_guest_to_capacity_ratio
+                FROM 
+                    Room R
+                JOIN RoomDescription RD ON R.rdid = RD.rdid
+                JOIN Reserve Res ON R.rid = Res.rid
+                GROUP BY 
+                    R.rid, RD.rname
+                ORDER BY 
+                    avg_guest_to_capacity_ratio ASC
+                LIMIT 3;
+            """
+            cur.execute(query)
+            result=cur.fetchall
+            return result
+        except Exception as e:
+            print(f"Error al obtener estadística {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()
+
