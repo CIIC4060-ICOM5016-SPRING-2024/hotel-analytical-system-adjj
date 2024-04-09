@@ -167,7 +167,7 @@ def test_put_reserve(client):
     # Eliminar el empleado de la base de datos
     try:
         cur = db.conexion.cursor()
-        cur.execute("DELETE FROM reserve WHERE chid = %s", (reid,))
+        cur.execute("DELETE FROM reserve WHERE reid = %s", (reid,))
         db.conexion.commit()
     finally:
         cur.close()
