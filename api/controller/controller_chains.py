@@ -74,6 +74,7 @@ class ChainsContoller:
 
 
     def get_least_rooms_chains(self):
+#add verification of employee id
 
         def dict_build(row):
             return {
@@ -82,10 +83,18 @@ class ChainsContoller:
                 'room_count': row[2]
             }
 
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
         dao = ChainsDAO()
-        chains_list = dao.get_top_3_chains_with_least_rooms()
+        au_dict = dao.get_top_3_chains_with_least_rooms(data['eid'])
+        if au_dict is None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas globales.")
         result = []
-        for chain in chains_list:
+        for chain in au_dict:
             result.append(dict_build(chain))
         return jsonify(result)
     def get_highest_revenue_chains(self):
@@ -97,10 +106,18 @@ class ChainsContoller:
                 'total_revenue': row[2]
             }
 
+        data = request.get_json()
+        # Validar que todos los campos necesarios están presentes
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+
         dao = ChainsDAO()
-        chains_list = dao.get_top_3_chains_with_highest_revenue()
+        au_dict = dao.get_top_3_chains_with_highest_revenue(data['eid'])
+        if au_dict is None:
+            return jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas globales.")
         result = []
-        for chain in chains_list:
+        for chain in au_dict:
             result.append(dict_build(chain))
         return jsonify(result)
 

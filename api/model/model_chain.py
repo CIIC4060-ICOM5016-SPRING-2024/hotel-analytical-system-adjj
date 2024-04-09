@@ -74,7 +74,13 @@ class ChainsDAO:
 
         return True
 
-    def get_top_3_chains_with_least_rooms(self):
+    def get_top_3_chains_with_least_rooms(self,eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
+
+
         cur = self.db.conexion.cursor()
         query = """
                 SELECT
@@ -96,7 +102,13 @@ class ChainsDAO:
         cur.close()
         return chains_list
 
-    def get_top_3_chains_with_highest_revenue(self):
+    def get_top_3_chains_with_highest_revenue(self,eid):
+
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
+
         cur = self.db.conexion.cursor()
         query = """
                 SELECT
