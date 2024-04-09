@@ -181,5 +181,32 @@ class HotelDAO:
         cur.close()
 
         return hotel_list
+    
+    def get_total_reservation_by_room_type(self ,hid, eid):
+        if not self.db.canAccessLocalStats(eid, hid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas del hotel {hid}.")
+            return None
+        cur = self.db.conexion.cursor()
+        query="""
+        SELECT 
+            RD.rtype, 
+            COUNT(R.reid) AS total_reservations
+        FROM 
+            Reserve R
+        INNER JOIN RoomUnavailable RU ON R.ruid = RU.ruid
+        INNER JOIN Room Ro ON RU.rid = Ro.rid
+        INNER JOIN RoomDescription RD ON Ro.rdid = RD.rdid
+        GROUP BY 
+            RD.rtype
+        ORDER BY 
+            total_reservations DESC;"""
+        cur.execute(query)
+        total_reservations = cur.fetchall()
+        self.db.close()
+        cur.close()
+
+        return total_reservations
+
+
 
 
