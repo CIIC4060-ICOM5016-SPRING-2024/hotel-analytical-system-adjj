@@ -97,6 +97,29 @@ class Database:
             return False
         else:
             return True
+    
+    def validGuests(self,reid):
+        cur = self.conexion.cursor()
+        query = """
+            SELECT Res.guests, RD.capacity
+            FROM Reserve Res
+            INNER JOIN RoomUnavailable RU ON Res.ruid = RU.ruid
+            INNER JOIN Room R ON RU.rid = R.rid
+            INNER JOIN RoomDescription RD ON R.rdid = RD.rdid
+            WHERE Res.reid = %s;
+        """
+        result = cur.fetchone()
+
+        if result:
+            guests, capacity = result
+            # Check if the number of guests does not exceed the room's capacity
+            if guests <= capacity:
+                return True, "Reservation is valid."
+            else:
+                return False, f"Reservation exceeds room capacity. Guests: {guests}, Capacity: {capacity}"
+        else:
+            return False, "Reservation not found."
+
 
     def close(self):
         self.conexion.close()

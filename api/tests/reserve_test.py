@@ -44,7 +44,7 @@ def test_post_reserve(client):
         "clid":2,
         "total_cost": 32.45,
         "payment": 'cash',
-        "guests":2,
+        "guests":1,
         "eid": 9
 }
 
