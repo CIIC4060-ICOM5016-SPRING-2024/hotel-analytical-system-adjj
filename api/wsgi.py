@@ -8,7 +8,7 @@ from api.controller.controller_room import RoomController
 from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
-
+from api.controller.controller_reserve import ReserveController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -198,6 +198,26 @@ def create_app(test_config=None):
     @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
+
+    @app.route('/reserve')
+    def get_all_reservations():
+        return ReserveController().getAllReservations()
+    @app.route('/reserve/<int:reid>')
+    def get_reservation(reid):
+        return ReserveController().getReservation(reid)
+
+    @app.route('/reserve',methods=['POST'])
+    def add_reservation():
+        return ReserveController().addReservation()
+
+    @app.route('/reserve/<int:reid>', methods=['PUT'])
+    def update_reservation(reid):
+        return ReserveController().putReservation(id=reid)
+
+    @app.route('/reserve/<int:reid>', methods=['DELETE'])
+    def delete_reservation(reid):
+        return ReserveController().deleteReservation(id=reid)
+
 
     @app.route('/hotel/<int:hid>/leastreserve', methods=['GET'])
     def get_top_3_rooms_least_unavailable(hid):
