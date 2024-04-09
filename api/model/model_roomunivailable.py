@@ -28,7 +28,11 @@ class RoomUnavailableDAO():
         finally:
             cur.close()
 
-    def postRoomUnavailable(self, rid, startdate, enddate):
+    def postRoomUnavailable(self, eid, rid, startdate, enddate):
+        if not self.db.canPostUnavailableRoom(eid):
+            print(f"El empleado {eid} no tiene autorización para añadir una habitación indisponible.")
+            return False, "El empleado no tiene autorización"
+
         # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion
         if (startdate >= enddate):
             print("Error al añadir la habitacion indisponible")
@@ -75,7 +79,6 @@ class RoomUnavailableDAO():
                 cur.close()
 
     def putRoomUnavailable(self, ruid, rid, startdate, enddate):
-
         # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion
         if (startdate >= enddate):
             print("Error al cambiar la informacion de la habitacion indisponible")

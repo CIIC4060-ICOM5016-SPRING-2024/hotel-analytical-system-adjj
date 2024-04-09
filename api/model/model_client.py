@@ -128,7 +128,7 @@ class ClientDAO:
             return top_clients
         except Exception as e:
             print(
-                f"Error al obtener el top 5 de clientes menores de 30 con más reservaciones con tarjeta de crédito para el hotel {hotel_id}: {e}")
+                f"Error al obtener el top 5 de clientes menores de 30 con más reservaciones con tarjeta de crédito para el hotel {hid}: {e}")
             return None
         finally:
             self.db.close()

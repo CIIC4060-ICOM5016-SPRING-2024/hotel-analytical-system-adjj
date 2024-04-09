@@ -1,6 +1,6 @@
 from api.model.db import Database
-
 from datetime import datetime
+
 def validate_room_unavailable_data(roomunavailable, expected_types):
     for key, expected_type in expected_types.items():
         assert key in roomunavailable, f"Expected key '{key}' not found in room data"
@@ -58,8 +58,14 @@ def test_get_room_unavailable_by_id(client):
     assert isinstance(data, dict), "Expected to be a dictionary"
     validate_room_unavailable_data(data, expected_types)
 def test_post_room(client):
-    # Datos del nuevo empleado
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'/roomunavailable', json=body)
+    assert response.status_code == 200, "Employee 9 should not have authorization to add a room unavailable"
+
+    # Empleado 4 tiene autorizacion
     new_roomunavailable = {
+        "eid": 4,
         "rid": 1,
         "startdate": "2024-10-20",
         "enddate": "2024-10-30",

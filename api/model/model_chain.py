@@ -59,7 +59,6 @@ class ChainsDAO:
 
     def putChain(self, id:int, updated_chain:dict):
         cur = self.db.conexion.cursor()
-
         try:
             query = """UPDATE chains SET cname=%s,springmkup=%s,summermkup=%s,fallmkup=%s,wintermkup=%s WHERE chid=%s"""
             cur.execute(query,(updated_chain['cname'],updated_chain['springmkup'],updated_chain['summermkup'],updated_chain['fallmkup'],updated_chain['wintermkup'],id))
@@ -73,12 +72,48 @@ class ChainsDAO:
 
         return True
 
-
-
-
-
-
-            
-
-
-
+    def getTop3ProfitMonthsByChain(self, eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query = """
+                        WITH MonthlyReservations AS (
+                            SELECT
+                                chid,
+                                EXTRACT(MONTH FROM startdate) AS Month,
+                                COUNT(*) AS count_reservation
+                             FROM
+                                chains NATURAL INNER JOIN hotel NATURAL INNER JOIN room
+                                NATURAL INNER JOIN roomunavailable
+                            GROUP BY
+                                chid, Month),
+                        RankedMonths AS (
+                            SELECT
+                                chid,
+                                Month,
+                                count_reservation,
+                                RANK() OVER(PARTITION BY chid ORDER BY count_reservation DESC) AS month_rank
+                                FROM
+                                MonthlyReservations)
+                        SELECT
+                            chid,
+                        Month,
+                            count_reservation
+                        FROM
+                            RankedMonths
+                        WHERE
+                            month_rank <= 3
+                    ORDER BY
+                            chid, month_rank;
+                        """
+            cur.execute(query)
+            most_profit_list = cur.fetchall()
+            return most_profit_list
+        except Exception as e:
+            print(f"Error al los tres meses con mayor reservación por cadena {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()

@@ -8,7 +8,7 @@ from api.controller.controller_room import RoomController
 from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
-
+from api.controller.controller_reserve1 import ReserveController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -203,6 +203,13 @@ def create_app(test_config=None):
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
 
+    @app.route('/paymentmethod', methods=['GET'])
+    def get_payment_methods():
+        return ReserveController().getReserveByPayMethod()
+
+    @app.route('/most/profitmonth', methods=['GET'])
+    def get_most_profit_month():
+        return ChainsContoller().getTop3ProfitMonthsByChain()
 
     return app
 

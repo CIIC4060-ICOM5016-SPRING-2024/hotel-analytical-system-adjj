@@ -189,3 +189,84 @@ def test_get_hotels_with_most_capacity(client):
     revert_hotel_capacity_adjustments(hotel_id=28, additional_capacity=1, num_rooms=4)
 
     # (Opcional) Verificar que el estado se haya restaurado efectivamente podría ser parte de otra prueba
+
+def test_total_reservation_by_payment_method(client):
+    # Empleado sin acceso
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {body['eid']} no tiene acceso a las estadísticas solicitadas."}, \
+            f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    # Empleado con acceso
+    employee_id = 3
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    assert response.status_code == 200, \
+        f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+    data = response.get_json()
+    expected_methods = [
+        {"num_reservations_pay_method": 199, "payment": "debit card", "percentage_reservations_pay_method": "5.2368421052631579"},
+        {"num_reservations_pay_method": 383, "payment": "pear pay", "percentage_reservations_pay_method": "10.0789473684210526"},
+        {"num_reservations_pay_method": 767, "payment": "check", "percentage_reservations_pay_method": "20.1842105263157895"},
+        {"num_reservations_pay_method": 961, "payment": "cash", "percentage_reservations_pay_method": "25.2894736842105263"},
+        {"num_reservations_pay_method": 1490, "payment": "credit card", "percentage_reservations_pay_method": "39.2105263157894737"}
+    ]
+
+    for i, method in enumerate(expected_methods):
+        assert data[i]['num_reservations_pay_method'] == method['num_reservations_pay_method'], \
+            (f"Expected number of reservations for payment method {method['payment']} to be {method['num_reservations_pay_method']}, "
+             f"got {data[i]['num_reservations_pay_method']}")
+        assert data[i]['payment'] == method['payment'], \
+            f"Expected payment method to be {method['payment']}, got {data[i]['payment']}"
+        # Convertimos ambos a float para comparar los valores numéricos en lugar de cadenas
+        assert float(data[i]['percentage_reservations_pay_method']) == float(method['percentage_reservations_pay_method']), \
+            (f"Expected percentage for payment method {method['payment']} to be {method['percentage_reservations_pay_method']}, "
+             f"got {data[i]['percentage_reservations_pay_method']}")
+
+def test_top3_profit_month_by_chain(client):
+    # Empleado sin acceso
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'/most/profitmonth', json=body)
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {body['eid']} no tiene acceso a las estadísticas solicitadas."}, \
+            f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    # Empleado con acceso
+    employee_id = 3
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    assert response.status_code == 200, \
+        f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    expected_results = [
+        {"chid": 1, "count_reservation": 90, "month": "1"},
+        {"chid": 1, "count_reservation": 86, "month": "10"},
+        {"chid": 1, "count_reservation": 85, "month": "11"},
+        {"chid": 2, "count_reservation": 71, "month": "10"},
+        {"chid": 2, "count_reservation": 71, "month": "11"},
+        {"chid": 2, "count_reservation": 68, "month": "2"},
+        {"chid": 3, "count_reservation": 69, "month": "5"},
+        {"chid": 3, "count_reservation": 65, "month": "6"},
+        {"chid": 3, "count_reservation": 61, "month": "11"},
+        {"chid": 4, "count_reservation": 88, "month": "5"},
+        {"chid": 4, "count_reservation": 84, "month": "2"},
+        {"chid": 4, "count_reservation": 81, "month": "6"},
+        {"chid": 5, "count_reservation": 106, "month": "5"},
+        {"chid": 5, "count_reservation": 93, "month": "1"},
+        {"chid": 5, "count_reservation": 93, "month": "2"}
+    ]
+    response = client.get('/most/profitmonth', json=body)
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    data = response.get_json()
+
+    # Valores que se obtienen de la base de datos
+    for expected in expected_results:
+        # Find a matching item in response data
+        match = next((item for item in data if item["chid"] == expected["chid"] and item["month"] == expected["month"]),
+                     None)
+        assert match is not None, f"Expected result for chid {expected['chid']} and month {expected['month']} not found in response."
+        assert match["count_reservation"] == expected[
+            "count_reservation"], f"Expected count_reservation for chid {expected['chid']} and month {expected['month']} to be {expected['count_reservation']}, got {match['count_reservation']}"

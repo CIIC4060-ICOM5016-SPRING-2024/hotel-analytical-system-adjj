@@ -21,13 +21,20 @@ class RoomUnavailableController():
 
     def postRoomUnavailable(self):
         data = request.get_json()
-        if not all(key in data for key in ('rid', 'startdate', 'enddate')):
+        if not all(key in data for key in ('eid', 'rid', 'startdate', 'enddate')):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
         try:
-            success, message = self.dao.postRoomUnavailable(data['rid'], data['startdate'], data['enddate'])
-            return make_response(jsonify({"message": message}), 201)
+            # Se pasa el eid al método postRoomUnavailable
+            success, message = self.dao.postRoomUnavailable(data['eid'], data['rid'], data['startdate'],data['enddate'])
+            if success:
+                return make_response(jsonify({"message": message}), 201)
+            else:
+                # Manejo del caso donde el empleado no tiene autorización o hay otro error
+                return make_response(jsonify({"error": message}),
+                                     403 if message == "El empleado no tiene autorización" else 500)
         except Exception as e:
             return make_response(jsonify({"error": "Error al agregar habitacion indisponible"}), 500)
+
 
 
     def deleteRoomUnavailable(self, ruid):
@@ -58,6 +65,7 @@ class RoomUnavailableController():
             dic = {
                 'hid': row[0],
                 'rid': row[1],
+                'reserved days': row[2]
             }
             return dic
         data = request.get_json()

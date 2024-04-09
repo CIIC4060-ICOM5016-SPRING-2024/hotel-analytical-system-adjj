@@ -66,7 +66,18 @@ class Database:
 
     def canAccessGlobalStats(self, eid):
         cur = self.conexion.cursor()
-        query = "SELECT position, hid FROM employee WHERE position = 'Administrator' AND eid = %s"
+        query = "SELECT position, eid  FROM employee WHERE position = 'Administrator' AND eid = %s"
+        cur.execute(query, (eid,))
+        employee = cur.fetchone()
+
+        if employee is None:
+            return False
+        else:
+            return True
+
+    def canPostUnavailableRoom(self, eid):
+        cur = self.conexion.cursor()
+        query = "SELECT position, eid  FROM employee WHERE position = 'Supervisor' AND eid = %s"
         cur.execute(query, (eid,))
         employee = cur.fetchone()
 
