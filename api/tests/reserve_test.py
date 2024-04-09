@@ -97,7 +97,7 @@ def test_delete_reserve(client):
     try:
         cur = db.conexion.cursor()
         cur.execute("""
-            INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s,%s,%s,%s,%s) RETURNING chid
+            INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s,%s,%s,%s,%s) RETURNING reid
         """,(4541,2,32.45,'cash',2))
         reid= cur.fetchone()[0]  # Asume que INSERT...RETURNING retorna el eid del nuevo registro
 
