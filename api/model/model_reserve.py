@@ -20,6 +20,11 @@ class ReserveDAO:
         cur.close()
         return reservation
     def postReservation(self,new_reservation:dict) -> bool:
+
+        if not self.db.canPostInReserveTable(new_reservation['eid']):
+            print(f"El empleado {new_reservation['eid']} no tiene acceso a crear un reserve.")
+            return None
+
         cur = self.db.conexion.cursor()
         try:
             query="INSERT into reserve(ruid,clid,total_cost,payment,guests) VALUES(%s,%s,%s,%s,%s)"
@@ -61,3 +66,27 @@ class ReserveDAO:
             self.db.close()
             cur.close()
         return True
+
+    def getReserveByPayMethod(self, eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query = """
+                    SELECT payment,
+                    COUNT (*) as num_payment_method,
+                    (COUNT(*) * 100.0) / SUM(COUNT(*)) OVER() AS reservation_percentage
+                    FROM reserve
+                    GROUP BY payment
+                    ORDER BY reservation_percentage
+                    """
+            cur.execute(query)
+            payments_list = cur.fetchall()
+            return payments_list
+        except Exception as e:
+            print(f"Error al obtener el porcentaje de metodos de pagos utilizados por reservaciones en total {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()

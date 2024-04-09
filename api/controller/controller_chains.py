@@ -71,9 +71,28 @@ class ChainsContoller:
         else:
             return make_response(jsonify({"error":"Error updating chain"},500))
 
+    def getTop3ProfitMonthsByChain(self):
+        def make_json1(row):
+            dic = {
+                'chid': row[0],
+                'month': row[1],
+                'count_reservation': row[2]
+            }
+            return dic
+        data = request.get_json()
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
+        dao = ChainsDAO()
+        dic = dao.getTop3ProfitMonthsByChain(data["eid"])
+        if dic == None:
+            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas."))
+        result = []
+        for element in dic:
+            result.append(make_json1(element))
+        return jsonify(result)
 
     def get_least_rooms_chains(self):
-#add verification of employee id
 
         def dict_build(row):
             return {
@@ -119,7 +138,5 @@ class ChainsContoller:
         for chain in au_dict:
             result.append(dict_build(chain))
         return jsonify(result)
-
-
 
 

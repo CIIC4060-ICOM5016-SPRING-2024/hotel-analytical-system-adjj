@@ -18,6 +18,7 @@ def employee_inputs_are_correct(position, salary):
 
     return True
 
+
 def post_room_description_validation(rname, rtype, capacity):
     # Dictionary to hold the valid capacities and types for each room name
     valid_descriptions = {

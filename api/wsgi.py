@@ -227,6 +227,13 @@ def create_app(test_config=None):
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
 
+    @app.route('/paymentmethod', methods=['GET'])
+    def get_payment_methods():
+        return ReserveController().getReserveByPayMethod()
+
+    @app.route('/most/profitmonth', methods=['GET'])
+    def get_most_profit_month():
+        return ChainsContoller().getTop3ProfitMonthsByChain()
 
 
     @app.route('/least/rooms')

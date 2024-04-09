@@ -145,13 +145,20 @@ def test_get_top3_least_reserve_rooms(client):
     # Acceso al hotel 1
     response = client.get(f'/hotel/1/leastreserve', json=body)
     assert response.status_code == 200, "Employee 9 should have access to Hotel 1"
+    data = response.get_json()
+    # Acceso al hotel 1
+    response = client.get(f'/hotel/1/leastreserve', json=body)
+    assert response.status_code == 200, "Employee 9 should have access to Hotel 1"
+    data = response.get_json()
+    assert data[0]['reserved days'] == 32, f"Expected room with 32 reserved days as the least reserved, got {data[0]['reserved days']}"
+    assert data[1]['reserved days'] == 46, f"Expected room with 46 reserved days as the second least reserved, got {data[1]['reserved days']}"
+    assert data[2]['reserved days'] == 53, f"Expected room with 53 reserved days as the third least reserved, got {data[2]['reserved days']}"
 
     # Acceso en los demás hoteles
     for hid in range(2, 41):
         response = client.get(f'/hotel/{hid}/leastreserve', json=body)
         expected_status_code = 200
         assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
-
 
 
 def test_get_top_5_handicap_reserved(client):
@@ -169,6 +176,7 @@ def test_get_top_5_handicap_reserved(client):
         expected_status_code = 200
         assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
 
+
 def test_get_total_reservations_by_room_type(client):
     employee_id = 9
     body = {"eid": employee_id}
@@ -182,3 +190,4 @@ def test_get_total_reservations_by_room_type(client):
         response = client.get(f'/hotel/{hid}/totalreservations', json=body)
         expected_status_code = 200
         assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
+

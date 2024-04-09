@@ -190,6 +190,86 @@ def test_get_hotels_with_most_capacity(client):
 
     # (Opcional) Verificar que el estado se haya restaurado efectivamente podría ser parte de otra prueba
 
+def test_total_reservation_by_payment_method(client):
+    # Empleado sin acceso
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {body['eid']} no tiene acceso a las estadísticas solicitadas."}, \
+            f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    # Empleado con acceso
+    employee_id = 3
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    assert response.status_code == 200, \
+        f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+    data = response.get_json()
+    expected_methods = [
+        {"num_reservations_pay_method": 199, "payment": "debit card", "percentage_reservations_pay_method": "5.2368421052631579"},
+        {"num_reservations_pay_method": 383, "payment": "pear pay", "percentage_reservations_pay_method": "10.0789473684210526"},
+        {"num_reservations_pay_method": 767, "payment": "check", "percentage_reservations_pay_method": "20.1842105263157895"},
+        {"num_reservations_pay_method": 961, "payment": "cash", "percentage_reservations_pay_method": "25.2894736842105263"},
+        {"num_reservations_pay_method": 1490, "payment": "credit card", "percentage_reservations_pay_method": "39.2105263157894737"}
+    ]
+
+    for i, method in enumerate(expected_methods):
+        assert data[i]['num_reservations_pay_method'] == method['num_reservations_pay_method'], \
+            (f"Expected number of reservations for payment method {method['payment']} to be {method['num_reservations_pay_method']}, "
+             f"got {data[i]['num_reservations_pay_method']}")
+        assert data[i]['payment'] == method['payment'], \
+            f"Expected payment method to be {method['payment']}, got {data[i]['payment']}"
+        # Convertimos ambos a float para comparar los valores numéricos en lugar de cadenas
+        assert float(data[i]['percentage_reservations_pay_method']) == float(method['percentage_reservations_pay_method']), \
+            (f"Expected percentage for payment method {method['payment']} to be {method['percentage_reservations_pay_method']}, "
+             f"got {data[i]['percentage_reservations_pay_method']}")
+
+def test_top3_profit_month_by_chain(client):
+    # Empleado sin acceso
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'/most/profitmonth', json=body)
+    if response.status_code != 200:
+        assert response.get_json() == {"error": f"El empleado {body['eid']} no tiene acceso a las estadísticas solicitadas."}, \
+            f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    # Empleado con acceso
+    employee_id = 3
+    body = {"eid": employee_id}
+    response = client.get(f'/paymentmethod', json=body)
+    assert response.status_code == 200, \
+        f"El código de respuesta debe ser 200, pero se obtuvo {response.status_code}"
+
+    expected_results = [
+        {"chid": 1, "count_reservation": 90, "month": "1"},
+        {"chid": 1, "count_reservation": 86, "month": "10"},
+        {"chid": 1, "count_reservation": 85, "month": "11"},
+        {"chid": 2, "count_reservation": 71, "month": "10"},
+        {"chid": 2, "count_reservation": 71, "month": "11"},
+        {"chid": 2, "count_reservation": 68, "month": "2"},
+        {"chid": 3, "count_reservation": 69, "month": "5"},
+        {"chid": 3, "count_reservation": 65, "month": "6"},
+        {"chid": 3, "count_reservation": 61, "month": "11"},
+        {"chid": 4, "count_reservation": 88, "month": "5"},
+        {"chid": 4, "count_reservation": 84, "month": "2"},
+        {"chid": 4, "count_reservation": 81, "month": "6"},
+        {"chid": 5, "count_reservation": 106, "month": "5"},
+        {"chid": 5, "count_reservation": 93, "month": "1"},
+        {"chid": 5, "count_reservation": 93, "month": "2"}
+    ]
+    response = client.get('/most/profitmonth', json=body)
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    data = response.get_json()
+
+    # Valores que se obtienen de la base de datos
+    for expected in expected_results:
+        # Find a matching item in response data
+        match = next((item for item in data if item["chid"] == expected["chid"] and item["month"] == expected["month"]),
+                     None)
+        assert match is not None, f"Expected result for chid {expected['chid']} and month {expected['month']} not found in response."
+        assert match["count_reservation"] == expected[
+            "count_reservation"], f"Expected count_reservation for chid {expected['chid']} and month {expected['month']} to be {expected['count_reservation']}, got {match['count_reservation']}"
 
 
 def test_get_highest_revenue_chains(client):
@@ -263,7 +343,73 @@ def test_get_highest_revenue_chains(client):
 
 
 
+# def test_get_top_3_chains_with_least_rooms(client):
+#     def add_rooms(chain_id, num_rooms):
+#         """Adds a specific number of rooms to the first hotel found in the specified chain."""
+#         db = Database()
+#         cur = db.conexion.cursor()
+#         # Find the first hotel in the specified chain
+#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+#         hotel_id = cur.fetchone()[0]
+#         # Assuming there's at least one RoomDescription to use, add rooms to the hotel
+#         for _ in range(num_rooms):
+#             cur.execute("""
+#                 INSERT INTO Room (hid, rdid, rprice)
+#                 VALUES (%s, (SELECT rdid FROM RoomDescription LIMIT 1), 100.00)
+#             """, (hotel_id,))
+#         db.conexion.commit()
+#         cur.close()
+#         db.close()
+#
+#     def remove_rooms(chain_id, num_rooms):
+#         """Removes a specific number of the most recently added rooms from the first hotel found in the specified chain."""
+#         db = Database()
+#         cur = db.conexion.cursor()
+#         # Find the first hotel in the specified chain
+#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+#         hotel_id = cur.fetchone()[0]
+#         # Remove the specified number of most recently added rooms from the hotel
+#         cur.execute("""
+#             DELETE FROM Room
+#             WHERE rid IN (
+#                 SELECT rid FROM Room
+#                 WHERE hid = %s
+#                 ORDER BY rid DESC
+#                 LIMIT %s
+#             )
+#         """, (hotel_id, num_rooms))
+#         db.conexion.commit()
+#         cur.close()
+#         db.close()
+#
+#     # Verify the initial state matches the expected output
+#     response1 = client.get('/least/rooms')
+#     assert response1.status_code == 200
+#     data1 = response1.get_json()
+#     assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
+#
+#     # Add rooms to "Murphy and Boyles" chain to change its ranking
+#     add_rooms(chain_id=3, num_rooms=20)
+#
+#     # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
+#     response2 = client.get('/least/rooms')
+#     assert response2.status_code == 200
+#     data2 = response2.get_json()
+#     assert all(chain['chain_id'] != 3 for chain in data2)
+#
+#     # Remove the added rooms to restore the initial state
+#     remove_rooms(chain_id=3, num_rooms=20)
+#
+#     # Re-verify the initial state to ensure the changes have been reverted
+#     response3 = client.get('/least/rooms')
+#     assert response3.status_code == 200
+#     data3 = response3.get_json()
+#     assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
+
 def test_get_top_3_chains_with_least_rooms(client):
+    # Assuming eid 1 has access to global statistics
+    access_eid = 3
+
     def add_rooms(chain_id, num_rooms):
         """Adds a specific number of rooms to the first hotel found in the specified chain."""
         db = Database()
@@ -303,16 +449,16 @@ def test_get_top_3_chains_with_least_rooms(client):
         db.close()
 
     # Verify the initial state matches the expected output
-    response1 = client.get('/least/rooms')
+    response1 = client.post('/least/rooms', json={'eid': access_eid})
     assert response1.status_code == 200
     data1 = response1.get_json()
-    assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
+    assert data1[0]['chain_name'] == "Administrative" and data1[0]['room_count'] == 0
 
     # Add rooms to "Murphy and Boyles" chain to change its ranking
     add_rooms(chain_id=3, num_rooms=20)
 
     # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
-    response2 = client.get('/least/rooms')
+    response2 = client.post('/least/rooms', json={'eid': access_eid})
     assert response2.status_code == 200
     data2 = response2.get_json()
     assert all(chain['chain_id'] != 3 for chain in data2)
@@ -321,11 +467,9 @@ def test_get_top_3_chains_with_least_rooms(client):
     remove_rooms(chain_id=3, num_rooms=20)
 
     # Re-verify the initial state to ensure the changes have been reverted
-    response3 = client.get('/least/rooms')
+    response3 = client.post('/least/rooms', json={'eid': access_eid})
     assert response3.status_code == 200
     data3 = response3.get_json()
     assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
-
-
 
 
