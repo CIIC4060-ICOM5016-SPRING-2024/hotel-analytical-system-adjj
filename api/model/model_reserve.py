@@ -22,7 +22,7 @@ class ReserveDAO:
     def postReservation(self,new_reservation:dict) -> bool:
 
         if not self.db.canPostInReserveTable(new_reservation['eid']):
-            print(f"El empleado {new_reservation['eid']} no tiene acceso a las estadísticas globales.")
+            print(f"El empleado {new_reservation['eid']} no tiene acceso a crear un reserve.")
             return None
 
         cur = self.db.conexion.cursor()
