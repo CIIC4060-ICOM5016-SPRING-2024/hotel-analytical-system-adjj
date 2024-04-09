@@ -75,5 +75,17 @@ class Database:
         else:
             return True
 
+
+    def canPostInReserveTable(self, eid):
+        cur = self.conexion.cursor()
+        query = "SELECT position, hid FROM employee WHERE position = 'Regular' AND eid = %s"
+        cur.execute(query, (eid,))
+        employee = cur.fetchone()
+
+        if employee is None:
+            return False
+        else:
+            return True
+
     def close(self):
         self.conexion.close()

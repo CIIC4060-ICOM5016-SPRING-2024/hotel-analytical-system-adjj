@@ -20,6 +20,11 @@ class ReserveDAO:
         cur.close()
         return reservation
     def postReservation(self,new_reservation:dict) -> bool:
+
+        if not self.db.canPostInReserveTable(new_reservation['eid']):
+            print(f"El empleado {new_reservation['eid']} no tiene acceso a las estadísticas globales.")
+            return None
+
         cur = self.db.conexion.cursor()
         try:
             query="INSERT into reserve(ruid,clid,total_cost,payment,guests) VALUES(%s,%s,%s,%s,%s)"

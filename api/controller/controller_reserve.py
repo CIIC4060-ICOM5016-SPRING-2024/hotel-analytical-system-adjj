@@ -35,7 +35,7 @@ class ReserveController():
     def addReservation(self):
         data = request.get_json()
 
-        if not all(key in data for key in('ruid','clid','total_cost','payment','guests')):
+        if not all(key in data for key in('ruid','clid','total_cost','payment','guests','eid')):
             return make_response(jsonify({"error": "Missing Values"}), 400)
 
         dao = ReserveDAO()
