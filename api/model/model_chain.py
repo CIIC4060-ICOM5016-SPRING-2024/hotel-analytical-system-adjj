@@ -1,3 +1,4 @@
+
 from .db import Database
 
 
@@ -117,3 +118,63 @@ class ChainsDAO:
         finally:
             self.db.conexion.close()
             cur.close()
+
+    def get_top_3_chains_with_least_rooms(self, eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
+        cur = self.db.conexion.cursor()
+        query = """
+                SELECT
+                    C.chid AS Chain_ID,
+                    C.cname AS Chain_Name,
+                    COUNT(RO.rid) AS Room_Count
+                FROM
+                    Chains C
+                    LEFT JOIN Hotel H ON C.chid = H.chid
+                    LEFT JOIN Room RO ON H.hid = RO.hid
+                GROUP BY
+                    C.chid, C.cname
+                ORDER BY
+                    Room_Count ASC
+                LIMIT 3;
+                """
+        cur.execute(query)
+        chains_list = cur.fetchall()
+        cur.close()
+        return chains_list
+
+    def get_top_3_chains_with_highest_revenue(self,eid):
+
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
+            return None
+
+
+        cur = self.db.conexion.cursor()
+        query = """
+                SELECT
+                    C.chid AS Chain_ID,
+                    C.cname AS Chain_Name,
+                    SUM(R.total_cost) AS Total_Revenue
+                FROM
+                    Chains C
+                    INNER JOIN Hotel H ON C.chid = H.chid
+                    INNER JOIN Room RO ON H.hid = RO.hid
+                    INNER JOIN RoomUnavailable RU ON RO.rid = RU.rid
+                    INNER JOIN Reserve R ON RU.ruid = R.ruid
+                GROUP BY
+                    C.chid, C.cname
+                ORDER BY
+                    Total_Revenue DESC
+                LIMIT 3;
+                """
+        cur.execute(query)
+        chains_list = cur.fetchall()
+        cur.close()
+        return chains_list
+
+
+
+

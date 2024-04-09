@@ -8,7 +8,7 @@ from api.controller.controller_room import RoomController
 from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
-from api.controller.controller_reserve1 import ReserveController
+from api.controller.controller_reserve import ReserveController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -175,9 +175,9 @@ def create_app(test_config=None):
     def delete_login(lid):
         return LoginController().deleteEmployee(lid)
 
-    @app.route('/login/<int:lid>', methods=['POST'])
-    def add_login(lid):
-        return LoginController().addLogin(lid)
+    @app.route('/login', methods=['POST'])
+    def add_login():
+        return LoginController().addLogin()
 
 
     @app.route('/roomdescription')
@@ -199,6 +199,26 @@ def create_app(test_config=None):
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
 
+    @app.route('/reserve')
+    def get_all_reservations():
+        return ReserveController().getAllReservations()
+    @app.route('/reserve/<int:reid>')
+    def get_reservation(reid):
+        return ReserveController().getReservation(reid)
+
+    @app.route('/reserve',methods=['POST'])
+    def add_reservation():
+        return ReserveController().addReservation()
+
+    @app.route('/reserve/<int:reid>', methods=['PUT'])
+    def update_reservation(reid):
+        return ReserveController().putReservation(id=reid)
+
+    @app.route('/reserve/<int:reid>', methods=['DELETE'])
+    def delete_reservation(reid):
+        return ReserveController().deleteReservation(id=reid)
+
+
     @app.route('/hotel/<int:hid>/leastreserve', methods=['GET'])
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
@@ -210,6 +230,19 @@ def create_app(test_config=None):
     @app.route('/most/profitmonth', methods=['GET'])
     def get_most_profit_month():
         return ChainsContoller().getTop3ProfitMonthsByChain()
+
+
+    @app.route('/least/rooms')
+    def get_chains_least_rooms():
+        return ChainsContoller().get_least_rooms_chains()
+
+    @app.route('/most/revenue')
+    def get_chains_highest_revenue():
+        return ChainsContoller().get_highest_revenue_chains()
+
+    @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
+    def get_top_5_handicap_reserved_rooms(hid):
+        return RoomController().get_top_5_handicap_reserved(hid)
 
     return app
 

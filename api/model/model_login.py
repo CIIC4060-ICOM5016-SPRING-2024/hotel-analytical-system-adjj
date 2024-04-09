@@ -1,5 +1,8 @@
 from .db import Database
 from ..validate_inputs import employee_inputs_are_correct
+from api.controller.controller_employee import EmployeeController
+from api.model.model_employee import EmployeeDAO
+
 
 
 class LoginDAO:
@@ -31,6 +34,78 @@ class LoginDAO:
             self.db.close()
             cur.close()
 
+
+
+
+
+
+
+    # def postLogin(self, eid, username, password):
+    #
+    #     # Additional validation can be done here if necessary
+    #     cur = self.db.conexion.cursor()  # Assuming this correctly opens the cursor
+    #     try:
+    #         query = """
+    #                 INSERT INTO login (eid, username, password)
+    #                 VALUES (%s, %s, %s)
+    #                 """
+    #         cur.execute(query, (eid, username, password))
+    #         self.db.conexion.commit()
+    #     except Exception as e:
+    #         print(f"Error inserting login information: {e}")
+    #         self.db.conexion.rollback()  # Optional: undo changes in case of error
+    #         return False
+    #     finally:
+    #         self.db.close()
+    #         cur.close()
+    #     return True
+
+    def postLogin(self, eid, username, password):
+        cur = self.db.conexion.cursor()  # Assuming this correctly opens the cursor
+
+        # Check if the eid exists in the Employee table
+        cur.execute("SELECT COUNT(*) FROM Employee WHERE eid = %s", (eid,))
+        if cur.fetchone()[0] == 0:
+            print("Please create an employee before attempting to create a login for this eid.")
+            return False
+
+        # Check if there is already a login associated with this eid
+        cur.execute("SELECT COUNT(*) FROM Login WHERE eid = %s", (eid,))
+        if cur.fetchone()[0] > 0:
+            print("There is already login information related to this eid.")
+            return False
+
+        try:
+            query = """
+                    INSERT INTO Login (eid, username, password) 
+                    VALUES (%s, %s, %s)
+                    """
+            cur.execute(query, (eid, username, password))
+            self.db.conexion.commit()
+        except Exception as e:
+            print(f"Error inserting login information: {e}")
+            self.db.conexion.rollback()  # Optional: undo changes in case of error
+            return False
+        finally:
+            cur.close()  # Moved up to ensure the cursor is always closed before db connection
+            self.db.close()
+        return True
+
+    def deleteLogin(self, lid):
+        cur = self.db.conexion.cursor()
+        try:
+            query = "DELETE FROM login WHERE lid = %s"
+            cur.execute(query, (lid,))
+            self.db.conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al eliminar login: {e}")
+            self.db.conexion.rollback()
+            return False
+        finally:
+            cur.close()
+            self.db.close()
+
     def putLogin(self, lid, eid, username, password):
         cur = self.db.conexion.cursor()
 
@@ -53,40 +128,24 @@ class LoginDAO:
             self.db.close()
 
 
-    def deleteLogin(self, lid):
+
+    def putLogin(self, lid, eid, username, password):
         cur = self.db.conexion.cursor()
+
         try:
-            query = "DELETE FROM login WHERE lid = %s"
-            cur.execute(query, (lid,))
+            query = """UPDATE login SET eid = %s, username = %s, password =%s WHERE lid = %s"""
+
+            cur.execute(query, (eid, username, password, lid))
+
+            if cur.rowcount == 0:
+                self.db.conexion.rollback()
+                return False
             self.db.conexion.commit()
             return True
         except Exception as e:
-            print(f"Error al eliminar login: {e}")
+            print(f"Error al actualizar el login con ID {e}")
             self.db.conexion.rollback()
             return False
         finally:
             cur.close()
             self.db.close()
-
-
-    def postLogin(self,eid, username,password, salary, position):
-        # Asegurarse de que la posición sea válida
-        if not (employee_inputs_are_correct(position, salary)):
-            return False
-
-        cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
-        try:
-            query = """
-                    INSERT INTO login (eid, username, password) 
-                    VALUES (%s, %s, %s)
-                    """
-            cur.execute(query, (eid,username,password))
-            self.db.conexion.commit()
-        except Exception as e:
-            print(f"Error al insertar login: {e}")
-            self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
-            return False
-        finally:
-            self.db.close()
-            cur.close()
-        return True
