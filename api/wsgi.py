@@ -109,7 +109,7 @@ def create_app(test_config=None):
     def get_most_capacity():
         return HotelContoller().get_most_capacity()
     
-    @app.route('/hotel/<int:hid>/totalreservations',methods=['GET'])
+    @app.route('/hotel/<int:hid>/roomtype',methods=['GET'])
     def get_total_reservations_by_room_type(hid):
         return HotelContoller().get_total_reservations_by_room_type(hid)
 
