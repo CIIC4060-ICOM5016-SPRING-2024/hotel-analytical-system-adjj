@@ -112,7 +112,7 @@ def test_delete_reserve(client):
 
     assert reid is not None, "Reserve was not added correctly"
 
-    delete_response = client.delete(f'/chains/{reid}')
+    delete_response = client.delete(f'/reserve/{reid}')
 
     assert delete_response.status_code == 200, "Failed to eliminate chain"
 
@@ -147,7 +147,7 @@ def test_put_reserve(client):
         "guests":2
     }
 
-    updated_response = client.put(f'/chains/{reid}',json=updated_chain)
+    updated_response = client.put(f'/reserve/{reid}',json=updated_chain)
     assert updated_response.status_code == 200, "Failed to update client"
 
      # Verificar que los cambios se aplicaron correctamente
