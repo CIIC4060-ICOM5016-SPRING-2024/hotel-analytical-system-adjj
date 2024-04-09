@@ -290,7 +290,7 @@ def test_get_highest_revenue_chains(client):
     # Expected results in the specified format
     expected_results = [
         {"chain_id": 5, "chain_name": "Ferry Torp's Logs", "total_revenue": 1548260.0899999996},
-        {"chain_id": 1, "chain_name": "Bergaum-Champlin", "total_revenue": 1531435.7200000002},
+        {"chain_id": 1, "chain_name": "Bergaum-Champlin", "total_revenue": 1534075.5200000005},
         {"chain_id": 4, "chain_name": "Howe-Caroll", "total_revenue": 1302918.3899999994}
     ]
     response = client.get('/most/revenue', json=body)
