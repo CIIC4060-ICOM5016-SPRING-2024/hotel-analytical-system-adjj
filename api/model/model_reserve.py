@@ -46,6 +46,10 @@ class ReserveDAO:
             cur.close()
         return True
     def putReservation(self,id:int,updated_reservation:dict) -> bool:
+        guest_validity,message = self.db.validGuests(reid=updated_reservation['reid'])
+        if guest_validity == False:
+            print(message)
+            return False
         cur = self.db.conexion.cursor()
         try:
             query = "UPDATE reserve SET ruid=%s,clid=%s,total_cost=%s,payment=%s,guests=%s WHERE reid=%s"
