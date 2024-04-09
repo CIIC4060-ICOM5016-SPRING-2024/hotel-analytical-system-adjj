@@ -139,7 +139,7 @@ def test_put_reserve(client):
 
     assert reid is not None, "Reserve was not added correctly"
 
-    updated_chain ={
+    updated_reserve ={
         "ruid":4541,
         "clid":2,
         "total_cost": 32.45,
@@ -147,7 +147,7 @@ def test_put_reserve(client):
         "guests":2
     }
 
-    updated_response = client.put(f'/reserve/{reid}',json=updated_chain)
+    updated_response = client.put(f'/reserve/{reid}',json=updated_reserve)
     assert updated_response.status_code == 200, "Failed to update client"
 
      # Verificar que los cambios se aplicaron correctamente
@@ -156,11 +156,11 @@ def test_put_reserve(client):
         cur.execute("SELECT ruid, clid, total_cost, payment, guests FROM reserve WHERE reid = %s", (reid,))
         chain__ = cur.fetchone()
         assert chain__ is not None, "La reservacion no se encontró después de actualizar"
-        assert chain__[0] == updated_chain['ruid'], "El ruid del chain no se actualizó correctamente"
-        assert chain__[1] == updated_chain['clid'], "El clid del chain no se actualizó correctamente"
-        assert chain__[2] == updated_chain['total_cost'], "El total_cost del chain no se actualizó correctamente"
-        assert chain__[3] == updated_chain['payment'], "El payment del chain no se actualizó correctamente"
-        assert chain__[4] == updated_chain['guests'], "El guests del chain no se actualizó correctamente"
+        assert chain__[0] == updated_reserve['ruid'], "El ruid del chain no se actualizó correctamente"
+        assert chain__[1] == updated_reserve['clid'], "El clid del chain no se actualizó correctamente"
+        assert chain__[2] == updated_reserve['total_cost'], "El total_cost del chain no se actualizó correctamente"
+        assert chain__[3] == updated_reserve['payment'], "El payment del chain no se actualizó correctamente"
+        assert chain__[4] == updated_reserve['guests'], "El guests del chain no se actualizó correctamente"
     finally:
         cur.close()
 
