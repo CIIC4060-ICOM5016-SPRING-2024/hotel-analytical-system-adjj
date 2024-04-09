@@ -146,7 +146,7 @@ class HotelContoller:
         if not all(field in data for field in required_fields):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
 
-        result_dict = dao.get_total_reservation_by_room_type()
+        result_dict = dao.get_total_reservation_by_room_type(hid,data['eid'])
         if result_dict == None:
             return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas del hotel {hid}."))
         result = []

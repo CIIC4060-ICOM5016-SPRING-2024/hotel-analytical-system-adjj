@@ -80,7 +80,8 @@ class ReserveController():
         required_fields = ['eid']
         if not all(field in data for field in required_fields):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
-        dic = self.dao.getReserveByPayMethod(data["eid"])
+        dao = ReserveDAO()
+        dic = dao.getReserveByPayMethod(data["eid"])
         if dic == None:
             return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas."))
         result = []

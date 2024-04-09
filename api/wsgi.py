@@ -121,7 +121,7 @@ def create_app(test_config=None):
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
     
-    @app.route('/hotel/<int:hid>/mostdiscount')
+    @app.route('/hotel/<int:hid>/mostdiscount',methods=['GET'])
     def getTop5ClientsMostDiscount(hid):
         return ClientContoller().getTop5ClientsMostDiscount(hid)
 
