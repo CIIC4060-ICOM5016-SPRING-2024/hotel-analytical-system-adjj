@@ -73,7 +73,6 @@ class ChainsContoller:
 
 
     def get_least_rooms_chains(self):
-#add verification of employee id
 
         def dict_build(row):
             return {

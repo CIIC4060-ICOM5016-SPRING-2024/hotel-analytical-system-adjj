@@ -35,24 +35,43 @@ class LoginController:
         else:
             return make_response(jsonify({"error": f"No se encontró el Login con ID {lid}"}), 404)
 
+    # def addLogin(self):
+    #     if request.method == 'POST':
+    #         # Obtain data from the request body
+    #         data = request.get_json()
+    #         # Validate that all necessary fields are present
+    #         if not all(key in data for key in ['eid', 'username', 'password']):
+    #             return make_response(jsonify({"error": "Missing data"}), 400)
+    #
+    #         # Create an instance of LoginDAO (assuming it exists and works similarly to EmployeeDAO)
+    #         dao = LoginDAO()
+    #         # Call the method to insert new login information
+    #         success = dao.postLogin(data['eid'], data['username'], data['password'])
+    #
+    #         if success:
+    #             return make_response(jsonify({"message": "Login information added successfully"}), 201)
+    #         else:
+    #             return make_response(jsonify({"error": "Error adding login information"}), 500)
+
     def addLogin(self):
-        # if request.method == 'POST':
-            # Obtener datos del cuerpo de la petición
+        if request.method == 'POST':
             data = request.get_json()
-            # Validar que todos los campos necesarios están presentes
-            if not all(key in data for key in ('eid', 'username', 'password', 'hid', 'fname', 'lname', 'age', 'salary', 'position')):
-                return make_response(jsonify({"error": "Faltan datos"}), 400)
+            if not all(key in data for key in ['eid', 'username', 'password']):
+                return make_response(jsonify({"error": "Missing data"}), 400)
 
-            # Crear una instancia de EmployeeDAO
-            dao = LoginDAO()
-            # Llamar al método para insertar el nuevo empleado
-            success = dao.postLogin(data['eid'], data['username'], data['password'], data['hid'], data['fname'], data['lname'], data['age'], data['salary'], data['position'])
+            dao = LoginDAO()  # Assuming this is properly defined and instantiated
+            result = dao.postLogin(data['eid'], data['username'], data['password'])
 
-            if success:
-                return make_response(jsonify({"message": "Login agregado exitosamente"}), 201)
+            if result is True:
+                return make_response(jsonify({"message": "Login information added successfully"}), 201)
+            elif result == "employee_not_found":
+                return make_response(
+                    jsonify({"error": "Employee not found, please create an employee before adding login information"}),
+                    404)
+            elif result == "login_exists":
+                return make_response(jsonify({"error": "Login information already exists for this employee"}), 409)
             else:
-                return make_response(jsonify({"error": "Error al agregar login"}), 500)
-
+                return make_response(jsonify({"error": "Error adding login information"}), 500)
 
     def deleteEmployee(self, lid):
         dao = LoginDAO()

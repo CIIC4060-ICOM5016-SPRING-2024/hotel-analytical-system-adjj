@@ -263,7 +263,73 @@ def test_get_highest_revenue_chains(client):
 
 
 
+# def test_get_top_3_chains_with_least_rooms(client):
+#     def add_rooms(chain_id, num_rooms):
+#         """Adds a specific number of rooms to the first hotel found in the specified chain."""
+#         db = Database()
+#         cur = db.conexion.cursor()
+#         # Find the first hotel in the specified chain
+#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+#         hotel_id = cur.fetchone()[0]
+#         # Assuming there's at least one RoomDescription to use, add rooms to the hotel
+#         for _ in range(num_rooms):
+#             cur.execute("""
+#                 INSERT INTO Room (hid, rdid, rprice)
+#                 VALUES (%s, (SELECT rdid FROM RoomDescription LIMIT 1), 100.00)
+#             """, (hotel_id,))
+#         db.conexion.commit()
+#         cur.close()
+#         db.close()
+#
+#     def remove_rooms(chain_id, num_rooms):
+#         """Removes a specific number of the most recently added rooms from the first hotel found in the specified chain."""
+#         db = Database()
+#         cur = db.conexion.cursor()
+#         # Find the first hotel in the specified chain
+#         cur.execute("SELECT hid FROM Hotel WHERE chid=%s LIMIT 1", (chain_id,))
+#         hotel_id = cur.fetchone()[0]
+#         # Remove the specified number of most recently added rooms from the hotel
+#         cur.execute("""
+#             DELETE FROM Room
+#             WHERE rid IN (
+#                 SELECT rid FROM Room
+#                 WHERE hid = %s
+#                 ORDER BY rid DESC
+#                 LIMIT %s
+#             )
+#         """, (hotel_id, num_rooms))
+#         db.conexion.commit()
+#         cur.close()
+#         db.close()
+#
+#     # Verify the initial state matches the expected output
+#     response1 = client.get('/least/rooms')
+#     assert response1.status_code == 200
+#     data1 = response1.get_json()
+#     assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
+#
+#     # Add rooms to "Murphy and Boyles" chain to change its ranking
+#     add_rooms(chain_id=3, num_rooms=20)
+#
+#     # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
+#     response2 = client.get('/least/rooms')
+#     assert response2.status_code == 200
+#     data2 = response2.get_json()
+#     assert all(chain['chain_id'] != 3 for chain in data2)
+#
+#     # Remove the added rooms to restore the initial state
+#     remove_rooms(chain_id=3, num_rooms=20)
+#
+#     # Re-verify the initial state to ensure the changes have been reverted
+#     response3 = client.get('/least/rooms')
+#     assert response3.status_code == 200
+#     data3 = response3.get_json()
+#     assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
+
 def test_get_top_3_chains_with_least_rooms(client):
+    # Assuming eid 1 has access to global statistics
+    access_eid = 3
+
     def add_rooms(chain_id, num_rooms):
         """Adds a specific number of rooms to the first hotel found in the specified chain."""
         db = Database()
@@ -303,16 +369,16 @@ def test_get_top_3_chains_with_least_rooms(client):
         db.close()
 
     # Verify the initial state matches the expected output
-    response1 = client.get('/least/rooms')
+    response1 = client.post('/least/rooms', json={'eid': access_eid})
     assert response1.status_code == 200
     data1 = response1.get_json()
-    assert data1[0]['chain_name'] == "Administrative " and data1[0]['room_count'] == 0
+    assert data1[0]['chain_name'] == "Administrative" and data1[0]['room_count'] == 0
 
     # Add rooms to "Murphy and Boyles" chain to change its ranking
     add_rooms(chain_id=3, num_rooms=20)
 
     # Verify "Murphy and Boyles" is no longer in the top 3 chains with the least number of rooms
-    response2 = client.get('/least/rooms')
+    response2 = client.post('/least/rooms', json={'eid': access_eid})
     assert response2.status_code == 200
     data2 = response2.get_json()
     assert all(chain['chain_id'] != 3 for chain in data2)
@@ -321,11 +387,10 @@ def test_get_top_3_chains_with_least_rooms(client):
     remove_rooms(chain_id=3, num_rooms=20)
 
     # Re-verify the initial state to ensure the changes have been reverted
-    response3 = client.get('/least/rooms')
+    response3 = client.post('/least/rooms', json={'eid': access_eid})
     assert response3.status_code == 200
     data3 = response3.get_json()
     assert data3[1]['chain_name'] == "Murphy and Boyles" and data3[1]['room_count'] == 72
-
 
 
 

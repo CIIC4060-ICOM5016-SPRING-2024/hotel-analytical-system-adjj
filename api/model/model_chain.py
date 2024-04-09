@@ -74,7 +74,7 @@ class ChainsDAO:
 
         return True
 
-    def get_top_3_chains_with_least_rooms(self,eid):
+    def get_top_3_chains_with_least_rooms(self, eid):
         if not self.db.canAccessGlobalStats(eid):
             print(f"El empleado {eid} no tiene acceso a las estadísticas globales.")
             return None

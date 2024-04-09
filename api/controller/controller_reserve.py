@@ -1,4 +1,4 @@
-from model.model_reserve import ReserveDAO
+from ..model.model_reserve import ReserveDAO
 from flask import jsonify, request, make_response
 
 
