@@ -25,16 +25,18 @@ class ReserveDAO:
             print(f"El empleado {new_reservation['eid']} no tiene acceso a crear un reserve.")
             return None
 
+
+        guest_validity,message = self.db.validGuests(reid=new_reservation['reid'])
+        if guest_validity == False:
+            print(message)
+            return False
+        
         cur = self.db.conexion.cursor()
+
         try:
             query="INSERT into reserve(ruid,clid,total_cost,payment,guests) VALUES(%s,%s,%s,%s,%s)"
-            guest_validity,message = self.db.validGuests(reid=new_reservation['reid'])
-            if guest_validity == False:
-                print(message)
-                return False
-            else:
-                cur.execute(query=query,vars=(new_reservation['ruid'],new_reservation['clid'],new_reservation['total_cost'],new_reservation['payment'],new_reservation['guests']))
-                self.db.conexion.commit()
+            cur.execute(query=query,vars=(new_reservation['ruid'],new_reservation['clid'],new_reservation['total_cost'],new_reservation['payment'],new_reservation['guests']))
+            self.db.conexion.commit()
         except Exception as e:
             print(f"Error adding reservation: {e}")
             self.db.conexion.rollback()
