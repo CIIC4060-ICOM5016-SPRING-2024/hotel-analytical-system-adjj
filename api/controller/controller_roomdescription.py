@@ -77,4 +77,3 @@ class RoomDescriptionController():
             else:
                 # Si no se pudo actualizar, podría ser debido a un eid inválido o problemas internos del servidor
                 return make_response(jsonify({"error": "Error al actualizar Descripcion de habitacion"}), 500)
-

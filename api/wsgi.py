@@ -175,9 +175,9 @@ def create_app(test_config=None):
     def delete_login(lid):
         return LoginController().deleteEmployee(lid)
 
-    @app.route('/login/<int:lid>', methods=['POST'])
-    def add_login(lid):
-        return LoginController().addLogin(lid)
+    @app.route('/login', methods=['POST'])
+    def add_login():
+        return LoginController().addLogin()
 
 
     @app.route('/roomdescription')
@@ -203,6 +203,19 @@ def create_app(test_config=None):
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
 
+
+
+    @app.route('/least/rooms')
+    def get_chains_least_rooms():
+        return ChainsContoller().get_least_rooms_chains()
+
+    @app.route('/most/revenue')
+    def get_chains_highest_revenue():
+        return ChainsContoller().get_highest_revenue_chains()
+
+    @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
+    def get_top_5_handicap_reserved_rooms(hid):
+        return RoomController().get_top_5_handicap_reserved(hid)
 
     return app
 
