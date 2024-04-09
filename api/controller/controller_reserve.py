@@ -38,10 +38,12 @@ class ReserveController():
             return make_response(jsonify({"error": "Missing Values"}), 400)
 
         dao = ReserveDAO()
-
+        required_fields = ['eid']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"error": "Faltan datos"}), 400)
         success = dao.postReservation(data)
         if success:
-            return make_response(jsonify({"message":"Reservation Added"}),200)
+            return make_response(jsonify({"message":"Reservation Added"}),201)
         else:
             return make_response(jsonify({"error":"Error adding reservation"},500))
         
@@ -62,7 +64,7 @@ class ReserveController():
 
         dao = ReserveDAO()
 
-        success = dao.putReservation(data)
+        success = dao.putReservation(id,data)
         if success:
             return make_response(jsonify({"message": "Reservation Updated"}), 200)
         else:

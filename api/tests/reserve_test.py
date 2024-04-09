@@ -39,23 +39,22 @@ def test_get_all_reserves(client):
             assert isinstance(data[i]['payment'], str)
             assert isinstance(data[i]['guests'], int)
 def test_post_reserve(client):
-    # Datos del nuevo empleado
     new_reserve = {
         "ruid":4541,
         "clid":2,
         "total_cost": 32.45,
         "payment": 'cash',
-        "guests":2
+        "guests":2,
+        "eid": 9
 }
 
-    # Enviar petición POST al endpoint /employee con los datos del empleado
     response = client.post('/reserve', json=new_reserve)
 
     # Verificar que la respuesta tenga un código de estado 201 (creado)
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
 
     response_data = response.get_json()
-    assert response_data['message'] == "Reserve added", "Expected success message in the response"
+    assert response_data['message'] == "Reservation Added", "Expected success message in the response"
 
     db = Database()
     #Consulta directa con la base para ver asegurarnos de que si se añadio el elemento
