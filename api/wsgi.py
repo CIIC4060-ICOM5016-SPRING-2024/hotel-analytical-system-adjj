@@ -59,7 +59,7 @@ def create_app(test_config=None):
     @app.route('/client/<int:clid>', methods=['PUT'])
     def update_client(clid):
         return ClientContoller().putClient(clid)
-
+    
 
     @app.route('/employee')
     def get_employees():
@@ -120,6 +120,10 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/mostcreditcard')
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
+    
+    @app.route('/hotel/<int:hid>/mostdiscount')
+    def getTop5ClientsMostDiscount(hid):
+        return ClientContoller().getTop5ClientsMostDiscount(hid)
 
     @app.route('/room')
     def get_rooms():
