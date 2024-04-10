@@ -205,3 +205,15 @@ def test_get_top_5_clients_most_discount(client):
         expected_status_code = 200
         assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
 
+def test_get_top3_rooms_gc_ratio(client):
+    employee_id = 9
+    body = {"eid": employee_id}
+    response = client.get(f'hotel/1/mostdiscount', json=body)
+
+    assert response.status_code == 200, "Employee 9 should have access to Hotel 1"
+
+    for hid in range(2, 41):
+        response = client.get(f'/hotel/{hid}/mostdiscount', json=body)
+        expected_status_code = 200
+        assert response.status_code == expected_status_code, f"Employee 9 should not have access to Hotel {hid}, expected {expected_status_code}, got {response.status_code}"
+

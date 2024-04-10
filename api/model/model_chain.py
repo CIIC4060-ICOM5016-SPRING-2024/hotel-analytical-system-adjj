@@ -95,7 +95,7 @@ class ChainsDAO:
                                 chid,
                                 Month,
                                 count_reservation,
-                                RANK() OVER(PARTITION BY chid ORDER BY count_reservation DESC) AS month_rank
+                                ROW_NUMBER() OVER(PARTITION BY chid ORDER BY count_reservation DESC) AS month_rank
                                 FROM
                                 MonthlyReservations)
                         SELECT

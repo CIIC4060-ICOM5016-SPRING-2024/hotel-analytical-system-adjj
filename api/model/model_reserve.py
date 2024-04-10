@@ -25,16 +25,18 @@ class ReserveDAO:
             print(f"El empleado {new_reservation['eid']} no tiene acceso a crear un reserve.")
             return None
 
+
+        guest_validity,message = self.db.validGuests(reid=new_reservation['reid'])
+        if guest_validity == False:
+            print(message)
+            return False
+        
         cur = self.db.conexion.cursor()
+
         try:
             query="INSERT into reserve(ruid,clid,total_cost,payment,guests) VALUES(%s,%s,%s,%s,%s)"
-            guest_validity,message = self.db.validGuests(reid=new_reservation['reid'])
-            if guest_validity == False:
-                print(message)
-                return False
-            else:
-                cur.execute(query=query,vars=(new_reservation['ruid'],new_reservation['clid'],new_reservation['total_cost'],new_reservation['payment'],new_reservation['guests']))
-                self.db.conexion.commit()
+            cur.execute(query=query,vars=(new_reservation['ruid'],new_reservation['clid'],new_reservation['total_cost'],new_reservation['payment'],new_reservation['guests']))
+            self.db.conexion.commit()
         except Exception as e:
             print(f"Error adding reservation: {e}")
             self.db.conexion.rollback()
@@ -44,6 +46,10 @@ class ReserveDAO:
             cur.close()
         return True
     def putReservation(self,id:int,updated_reservation:dict) -> bool:
+        guest_validity,message = self.db.validGuests(reid=updated_reservation['reid'])
+        if guest_validity == False:
+            print(message)
+            return False
         cur = self.db.conexion.cursor()
         try:
             query = "UPDATE reserve SET ruid=%s,clid=%s,total_cost=%s,payment=%s,guests=%s WHERE reid=%s"
@@ -95,3 +101,35 @@ class ReserveDAO:
         finally:
             self.db.conexion.close()
             cur.close()
+
+    def getTop3RoomsLeastCapacityRatio(self,eid):
+        if not self.db.canAccessGlobalStats(eid):
+            print(f"El empleado {eid} no tiene acceso a las estadísticas.")
+            return None
+        cur = self.db.conexion.cursor()
+        try:
+            query="""
+                SELECT 
+                    R.rid,
+                    RD.rname,
+                    ROUND(AVG(Res.guests::decimal / RD.capacity) * 100, 2) AS avg_guest_to_capacity_ratio
+                FROM 
+                    Room R
+                JOIN RoomDescription RD ON R.rdid = RD.rdid
+                JOIN Reserve Res ON R.rid = Res.rid
+                GROUP BY 
+                    R.rid, RD.rname
+                ORDER BY 
+                    avg_guest_to_capacity_ratio ASC
+                LIMIT 3;
+            """
+            cur.execute(query)
+            result=cur.fetchall
+            return result
+        except Exception as e:
+            print(f"Error al obtener estadística {e}")
+            return None
+        finally:
+            self.db.conexion.close()
+            cur.close()
+
