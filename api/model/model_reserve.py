@@ -126,7 +126,7 @@ class ReserveDAO:
 
             """
             cur.execute(query)
-            result=cur.fetchall
+            result=cur.fetchall()
             return result
         except Exception as e:
             print(f"Error al obtener estadística {e}")
