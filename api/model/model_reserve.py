@@ -102,8 +102,8 @@ class ReserveDAO:
             self.db.conexion.close()
             cur.close()
 
-    def getTop3RoomsLeastCapacityRatio(self,eid):
-        if not self.db.canAccessGlobalStats(eid):
+    def getTop3RoomsLeastCapacityRatio(self,eid,hid):
+        if not self.db.canAccessLocalStats(hid=hid,eid=eid):
             print(f"El empleado {eid} no tiene acceso a las estadísticas.")
             return None
         cur = self.db.conexion.cursor()

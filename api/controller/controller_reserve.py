@@ -92,7 +92,7 @@ class ReserveController():
             result.append(make_json1(element))
         return jsonify(result)
     
-    def getTop3RoomsLeastGuestCapacity(self):
+    def getTop3RoomsLeastGuestCapacity(self,hid):
         def json(row):
             dic={
                 'rid':row[0],
@@ -105,7 +105,7 @@ class ReserveController():
         if not all(field in data for field in required_fields):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
         dao = ReserveDAO()
-        dic = dao.getTop3RoomsLeastCapacityRatio(data["eid"])
+        dic = dao.getTop3RoomsLeastCapacityRatio(hid=hid,eid=data["eid"])
         if dic == None:
             return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas."))
         result = []
