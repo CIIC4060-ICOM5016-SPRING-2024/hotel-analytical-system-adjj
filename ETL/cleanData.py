@@ -201,12 +201,26 @@ def apply_column_mappings(df_list):
             print(f'No se encontró mapeo para {file_name}')
 
 
-def convert_boolean_columns(df_list):
+def fix_datatype_columns(df_list):
     for file_name, df in df_list:
         # Verificar si el DataFrame actual es 'roomdetails.json' por su nombre de archivo
         if 'roomdetails.json' in file_name:
             # Convertir la columna 'ishandicap' de enteros a booleanos
             df['ishandicap'] = df['ishandicap'].astype(bool)
+
+        if 'chain.xlsx' in file_name:
+            # Convertir la columna 'ishandicap' de enteros a booleanos
+            df['chid'] = df['chid'].astype(int)
+
+        if 'client.csv' in file_name:
+            # Convertir la columna 'ishandicap' de enteros a booleanos
+            # print(df.dtypes)
+            df['clid'] = df['clid'].astype(int)
+            df['age'] = df['age'].astype(int)
+            df['memberyear'] = df['memberyear'].astype(int)
+            # print(df.dtypes)
+            # print(df)
+
 
 def insert_df_to_table(df, table_name):
     """
@@ -299,7 +313,7 @@ if __name__ == "__main__":
     proceed = input("¿Desea continuar con los inserts? (s/n): ")
     if proceed.lower() == 's':
         apply_column_mappings(clean_df_list)
-        convert_boolean_columns(clean_df_list)
+        fix_datatype_columns(clean_df_list)
         insert_in_tables(clean_df_list)
     else:
         print("Operación terminada por el usuario.")
