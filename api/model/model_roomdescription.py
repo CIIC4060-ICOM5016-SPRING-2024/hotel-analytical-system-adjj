@@ -37,24 +37,26 @@ class RoomDescriptionDAO:
             return False
 
         cur = self.db.conexion.cursor()  # Assuming this opens the cursor correctly.
+        rdid = None
+        message = ""
         try:
             query = """
                     INSERT INTO roomdescription (rname, rtype, capacity, ishandicap) 
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s) RETURNING rdid
                     """
             cur.execute(query, (rname, rtype, capacity,ishandicap))
             self.db.conexion.commit()
-
-            return True, "Room description agregada exitosamente"
+            rdid = cur.fetchone()[0]
+            message = "Room description agregada exitosamente"
 
         except Exception as e:
             print(f"Error when inserting room description: {e}")
             self.db.conexion.rollback()  # Optional: rollback changes in case of an error.
-            return False, str(e)
+            message = str(e)
         finally:
             self.db.close()
             cur.close()  # Assuming there's a separate method to close the database connection itself.
-        return True
+            return rdid,message
 
 
 

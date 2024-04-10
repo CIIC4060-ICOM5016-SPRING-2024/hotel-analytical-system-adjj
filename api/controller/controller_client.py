@@ -56,7 +56,7 @@ class ClientContoller:
             success = dao.postClient(data['fname'], data['lname'], data['age'],data['memberyear'])
 
             if success:
-                return make_response(jsonify({"message": "Client agregado exitosamente"}), 201)
+                return make_response(jsonify({"message": "Client agregado exitosamente", "clid":success}), 201)
             else:
                 return make_response(jsonify({"error": "Error al agregar client"}), 500)
 

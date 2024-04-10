@@ -34,21 +34,23 @@ class HotelDAO:
         #     return False
 
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
+        hid = None
         try:
             query = """
                     INSERT INTO hotel (chid, hname, hcity) 
-                    VALUES (%s, %s, %s)
+                    VALUES (%s, %s, %s) RETURNING hid
                     """
             cur.execute(query, (chid, hname, hcity))
             self.db.conexion.commit()
+            hid = cur.fetchone()[0]
         except Exception as e:
             print(f"Error al insertar hotel: {e}")
             self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
-            return False, f"Error al agregar hotel: {e}"
+            return hid, f"Error al agregar hotel: {e}"
         finally:
             self.db.close()
             cur.close()
-        return True, f"hotel agregado exitosamente"
+        return hid, f"hotel agregado exitosamente"
 
 
     def deleteHotel(self, hid):

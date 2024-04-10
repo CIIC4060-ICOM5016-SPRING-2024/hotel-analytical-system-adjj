@@ -46,7 +46,7 @@ class ChainsContoller:
 
         success = dao.postChain(data)
         if success:
-            return make_response(jsonify({"message": "Chain added"}), 201)
+            return make_response(jsonify({"message": "Chain added", "chid": success}), 201)
         else:
             return make_response(jsonify({"error": "Error adding chain"}), 500)
 

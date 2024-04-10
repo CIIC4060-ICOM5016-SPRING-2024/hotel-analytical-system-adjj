@@ -24,20 +24,24 @@ class RoomDAO:
 
     def postRoom(self, hid, rdid, rprice):
         with self.db.conexion.cursor() as cur:
+            rid = None
+            message = ""
             try:
                 hid = int(hid)
                 rdid = int(rdid)
                 rprice = float(rprice)
-                query = "INSERT INTO room (hid, rdid, rprice) VALUES (%s, %s, %s)"
+                query = "INSERT INTO room (hid, rdid, rprice) VALUES (%s, %s, %s) RETURNING rid"
                 cur.execute(query, (hid, rdid, rprice))
                 self.db.conexion.commit()
-                return True, f"Habitacion agregada exitosamente"
+                rid = cur.fetchone()[0]
+                message = f"Habitacion agregada exitosamente"
             except Exception as e:
                 print(f"Error al insertar habitación: {e}")
                 self.db.conexion.rollback()
-                return False, "Error al agregar habitacion"
+                message = "Error al agregar habitacion"
             finally:
                 cur.close()
+                return rid,message
 
 
     def deleteRoom(self,rid):

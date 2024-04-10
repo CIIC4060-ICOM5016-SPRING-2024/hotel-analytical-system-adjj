@@ -27,10 +27,10 @@ class RoomUnavailableController():
             # Se pasa el eid al método postRoomUnavailable
             success, message = self.dao.postRoomUnavailable(data['eid'], data['rid'], data['startdate'],data['enddate'])
             if success:
-                return make_response(jsonify({"message": message}), 201)
+                return make_response(jsonify({"message": message, "ruid":success}), 201)
             else:
                 # Manejo del caso donde el empleado no tiene autorización o hay otro error
-                return make_response(jsonify({"error": message}),
+                return make_response(jsonify({"message": message, "ruid":success}),
                                      403 if message == "El empleado no tiene autorización" else 500)
         except Exception as e:
             return make_response(jsonify({"error": "Error al agregar habitacion indisponible"}), 500)

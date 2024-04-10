@@ -60,10 +60,11 @@ class EmployeeController:
             success = dao.postEmployee(data['hid'], data['fname'], data['lname'], data['age'], data['salary'],
                                        data['position'])
 
+            json = jsonify({"message": "Empleado agregado exitosamente", "eid": success})
             if success:
-                return make_response(jsonify({"message": "Empleado agregado exitosamente"}), 201)
+                return make_response(json, 201)
             else:
-                return make_response(jsonify({"error": "Error al agregar empleado"}), 500)
+                return make_response(json, 500)
 
     def deleteEmployee(self, eid):
         dao = EmployeeDAO()

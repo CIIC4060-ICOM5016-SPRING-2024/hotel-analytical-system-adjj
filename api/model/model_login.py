@@ -67,29 +67,29 @@ class LoginDAO:
         cur.execute("SELECT COUNT(*) FROM Employee WHERE eid = %s", (eid,))
         if cur.fetchone()[0] == 0:
             print("Please create an employee before attempting to create a login for this eid.")
-            return False
+            return "employee_not_found"
 
         # Check if there is already a login associated with this eid
         cur.execute("SELECT COUNT(*) FROM Login WHERE eid = %s", (eid,))
         if cur.fetchone()[0] > 0:
             print("There is already login information related to this eid.")
-            return False
-
+            return "login_exists"
+        lid = None
         try:
             query = """
                     INSERT INTO Login (eid, username, password) 
-                    VALUES (%s, %s, %s)
+                    VALUES (%s, %s, %s) RETURNING lid
                     """
             cur.execute(query, (eid, username, password))
             self.db.conexion.commit()
+            lid = cur.fetchone()[0]
         except Exception as e:
             print(f"Error inserting login information: {e}")
             self.db.conexion.rollback()  # Optional: undo changes in case of error
-            return False
         finally:
             cur.close()  # Moved up to ensure the cursor is always closed before db connection
             self.db.close()
-        return True
+            return lid
 
     def deleteLogin(self, lid):
         cur = self.db.conexion.cursor()

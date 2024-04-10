@@ -41,11 +41,11 @@ class RoomDescriptionController():
             dao = RoomDescriptionDAO()
             # Llamar al método para insertar el nuevo empleado
 
-            success = dao.postRoomDescription(data['rname'], data['rtype'], data['capacity'], data['ishandicap'])
+            success, message = dao.postRoomDescription(data['rname'], data['rtype'], data['capacity'], data['ishandicap'])
             if success:
-                return make_response(jsonify({"message": f"Room description agregada exitosamente"}), 201)
+                return make_response(jsonify({"message": f"Room description agregada exitosamente", "rdid":success}), 201)
             else:
-                return make_response(jsonify({"error": f"Error al agregar room description"}), 500)
+                return make_response(jsonify({"error": f"Error al agregar room description", "rdid":success}), 500)
 
 
 

@@ -40,6 +40,8 @@ class RoomUnavailableDAO():
 
         date_format = "%Y-%m-%d"
         with self.db.conexion.cursor() as cur:
+            ruid = None
+            message = ""
             try:
                 rid = int(rid)
                 try:
@@ -48,16 +50,18 @@ class RoomUnavailableDAO():
                 except ValueError:
                     self.db.conexion.rollback()
                     return False, "Error al insertar la fecha. Asegurate que el formato sea el siguiente: (YYYY-MM-DD)"
-                query = "INSERT INTO roomunavailable (rid, startdate, enddate) VALUES(%s, %s, %s)"
+                query = "INSERT INTO roomunavailable (rid, startdate, enddate) VALUES(%s, %s, %s) RETURNING ruid"
                 cur.execute(query, (rid, startdate,enddate))
                 self.db.conexion.commit()
-                return True, "Habitacion indisponible añadida exitosamente"
+                ruid = cur.fetchone()[0]
+                message = "Habitacion indisponible añadida exitosamente"
             except Exception as e:
                 print(f"Error al añadir la habitación indisponible: {e}")
                 self.db.conexion.rollback()
-                return False, "Error al agregar habitacion indisponible."
+                message = "Error al agregar habitacion indisponible."
             finally:
                 cur.close()
+                return ruid, message
 
     def deleteRoomUnavailable(self, ruid):
         with self.db.conexion.cursor() as cur:

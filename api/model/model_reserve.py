@@ -31,7 +31,7 @@ class ReserveDAO:
             return False
 
         cur = self.db.conexion.cursor()
-
+        reid = None
         try:
             # Obtener información necesaria para calcular el total_cost
             query = """
@@ -73,22 +73,21 @@ class ReserveDAO:
                 total_cost = round(rprice * days_stayed * season_markup * membership_discount,2)
 
                 # Insertar la nueva reserva con el total_cost calculado
-                insert_query = "INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s, %s, %s, %s, %s)"
+                insert_query = "INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s, %s, %s, %s, %s) RETURNING reid"
                 cur.execute(insert_query, (
                 new_reservation['ruid'], new_reservation['clid'], total_cost, new_reservation['payment'],
                 new_reservation['guests']))
                 self.db.conexion.commit()
-                return True
+                reid = cur.fetchone()[0]
             else:
                 print("No se encontró la información necesaria para calcular el total_cost.")
-                return False
         except Exception as e:
             print(f"Error al añadir la reserva: {e}")
             self.db.conexion.rollback()
-            return False
         finally:
             cur.close()
             self.db.close()
+            return reid
 
     def putReservation(self,id:int,updated_reservation:dict) -> bool:
        

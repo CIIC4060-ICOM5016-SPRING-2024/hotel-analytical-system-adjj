@@ -273,12 +273,12 @@ def insert_in_tables(df_list):
     for table in insert_order:
         for file_name, df in df_list:
             if table_mapping.get(file_name) == table:
-                proceed = input(f"¿Deseas insertar {file_name} en {table}? (s/n): ")
-                if proceed.lower() == 's':
-                    insert_df_to_table(df, table)
-                    break  # Suponiendo que solo hay un DataFrame por tabla
-                else:
-                    print(f"No se inserta en {table}")
+                # proceed = input(f"¿Deseas insertar {file_name} en {table}? (s/n): ")
+                # if proceed.lower() == 's':
+                insert_df_to_table(df, table)
+                break  # Suponiendo que solo hay un DataFrame por tabla
+                # else:
+                #     print(f"No se inserta en {table}")
 
 def print_table_columns():
     """
@@ -296,6 +296,30 @@ def print_table_columns():
     cursor.close()
     db.close()
 
+def deleteDataBase():
+    print("Deleting database...")
+    db = Database()
+    cur = db.conexion.cursor()
+    try:
+        query = """delete from login;
+                    delete from reserve;
+                    delete from client;
+                    delete from roomunavailable;
+                    delete from room;
+                    delete from roomdescription;
+                    delete from employee;
+                    delete from hotel;
+                    delete from chains;
+                    """
+        cur.execute(query)
+        db.conexion.commit()
+    except Exception as e:
+        db.conexion.rollback()
+        print(e)
+    finally:
+        cur.close()
+        db.close()
+
 # Ejemplo de uso
 if __name__ == "__main__":
     df_list = [(file, make_data_frame(os.path.join(DATA_PATH, file))) for file in NAME_FILES]
@@ -310,11 +334,12 @@ if __name__ == "__main__":
         write_clean_data_to_file(CLEAN_DATA_DIR, file_name, df)
 
     print_table_columns()
-    proceed = input("¿Desea continuar con los inserts? (s/n): ")
-    if proceed.lower() == 's':
-        apply_column_mappings(clean_df_list)
-        fix_datatype_columns(clean_df_list)
-        insert_in_tables(clean_df_list)
-    else:
-        print("Operación terminada por el usuario.")
+    deleteDataBase()
+    # proceed = input("¿Desea continuar con los inserts? (s/n): ")
+    # if proceed.lower() == 's':
+    apply_column_mappings(clean_df_list)
+    fix_datatype_columns(clean_df_list)
+    insert_in_tables(clean_df_list)
+    # else:
+    #     print("Operación terminada por el usuario.")
 

@@ -32,23 +32,23 @@ class ClientDAO:
         # Asegurarse de que la posición sea válida
         # if not (employee_inputs_are_correct(position, salary)):
         #     return False
-
+        clid = None
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
         try:
             query = """
                     INSERT INTO client (fname, lname, age, memberyear) 
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s) RETURNING clid
                     """
             cur.execute(query, (fname, lname, age, memberyear))
             self.db.conexion.commit()
+            clid = cur.fetchone()[0]
         except Exception as e:
             print(f"Error al insertar cliente: {e}")
             self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
-            return False
         finally:
             self.db.close()
             cur.close()
-        return True
+            return clid
 
 
     def deleteClient(self, clid):

@@ -110,3 +110,15 @@
 -- SELECT setval('roomunavailable_ruid_seq', (SELECT MAX(ruid) FROM roomunavailable) + 1, false);
 
 --SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = 'public'; --Con esto se puede ver los nombres de todas las variables primary key autoincrementadas
+
+
+
+-- delete from login;
+-- delete from reserve;
+-- delete from client;
+-- delete from roomunavailable;
+-- delete from room;
+-- delete from roomdescription;
+-- delete from employee;
+-- delete from hotel;
+-- delete from chains;

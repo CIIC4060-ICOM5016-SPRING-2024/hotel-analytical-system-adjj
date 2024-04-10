@@ -23,12 +23,13 @@ class RoomController:
         data = request.get_json()
         if not all(key in data for key in ('hid', 'rdid', 'rprice')):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
-        try:
-            # Assuming data validation and conversion (if necessary) are done here
-            success, message = self.dao.postRoom(data['hid'], data['rdid'], data['rprice'])
-            return make_response(jsonify({"message": message}), 201)
-        except Exception as e:
-            return make_response(jsonify({"error": "Error al agregar habitacion"}), 500)
+
+        # Assuming data validation and conversion (if necessary) are done here
+        success, message = self.dao.postRoom(data['hid'], data['rdid'], data['rprice'])
+        if success:
+            return make_response(jsonify({"message": message, "rid": success}), 201)
+        else:
+            return make_response(jsonify({"message": "Error al agregar habitacion", "rid": success}), 500)
 
     def deleteRoom(self, rid):
         try:

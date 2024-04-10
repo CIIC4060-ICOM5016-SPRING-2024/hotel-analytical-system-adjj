@@ -35,21 +35,22 @@ class EmployeeDAO:
             return False
 
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
+        eid = None
         try:
             query = """
                     INSERT INTO employee (hid, fname, lname, age, salary, position) 
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s) RETURNING eid
                     """
             cur.execute(query, (hid, fname, lname, age, salary, position))
             self.db.conexion.commit()
+            eid = cur.fetchone()[0]
         except Exception as e:
             print(f"Error al insertar empleado: {e}")
             self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
-            return False
         finally:
             self.db.close()
             cur.close()
-        return True
+            return eid
 
     def deleteEmployee(self, eid):
         cur = self.db.conexion.cursor()

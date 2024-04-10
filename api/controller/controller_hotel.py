@@ -45,7 +45,7 @@ class HotelContoller:
             success, message = dao.postHotel(data['chid'], data['hname'], data['hcity'])
 
             if success:
-                return make_response(jsonify({"message": f"Hotel agregado exitosamente"}), 201)
+                return make_response(jsonify({"message": f"Hotel agregado exitosamente", "hid":success}), 201)
             else:
                 return make_response(jsonify({"error": f"Error al agregar hotel"}), 500)
 
