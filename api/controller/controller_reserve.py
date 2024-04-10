@@ -107,7 +107,7 @@ class ReserveController():
         dao = ReserveDAO()
         dic = dao.getTop3RoomsLeastCapacityRatio(hid=hid,eid=data["eid"])
         if dic == None:
-            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas."))
+            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas. (Found in Model)"))
         result = []
         for element in dic:
             result.append(json(element))
