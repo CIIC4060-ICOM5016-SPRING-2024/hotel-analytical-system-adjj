@@ -108,6 +108,7 @@ class Database:
             INNER JOIN RoomDescription RD ON R.rdid = RD.rdid
             WHERE Res.reid = %s;
         """
+        cur.execute(query=query,vars=(reid,))
         result = cur.fetchone()
 
         if result:
