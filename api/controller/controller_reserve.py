@@ -105,9 +105,9 @@ class ReserveController():
         if not all(field in data for field in required_fields):
             return make_response(jsonify({"error": "Faltan datos"}), 400)
         dao = ReserveDAO()
-        dic = dao.getTop3RoomsLeastCapacityRatio(hid=hid,eid=data["eid"])
+        dic = dao.getTop3RoomsLeastCapacityRatio(data["eid"],hid)
         if dic == None:
-            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas. (Found in Model)"))
+            return make_response(jsonify(f"El empleado {data['eid']} no tiene acceso a las estadísticas. (Found in Controller)"))
         result = []
         for element in dic:
             result.append(json(element))
