@@ -125,6 +125,7 @@ def create_app(test_config=None):
     def getTop5ClientsMostDiscount(hid):
         return ClientContoller().getTop5ClientsMostDiscount(hid)
 
+
     @app.route('/room')
     def get_rooms():
         return RoomController().getAllRooms()
@@ -230,6 +231,10 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/leastreserve', methods=['GET'])
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
+    
+    @app.route('/hotel/<int:hid>/leastguests', methods=['GET'])
+    def get_top3_rooms_least_gc_ratio(hid):
+        return ReserveController().getTop3RoomsLeastGuestCapacity(hid)
 
     @app.route('/paymentmethod', methods=['GET'])
     def get_payment_methods():
