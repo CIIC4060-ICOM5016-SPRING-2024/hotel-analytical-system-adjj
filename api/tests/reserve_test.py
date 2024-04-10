@@ -42,11 +42,10 @@ def test_post_reserve(client):
     new_reserve = {
         "ruid":4541,
         "clid":2,
-        "total_cost": 32.45,
         "payment": 'cash',
         "guests":1,
         "eid": 9
-}
+    }
 
     response = client.post('/reserve', json=new_reserve)
 
@@ -62,9 +61,9 @@ def test_post_reserve(client):
         cur = db.conexion.cursor()
         query = """
                     SELECT * FROM reserve 
-                    WHERE ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
+                    WHERE ruid = %s AND clid = %s  AND payment = %s AND guests = %s
                     """
-        cur.execute(query, (new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests']))
+        cur.execute(query, (new_reserve['ruid'], new_reserve['clid'], new_reserve['payment'], new_reserve['guests']))
         chain__ = cur.fetchone()  # Utiliza fetchone() para obtener el primer resultado que coincida
         assert chain__ is not None, "El reserve añadido no se encontró en la base de datos"
     finally:
@@ -76,10 +75,10 @@ def test_post_reserve(client):
         # Construye la consulta DELETE utilizando todos los campos para especificar el empleado a eliminar
         query = """
                 DELETE FROM reserve
-                WHERE  reid=%s AND ruid = %s AND clid = %s AND total_cost = %s AND payment = %s AND guests = %s
+                WHERE  reid=%s AND ruid = %s AND clid = %s AND payment = %s AND guests = %s
                 """
         # Preparar los valores a utilizar en la consulta DELETE
-        values = (new_reserve['reid'],new_reserve['ruid'], new_reserve['clid'], new_reserve['total_cost'], new_reserve['payment'], new_reserve['guests'])
+        values = (new_reserve['reid'],new_reserve['ruid'], new_reserve['clid'], new_reserve['payment'], new_reserve['guests'])
         # Ejecutar la consulta DELETE
         cur.execute(query, values)
         # Hacer commit de los cambios

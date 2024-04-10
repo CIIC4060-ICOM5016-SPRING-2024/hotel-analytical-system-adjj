@@ -58,9 +58,11 @@ def test_get_most_reservations(client):
             "reservation_count": 140
           }
         ]"""
-
+    body = {
+        "eid": 3
+    }
     # Verificar si el hotel con hid=1 tiene el mayor número de reservaciones
-    response1 = client.get('/most/reservation')
+    response1 = client.get('/most/reservation', json=body)
     assert response1.status_code == 200
     data1 = response1.get_json()
     assert data1[0]['hid'] == 1
@@ -69,7 +71,7 @@ def test_get_most_reservations(client):
     add_reservations(hotel_id=30, num_reservations=33)
 
     # Verificar si el hotel con hid=30 ahora tiene el mayor número de reservaciones
-    response2 = client.get('/most/reservation')
+    response2 = client.get('/most/reservation', json=body)
     assert response2.status_code == 200
     data2 = response2.get_json()
     assert data2[0]['hid'] == 30
@@ -77,7 +79,7 @@ def test_get_most_reservations(client):
     remove_reservations(hotel_id=30, num_reservations=2)
 
     # Verificar si el hotel con hid=28 vuelve a tener el mayor número de reservaciones
-    response3 = client.get('/most/reservation')
+    response3 = client.get('/most/reservation', json=body)
     assert response3.status_code == 200
     data3 = response3.get_json()
     assert data3[0]['hid'] == 1
@@ -90,9 +92,11 @@ def test_get_most_reservations(client):
 
 def test_get_hotels_with_most_capacity(client):
     # No es necesario modificar los datos antes del primer chequeo porque ya tienes el estado inicial esperado
-
+    body = {
+        "eid": 3
+    }
     # Verificar si la respuesta inicial es correcta
-    initial_response = client.get('/most/capacity')
+    initial_response = client.get('/most/capacity', json=body)
     assert initial_response.status_code == 200
     initial_data = initial_response.get_json()
     expected_initial_response = [
@@ -179,7 +183,7 @@ def test_get_hotels_with_most_capacity(client):
     adjust_hotel_capacity(hotel_id=28, additional_capacity=1, num_rooms=4)
 
     # Verificar si el cambio se refleja correctamente
-    updated_response = client.get('/most/capacity')
+    updated_response = client.get('/most/capacity', json=body)
     assert updated_response.status_code == 200
     updated_data = updated_response.get_json()
     # Asumiendo que el cambio hecho debería colocar al hotel con hid=28 en la cima
