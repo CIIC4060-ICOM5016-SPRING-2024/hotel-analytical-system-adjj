@@ -19,32 +19,77 @@ class ReserveDAO:
         self.db.close()
         cur.close()
         return reservation
-    def postReservation(self,new_reservation:dict) -> bool:
 
+    def postReservation(self, new_reservation: dict) -> bool:
         if not self.db.canPostInReserveTable(new_reservation['eid']):
-            print(f"El empleado {new_reservation['eid']} no tiene acceso a crear un reserve.")
-            return None
+            print(f"El empleado {new_reservation['eid']} no tiene acceso a crear una reserva.")
+            return False
 
-
-        guest_validity,message = self.db.validGuests(reid=new_reservation['reid'])
-        if guest_validity == False:
+        guest_validity, message = self.db.validGuests(ruid=new_reservation['ruid'], guests=new_reservation['guests'])
+        if not guest_validity:
             print(message)
             return False
-        
+
         cur = self.db.conexion.cursor()
 
         try:
-            query="INSERT into reserve(ruid,clid,total_cost,payment,guests) VALUES(%s,%s,%s,%s,%s)"
-            cur.execute(query=query,vars=(new_reservation['ruid'],new_reservation['clid'],new_reservation['total_cost'],new_reservation['payment'],new_reservation['guests']))
-            self.db.conexion.commit()
+            # Obtener información necesaria para calcular el total_cost
+            query = """
+            SELECT R.rprice, RU.startdate, RU.enddate, C.springmkup, C.summermkup, C.fallmkup, C.wintermkup, CL.memberyear
+            FROM roomunavailable RU
+            JOIN room R ON RU.rid = R.rid
+            JOIN hotel H ON R.hid = H.hid
+            JOIN chains C ON H.chid = C.chid
+            JOIN client CL ON CL.clid = %s
+            WHERE RU.ruid = %s;
+            """
+            cur.execute(query, (new_reservation['clid'], new_reservation['ruid']))
+            result = cur.fetchone()
+
+            if result:
+                rprice, startdate, enddate, springmkup, summermkup, fallmkup, wintermkup, memberyear = result
+                # Calcular los días hospedados
+                days_stayed = (enddate - startdate).days
+                # Determinar el markup de temporada basado en el mes de startdate
+                month = startdate.month
+                if 3 <= month <= 5:
+                    season_markup = springmkup
+                elif 6 <= month <= 8:
+                    season_markup = summermkup
+                elif 9 <= month <= 11:
+                    season_markup = fallmkup
+                else:
+                    season_markup = wintermkup
+                # Calcular el descuento de membresía
+                if 1 <= memberyear <= 4:
+                    membership_discount = 0.98
+                elif 5 <= memberyear <= 9:
+                    membership_discount = 0.95
+                elif 10 <= memberyear <= 14:
+                    membership_discount = 0.92
+                else:
+                    membership_discount = 0.88
+                # Calcular el total_cost
+                total_cost = round(rprice * days_stayed * season_markup * membership_discount,2)
+
+                # Insertar la nueva reserva con el total_cost calculado
+                insert_query = "INSERT INTO reserve (ruid, clid, total_cost, payment, guests) VALUES (%s, %s, %s, %s, %s)"
+                cur.execute(insert_query, (
+                new_reservation['ruid'], new_reservation['clid'], total_cost, new_reservation['payment'],
+                new_reservation['guests']))
+                self.db.conexion.commit()
+                return True
+            else:
+                print("No se encontró la información necesaria para calcular el total_cost.")
+                return False
         except Exception as e:
-            print(f"Error adding reservation: {e}")
+            print(f"Error al añadir la reserva: {e}")
             self.db.conexion.rollback()
             return False
         finally:
-            self.db.close()
             cur.close()
-        return True
+            self.db.close()
+
     def putReservation(self,id:int,updated_reservation:dict) -> bool:
         guest_validity,message = self.db.validGuests(reid=updated_reservation['reid'])
         if guest_validity == False:
