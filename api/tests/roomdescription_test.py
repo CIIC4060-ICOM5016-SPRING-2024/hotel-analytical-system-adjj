@@ -61,8 +61,7 @@ def test_post_room_description(client):
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
 
     response_data = response.get_json()
-    assert response_data[
-               'message'] == "Room description agregada exitosamente", "Expected success message in the response"
+    assert response_data['status'] == "success", "Expected success message in the response"
 
     db = Database()
     # Direct query to the database to ensure the room was added

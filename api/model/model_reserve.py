@@ -21,17 +21,24 @@ class ReserveDAO:
         return reservation
 
     def postReservation(self, new_reservation: dict) -> bool:
+        reid = None
+        message = "Reserve added successfully"
+        status = "success"
         if not self.db.canPostInReserveTable(new_reservation['eid']):
-            print(f"El empleado {new_reservation['eid']} no tiene acceso a crear una reserva.")
-            return False
+            #print(f"El empleado {new_reservation['eid']} no tiene acceso a crear una reserva.")
+            message = f"The employee with id {new_reservation['eid']} does not have access to create a reservation."
+            status = "unauthorized"
+            return reid, message, status
 
-        guest_validity, message = self.db.validGuests(ruid=new_reservation['ruid'], guests=new_reservation['guests'])
+        guest_validity, validMessage = self.db.validGuests(ruid=new_reservation['ruid'], guests=new_reservation['guests'])
         if not guest_validity:
-            print(message)
-            return False
+            #print(message)
+            message = validMessage
+            status = "error"
+            return reid, message, status
 
         cur = self.db.conexion.cursor()
-        reid = None
+
         try:
             # Obtener información necesaria para calcular el total_cost
             query = """
@@ -80,14 +87,19 @@ class ReserveDAO:
                 self.db.conexion.commit()
                 reid = cur.fetchone()[0]
             else:
-                print("No se encontró la información necesaria para calcular el total_cost.")
+                #print("No se encontró la información necesaria para calcular el total_cost.")
+                message = "The information necessary to calculate the total_cost was not found."
+                status = "error"
+                return reid, message, status
         except Exception as e:
             print(f"Error al añadir la reserva: {e}")
             self.db.conexion.rollback()
+            message = str(e)
+            status = "error"
         finally:
             cur.close()
             self.db.close()
-            return reid
+            return reid, message, status
 
     def putReservation(self,id:int,updated_reservation:dict) -> bool:
        

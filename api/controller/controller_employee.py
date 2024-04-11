@@ -57,11 +57,11 @@ class EmployeeController:
             # Crear una instancia de EmployeeDAO
             dao = EmployeeDAO()
             # Llamar al método para insertar el nuevo empleado
-            success = dao.postEmployee(data['hid'], data['fname'], data['lname'], data['age'], data['salary'],
+            id, message, status = dao.postEmployee(data['hid'], data['fname'], data['lname'], data['age'], data['salary'],
                                        data['position'])
 
-            json = jsonify({"message": "Empleado agregado exitosamente", "eid": success})
-            if success:
+            json = jsonify({"message": message, "id": id, "status": status})
+            if id:
                 return make_response(json, 201)
             else:
                 return make_response(json, 500)

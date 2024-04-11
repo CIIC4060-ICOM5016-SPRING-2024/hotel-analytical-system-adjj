@@ -42,12 +42,12 @@ class HotelContoller:
             # Crear una instancia de ClientDAO
             dao = HotelDAO()
             # Llamar al método para insertar el nuevo empleado
-            success, message = dao.postHotel(data['chid'], data['hname'], data['hcity'])
-
-            if success:
-                return make_response(jsonify({"message": f"Hotel agregado exitosamente", "hid":success}), 201)
+            id, message, status = dao.postHotel(data['chid'], data['hname'], data['hcity'])
+            json = jsonify({"message": message, "id":id, "status":status})
+            if id:
+                return make_response(json, 201)
             else:
-                return make_response(jsonify({"error": f"Error al agregar hotel"}), 500)
+                return make_response(json, 500)
 
     def deleteHotel(self, hid):
         dao = HotelDAO()

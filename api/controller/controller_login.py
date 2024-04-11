@@ -43,18 +43,13 @@ class LoginController:
                 return make_response(jsonify({"error": "Missing data"}), 400)
 
             dao = LoginDAO()  # Assuming this is properly defined and instantiated
-            result = dao.postLogin(data['eid'], data['username'], data['password'])
+            id, message, status = dao.postLogin(data['eid'], data['username'], data['password'])
+            json = jsonify({"message": message, "id": id, "status": status})
 
-            if result == "employee_not_found":
-                return make_response(
-                    jsonify({"error": "Employee not found, please create an employee before adding login information", "lid": result}),
-                    404)
-            elif result == "login_exists":
-                return make_response(jsonify({"error": "Login information already exists for this employee", "lid": result}), 409)
-            elif result:
-                return make_response(jsonify({"message": "Login information added successfully", "lid": result}), 201)
+            if id:
+                return make_response(json,201)
             else:
-                return make_response(jsonify({"error": "Error adding login information, please create an employee before attempting to create a login for this eid.", "lid": result}), 500)
+                return make_response(json,500)
 
     def deleteEmployee(self, lid):
         dao = LoginDAO()

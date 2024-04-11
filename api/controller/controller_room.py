@@ -25,11 +25,12 @@ class RoomController:
             return make_response(jsonify({"error": "Faltan datos"}), 400)
 
         # Assuming data validation and conversion (if necessary) are done here
-        success, message = self.dao.postRoom(data['hid'], data['rdid'], data['rprice'])
-        if success:
-            return make_response(jsonify({"message": message, "rid": success}), 201)
+        id, message, status = self.dao.postRoom(data['hid'], data['rdid'], data['rprice'])
+        json = jsonify({"message": message, "id": id, "status":status})
+        if id:
+            return make_response(json, 201)
         else:
-            return make_response(jsonify({"message": "Error al agregar habitacion", "rid": success}), 500)
+            return make_response(json, 500)
 
     def deleteRoom(self, rid):
         try:

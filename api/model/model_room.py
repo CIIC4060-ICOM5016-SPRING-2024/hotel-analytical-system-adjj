@@ -25,7 +25,8 @@ class RoomDAO:
     def postRoom(self, hid, rdid, rprice):
         with self.db.conexion.cursor() as cur:
             rid = None
-            message = ""
+            message = "Room added successfully"
+            status = "success"
             try:
                 hid = int(hid)
                 rdid = int(rdid)
@@ -34,14 +35,14 @@ class RoomDAO:
                 cur.execute(query, (hid, rdid, rprice))
                 self.db.conexion.commit()
                 rid = cur.fetchone()[0]
-                message = f"Habitacion agregada exitosamente"
             except Exception as e:
-                print(f"Error al insertar habitación: {e}")
+                #print(f"Error al insertar habitación: {e}")
                 self.db.conexion.rollback()
-                message = "Error al agregar habitacion"
+                message = str(e)
+                status = "error"
             finally:
                 cur.close()
-                return rid,message
+                return rid,message,status
 
 
     def deleteRoom(self,rid):

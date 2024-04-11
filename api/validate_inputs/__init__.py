@@ -1,8 +1,10 @@
 def employee_inputs_are_correct(position, salary):
+    message = "The entries are correct"
     # Asegurarse de que la posición sea válida
     if position not in ['Regular', 'Supervisor', 'Administrator']:
-        print(f"Error: La posición {position} no es válida.")
-        return False
+        #print(f"Error: La posición {position} no es válida.")
+        message = f"Position {position} is invalid. It should be 'Regular', 'Supervisor' or 'Administrator'."
+        return False, message
 
     # Asegurarse de que el salario cumpla con las reglas según la posición
     salary_rules = {
@@ -13,10 +15,11 @@ def employee_inputs_are_correct(position, salary):
 
     min_salary, max_salary = salary_rules[position]
     if not (min_salary <= salary <= max_salary):
-        print(f"Error: El salario {salary} no cumple con las reglas para la posición {position}.")
-        return False
+        #print(f"Error: El salario {salary} no cumple con las reglas para la posición {position}.")
+        message = f"Error: Salary {salary} does not comply with the rules for position {position}. The salaries are as follows: {salary_rules}"
+        return False, message
 
-    return True
+    return True, message
 
 
 def post_room_description_validation(rname, rtype, capacity):

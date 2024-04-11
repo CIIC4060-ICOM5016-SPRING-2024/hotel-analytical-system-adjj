@@ -53,12 +53,12 @@ class ClientContoller:
             # Crear una instancia de ClientDAO
             dao = ClientDAO()
             # Llamar al método para insertar el nuevo empleado
-            success = dao.postClient(data['fname'], data['lname'], data['age'],data['memberyear'])
-
-            if success:
-                return make_response(jsonify({"message": "Client agregado exitosamente", "clid":success}), 201)
+            id, message, status = dao.postClient(data['fname'], data['lname'], data['age'],data['memberyear'])
+            json = jsonify({"message":message, "id":id, "status":status})
+            if id:
+                return make_response(json, 201)
             else:
-                return make_response(jsonify({"error": "Error al agregar client"}), 500)
+                return make_response(json, 500)
 
     def deleteClient(self, clid):
         dao = ClientDAO()

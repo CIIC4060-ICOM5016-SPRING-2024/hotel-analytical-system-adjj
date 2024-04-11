@@ -29,19 +29,24 @@ class RoomUnavailableDAO():
             cur.close()
 
     def postRoomUnavailable(self, eid, rid, startdate, enddate):
+        ruid = None
+        message = "Room unavailable added successfully"
+        status = "success"
         if not self.db.canPostUnavailableRoom(eid):
-            print(f"El empleado {eid} no tiene autorización para añadir una habitación indisponible.")
-            return False, "El empleado no tiene autorización"
+            #print(f"El empleado {eid} no tiene autorización para añadir una habitación indisponible.")
+            message = f"Employee {eid} does not have authorization to add an unavailable room."
+            status = "unauthorized"
+            return ruid, message, status
 
         # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion
         if (startdate >= enddate):
-            print("Error al añadir la habitacion indisponible")
-            return False, "La fecha en que comienza debe ser una fecha anterior a la fecha en la que termina"
+            #print("Error al añadir la habitacion indisponible")
+            message ="The start date must be a date before the end date"
+            status = "error"
+            return ruid, message, status
 
         date_format = "%Y-%m-%d"
         with self.db.conexion.cursor() as cur:
-            ruid = None
-            message = ""
             try:
                 rid = int(rid)
                 try:
@@ -54,14 +59,14 @@ class RoomUnavailableDAO():
                 cur.execute(query, (rid, startdate,enddate))
                 self.db.conexion.commit()
                 ruid = cur.fetchone()[0]
-                message = "Habitacion indisponible añadida exitosamente"
             except Exception as e:
-                print(f"Error al añadir la habitación indisponible: {e}")
+                #print(f"Error al añadir la habitación indisponible: {e}")
                 self.db.conexion.rollback()
-                message = "Error al agregar habitacion indisponible."
+                message = str(e)
+                status = "error"
             finally:
                 cur.close()
-                return ruid, message
+                return ruid, message, status
 
     def deleteRoomUnavailable(self, ruid):
         with self.db.conexion.cursor() as cur:

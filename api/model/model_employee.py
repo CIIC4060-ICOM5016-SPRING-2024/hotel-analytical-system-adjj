@@ -31,11 +31,16 @@ class EmployeeDAO:
 
     def postEmployee(self, hid, fname, lname, age, salary, position):
         # Asegurarse de que la posición sea válida
-        if not (employee_inputs_are_correct(position, salary)):
-            return False
+        eid = None
+        message = "Employee added successfully"
+        status = "success"
+        validInput, validMessage = employee_inputs_are_correct(position, salary)
+        if not (validInput):
+            status = "error"
+            return eid, message, status
 
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
-        eid = None
+
         try:
             query = """
                     INSERT INTO employee (hid, fname, lname, age, salary, position) 
@@ -45,12 +50,14 @@ class EmployeeDAO:
             self.db.conexion.commit()
             eid = cur.fetchone()[0]
         except Exception as e:
-            print(f"Error al insertar empleado: {e}")
+            #print(f"Error al insertar empleado: {e}")
+            message = str(e)
+            status = "error"
             self.db.conexion.rollback()  # Opcional: deshacer cambios en caso de error.
         finally:
             self.db.close()
             cur.close()
-            return eid
+            return eid, message, status
 
     def deleteEmployee(self, eid):
         cur = self.db.conexion.cursor()

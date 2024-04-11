@@ -32,13 +32,27 @@ class RoomDescriptionDAO:
 
     def postRoomDescription(self, rname, rtype, capacity, ishandicap):
         # Ensure that the room description is valid
-
+        rdid = None
+        message = "Room Description added successfully"
+        status = "success"
         if not post_room_description_validation(rname, rtype, capacity):
-            return False
+            valid_descriptions = {
+                'Standard': {'capacities': [1], 'types': ['Basic', 'Premium']},
+                'Standard Queen': {'capacities': [1, 2], 'types': ['Basic', 'Premium', 'Deluxe']},
+                'Standard King': {'capacities': [2], 'types': ['Basic', 'Premium', 'Deluxe']},
+                'Double Queen': {'capacities': [4], 'types': ['Basic', 'Premium', 'Deluxe']},
+                'Double King': {'capacities': [4, 6], 'types': ['Basic', 'Premium', 'Deluxe', 'Suite']},
+                'Triple King': {'capacities': [6], 'types': ['Deluxe', 'Suite']},
+                'Executive Family': {'capacities': [4, 6, 8], 'types': ['Deluxe', 'Suite']},
+                'Presidential': {'capacities': [4, 6, 8], 'types': ['Suite']}
+            }
+            message = (f"The values entered to create the room description are incorrect. The options are the following:"
+                       f"{valid_descriptions}")
+            status = "error"
+            return rdid, message, status
 
         cur = self.db.conexion.cursor()  # Assuming this opens the cursor correctly.
-        rdid = None
-        message = ""
+
         try:
             query = """
                     INSERT INTO roomdescription (rname, rtype, capacity, ishandicap) 
@@ -47,16 +61,15 @@ class RoomDescriptionDAO:
             cur.execute(query, (rname, rtype, capacity,ishandicap))
             self.db.conexion.commit()
             rdid = cur.fetchone()[0]
-            message = "Room description agregada exitosamente"
-
         except Exception as e:
-            print(f"Error when inserting room description: {e}")
+            #print(f"Error when inserting room description: {e}")
             self.db.conexion.rollback()  # Optional: rollback changes in case of an error.
             message = str(e)
+            status = "error"
         finally:
             self.db.close()
             cur.close()  # Assuming there's a separate method to close the database connection itself.
-            return rdid,message
+            return rdid,message,status
 
 
 

@@ -56,7 +56,7 @@ def test_post_chain(client):
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
 
     response_data = response.get_json()
-    assert response_data['message'] == "Chain added", "Expected success message in the response"
+    assert response_data['status'] == "success", "Expected success message in the response"
 
     db = Database()
     #Consulta directa con la base para ver asegurarnos de que si se añadio el elemento

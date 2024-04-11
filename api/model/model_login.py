@@ -62,19 +62,25 @@ class LoginDAO:
 
     def postLogin(self, eid, username, password):
         cur = self.db.conexion.cursor()  # Assuming this correctly opens the cursor
-
+        message = "Login added successfully"
+        lid = None
+        status = "success"
         # Check if the eid exists in the Employee table
         cur.execute("SELECT COUNT(*) FROM Employee WHERE eid = %s", (eid,))
         if cur.fetchone()[0] == 0:
-            print("Please create an employee before attempting to create a login for this eid.")
-            return "employee_not_found"
+            #print("Please create an employee before attempting to create a login for this eid.")
+            message = "Please create an employee before attempting to create a login for this eid."
+            status = "error"
+            return lid, message, status
 
         # Check if there is already a login associated with this eid
         cur.execute("SELECT COUNT(*) FROM Login WHERE eid = %s", (eid,))
         if cur.fetchone()[0] > 0:
-            print("There is already login information related to this eid.")
-            return "login_exists"
-        lid = None
+            #print("There is already login information related to this eid.")
+            message = "login_exists"
+            status = "error"
+            return lid, message, status
+
         try:
             query = """
                     INSERT INTO Login (eid, username, password) 
@@ -84,12 +90,14 @@ class LoginDAO:
             self.db.conexion.commit()
             lid = cur.fetchone()[0]
         except Exception as e:
-            print(f"Error inserting login information: {e}")
+            #print(f"Error inserting login information: {e}")
+            message = str(e)
+            status = "error"
             self.db.conexion.rollback()  # Optional: undo changes in case of error
         finally:
             cur.close()  # Moved up to ensure the cursor is always closed before db connection
             self.db.close()
-            return lid
+            return lid, message, status
 
     def deleteLogin(self, lid):
         cur = self.db.conexion.cursor()

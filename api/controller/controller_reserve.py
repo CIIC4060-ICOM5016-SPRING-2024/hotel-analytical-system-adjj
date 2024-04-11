@@ -39,11 +39,12 @@ class ReserveController():
 
         dao = ReserveDAO()
 
-        success = dao.postReservation(data)
-        if success:
-            return make_response(jsonify({"message":"Reservation Added", "reid":success}),201)
+        id, message, status = dao.postReservation(data)
+        json = jsonify({"message":message, "id":id, "status":status})
+        if id:
+            return make_response(json,201)
         else:
-            return make_response(jsonify({"error":"Error adding reservation", "reid":success},500))
+            return make_response(json,500)
         
 
     def deleteReservation(self, id:int):

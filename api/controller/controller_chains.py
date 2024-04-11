@@ -44,11 +44,12 @@ class ChainsContoller:
 
         dao = ChainsDAO()
 
-        success = dao.postChain(data)
-        if success:
-            return make_response(jsonify({"message": "Chain added", "chid": success}), 201)
+        id, message, status = dao.postChain(data)
+        json = jsonify({"message": message, "id": id, "status":status})
+        if id:
+            return make_response(json, 201)
         else:
-            return make_response(jsonify({"error": "Error adding chain"}), 500)
+            return make_response(json, 500)
 
     def deleteChain(self,id:int):
         dao = ChainsDAO()

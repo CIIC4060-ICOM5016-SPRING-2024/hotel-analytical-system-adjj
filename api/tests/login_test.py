@@ -73,7 +73,7 @@ def test_post_login(client):  # Assuming 'db' is a fixture or a parameter that p
     assert login_response.status_code == 201, "Expected status code 201 but got {}".format(login_response.status_code)
 
     login_response_data = login_response.get_json()
-    assert login_response_data['message'] == "Login information added successfully", "Expected success message in the response"
+    assert login_response_data['status'] == "success", "Expected success message in the response"
 
     # Cleanup: Remove the test login and employee from the database
     try:
