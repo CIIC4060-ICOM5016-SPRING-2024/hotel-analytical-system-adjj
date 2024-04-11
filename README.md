@@ -1,7 +1,7 @@
 # [Postman URL](https://jjad-heroku-db.postman.co/workspace/e5f355e3-f951-426b-bd5a-5c48b0992560/request/33934176-5c192629-d700-4598-afe2-905a253068ca)
 # [Postman URL without limit of members in the workspace (14-day free trial, ends 4/25/2024)](https://jjad-heroku-db.postman.co/workspace/e5f355e3-f951-426b-bd5a-5c48b0992560/request/33934176-5c192629-d700-4598-afe2-905a253068ca)
 
-https://app.getpostman.com/join-team?invite_code=9ab1d99d5d3e1e8b4d765b461b82dd54
+
 # DB-ADJJ Database credentials
 
 REST API HOSTNAME: https://postgres-app1-075e5eddc52e.herokuapp.com
