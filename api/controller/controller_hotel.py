@@ -56,9 +56,9 @@ class HotelContoller:
         dao = HotelDAO()
         success = dao.deleteHotel(hid)
         if success:
-            return make_response(jsonify({"message": "Hotel eliminado exitosamente"}), 200)
+            return make_response(jsonify({"message": "Hotel eliminado exitosamente", "status":"success"}), 200)
         else:
-            return make_response(jsonify({"error": "Error al eliminar hotel"}), 500)
+            return make_response(jsonify({"message": "Error al eliminar hotel", "status":"error"}), 500)
 
     def putHotel(self, hid):
         if request.method == 'PUT':

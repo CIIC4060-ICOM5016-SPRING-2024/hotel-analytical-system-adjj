@@ -58,9 +58,9 @@ class LoginController:
         dao = LoginDAO()
         success = dao.deleteLogin(lid)
         if success:
-            return make_response(jsonify({"message": "Login eliminado exitosamente"}), 200)
+            return make_response(jsonify({"message": "Login eliminado exitosamente", "status":"success"}), 200)
         else:
-            return make_response(jsonify({"error": "Error al eliminar login"}), 500)
+            return make_response(jsonify({"message": "Error al eliminar login", "status":"error"}), 500)
 
 
 

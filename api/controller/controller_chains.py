@@ -58,9 +58,9 @@ class ChainsContoller:
         dao = ChainsDAO()
         success = dao.deleteChain(id)
         if success:
-            return make_response(jsonify({"message": "Chain eliminado exitosamente"}), 200)
+            return make_response(jsonify({"message": "Chain removed successfully", "status":"success"}), 200)
         else:
-            return make_response(jsonify({"error": "Error al eliminar chain"}), 500)
+            return make_response(jsonify({"message": "Error deleting chain", "status":"error"}), 500)
 
     def putChain(self,id:int):
         dao = ChainsDAO()
