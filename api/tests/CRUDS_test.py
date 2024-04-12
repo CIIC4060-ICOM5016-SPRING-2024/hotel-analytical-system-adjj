@@ -96,4 +96,5 @@ def test_POST_return_values(client):
 
     print("Delete Complete:")
     for response in delete_responses:
-        print(response.get_json())
+        res = response.get_json()
+        print("Status: " + res['status'], "Message: " + res['message'])

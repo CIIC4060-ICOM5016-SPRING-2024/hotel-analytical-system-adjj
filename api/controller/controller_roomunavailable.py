@@ -42,13 +42,13 @@ class RoomUnavailableController():
     def deleteRoomUnavailable(self, ruid):
         roomunavailable = self.dao.getRoomUnavailableById(ruid)
         if roomunavailable is None:
-            return make_response(jsonify({"error": f"La habitacion indisponible con el id {ruid} no se encuentra"}),
+            return make_response(jsonify({"message": f"La habitacion indisponible con el id {ruid} no se encuentra", "status":"error"}),
                                  404)
         try:
             success, message = self.dao.deleteRoomUnavailable(ruid)
-            return make_response(jsonify({"message": message}), 200)
+            return make_response(jsonify({"message": message, "status":"success"}), 200)
         except Exception as e:
-            return make_response(jsonify({"error": "Error al eliminar habitacion indisponible"}), 500)
+            return make_response(jsonify({"message": "Error al eliminar habitacion indisponible", "status":"error"}), 500)
 
     def putRoomUnavailable(self, ruid):
         data = request.get_json()

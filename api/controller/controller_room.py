@@ -36,11 +36,12 @@ class RoomController:
             return make_response(json, 500)
 
     def deleteRoom(self, rid):
-        try:
-            success, message = self.dao.deleteRoom(rid)
-            return make_response(jsonify({"message": message}), 200)
-        except Exception as e:
-            return make_response(jsonify({"error": "Error al eliminar habitacion"}), 500)
+
+        success, message = self.dao.deleteRoom(rid)
+        if success:
+            return make_response(jsonify({"message": message, "status":"success"}), 200)
+        else:
+            return make_response(jsonify({"message": message, "status":"error"}), 500)
 
     def putRoom(self, rid):
         data = request.get_json()

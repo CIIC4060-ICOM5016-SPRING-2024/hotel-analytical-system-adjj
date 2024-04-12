@@ -51,11 +51,11 @@ class RoomDAO:
                 query = "DELETE FROM room WHERE rid = %s"
                 cur.execute(query, (rid,))
                 self.db.conexion.commit()
-                return True, f"Habitacion eliminada exitosamente"
+                return True, f"Room successfully deleted"
             except Exception as e:
-                print(f"Error al eliminar habitacion: {e}")
+                #print(f"Error when deleting room: {e}")
                 self.db.conexion.rollback()
-                return False, "Error al eliminar habitacion"
+                return False, "Error when deleting room"
 
     def putRoom(self, rid, hid, rdid, rprice):
         with self.db.conexion.cursor() as cur:

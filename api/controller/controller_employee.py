@@ -73,9 +73,9 @@ class EmployeeController:
         dao = EmployeeDAO()
         success = dao.deleteEmployee(eid)
         if success:
-            return make_response(jsonify({"message": "Empleado eliminado exitosamente"}), 200)
+            return make_response(jsonify({"message": "Employee successfully removed", "status":"success"}), 200)
         else:
-            return make_response(jsonify({"error": "Error al eliminar empleado"}), 500)
+            return make_response(jsonify({"message": "Error al eliminar empleado", "status":"error"}), 500)
 
     def putEmployee(self, eid):
         if request.method == 'PUT':
