@@ -193,4 +193,4 @@ def test_post_room_with_missing_fields(client):
     assert response.status_code == 400, f"Expected status code 400 but got {response.status_code}"
 
     response_data = response.get_json()
-    assert "error" in response_data, "Expected error message in the response"
+    assert response_data['status'] == "error", "Expected error message in the response"
