@@ -35,7 +35,10 @@ class ReserveController():
         data = request.get_json()
 
         if not all(key in data for key in('ruid','clid','payment','guests','eid')):
-            return make_response(jsonify({"error": "Missing Values"}), 400)
+            message = "Data to be sent was missing in the request json"
+            id = None
+            status = "error"
+            return make_response(jsonify({"message":message, "id":id, "status":status}), 400)
 
         dao = ReserveDAO()
 
@@ -51,7 +54,7 @@ class ReserveController():
         dao = ReserveDAO()
         success = dao.deleteReservation(id)
         if success:
-            return make_response(jsonify({"message":"Reservation Deleted "},200))
+            return make_response(jsonify({"message":"Reservation Deleted ", "id":id},200))
         else:
             return make_response(jsonify({"error":"Error deleting reservation"},500))
 

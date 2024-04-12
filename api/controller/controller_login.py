@@ -40,7 +40,10 @@ class LoginController:
         if request.method == 'POST':
             data = request.get_json()
             if not all(key in data for key in ['eid', 'username', 'password']):
-                return make_response(jsonify({"error": "Missing data"}), 400)
+                message = "Data to be sent was missing in the request json"
+                id = None
+                status = "error"
+                return make_response(jsonify({"message": message, "id": id, "status": status}), 400)
 
             dao = LoginDAO()  # Assuming this is properly defined and instantiated
             id, message, status = dao.postLogin(data['eid'], data['username'], data['password'])

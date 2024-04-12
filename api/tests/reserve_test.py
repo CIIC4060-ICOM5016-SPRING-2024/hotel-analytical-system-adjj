@@ -48,6 +48,7 @@ def test_post_reserve(client):
     }
 
     response = client.post('/reserve', json=new_reserve)
+    reid = response.get_json()['id']
 
     # Verificar que la respuesta tenga un código de estado 201 (creado)
     assert response.status_code == 201, f"Expected status code 201 but got {response.status_code}"
@@ -78,7 +79,7 @@ def test_post_reserve(client):
                 WHERE  reid=%s AND ruid = %s AND clid = %s AND payment = %s AND guests = %s
                 """
         # Preparar los valores a utilizar en la consulta DELETE
-        values = (new_reserve['reid'],new_reserve['ruid'], new_reserve['clid'], new_reserve['payment'], new_reserve['guests'])
+        values = (reid,new_reserve['ruid'], new_reserve['clid'], new_reserve['payment'], new_reserve['guests'])
         # Ejecutar la consulta DELETE
         cur.execute(query, values)
         # Hacer commit de los cambios

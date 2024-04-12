@@ -22,7 +22,10 @@ class RoomUnavailableController():
     def postRoomUnavailable(self):
         data = request.get_json()
         if not all(key in data for key in ('eid', 'rid', 'startdate', 'enddate')):
-            return make_response(jsonify({"error": "Faltan datos"}), 400)
+            message = "Data to be sent was missing in the request json"
+            id = None
+            status = "error"
+            return make_response(jsonify({"message": message, "id": id, "status": status}), 400)
 
         # Se pasa el eid al método postRoomUnavailable
         id, message, status = self.dao.postRoomUnavailable(data['eid'], data['rid'], data['startdate'],data['enddate'])

@@ -37,12 +37,12 @@ def post_room_description_validation(rname, rtype, capacity):
 
     # Check if the room name is valid
     if rname not in valid_descriptions:
-        return False
+        return False, valid_descriptions
 
     # Check if the capacity and type are valid for the given room name
     if capacity in valid_descriptions[rname]['capacities'] and rtype in valid_descriptions[rname]['types']:
-        return True
+        return True, valid_descriptions
     else:
-        return False
+        return False, valid_descriptions
 
 

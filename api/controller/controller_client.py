@@ -48,7 +48,10 @@ class ClientContoller:
             data = request.get_json()
             # Validar que todos los campos necesarios están presentes
             if not all(key in data for key in ('fname', 'lname', 'age', 'memberyear')):
-                return make_response(jsonify({"error": "Faltan datos"}), 400)
+                message = "Data to be sent was missing in the request json"
+                id = None
+                status = "error"
+                return make_response(jsonify({"message": message, "id": id, "status": status}), 400)
 
             # Crear una instancia de ClientDAO
             dao = ClientDAO()

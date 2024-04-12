@@ -22,7 +22,10 @@ class RoomController:
     def postRoom(self):
         data = request.get_json()
         if not all(key in data for key in ('hid', 'rdid', 'rprice')):
-            return make_response(jsonify({"error": "Faltan datos"}), 400)
+            message = "Data to be sent was missing in the request json"
+            id = None
+            status = "error"
+            return make_response(jsonify({"message": message, "id": id, "status": status}), 400)
 
         # Assuming data validation and conversion (if necessary) are done here
         id, message, status = self.dao.postRoom(data['hid'], data['rdid'], data['rprice'])

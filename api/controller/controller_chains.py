@@ -40,7 +40,10 @@ class ChainsContoller:
         data = request.get_json()
         
         if not all(key in data for key in ('cname', 'springmkup','summermkup','fallmkup','wintermkup')):
-            return make_response(jsonify({"error": "Missing Values"}), 400)
+            message = "Data to be sent was missing in the request json"
+            id = None
+            status = "error"
+            return make_response(jsonify({"message": message, "id": id, "status": status}), 400)
 
         dao = ChainsDAO()
 

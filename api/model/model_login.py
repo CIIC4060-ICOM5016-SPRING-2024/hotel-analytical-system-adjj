@@ -77,7 +77,7 @@ class LoginDAO:
         cur.execute("SELECT COUNT(*) FROM Login WHERE eid = %s", (eid,))
         if cur.fetchone()[0] > 0:
             #print("There is already login information related to this eid.")
-            message = "login_exists"
+            message = "There is already login information related to this eid."
             status = "error"
             return lid, message, status
 

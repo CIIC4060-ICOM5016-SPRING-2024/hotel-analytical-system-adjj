@@ -35,17 +35,8 @@ class RoomDescriptionDAO:
         rdid = None
         message = "Room Description added successfully"
         status = "success"
-        if not post_room_description_validation(rname, rtype, capacity):
-            valid_descriptions = {
-                'Standard': {'capacities': [1], 'types': ['Basic', 'Premium']},
-                'Standard Queen': {'capacities': [1, 2], 'types': ['Basic', 'Premium', 'Deluxe']},
-                'Standard King': {'capacities': [2], 'types': ['Basic', 'Premium', 'Deluxe']},
-                'Double Queen': {'capacities': [4], 'types': ['Basic', 'Premium', 'Deluxe']},
-                'Double King': {'capacities': [4, 6], 'types': ['Basic', 'Premium', 'Deluxe', 'Suite']},
-                'Triple King': {'capacities': [6], 'types': ['Deluxe', 'Suite']},
-                'Executive Family': {'capacities': [4, 6, 8], 'types': ['Deluxe', 'Suite']},
-                'Presidential': {'capacities': [4, 6, 8], 'types': ['Suite']}
-            }
+        valid, valid_descriptions = post_room_description_validation(rname, rtype, capacity)
+        if not valid:
             message = (f"The values entered to create the room description are incorrect. The options are the following:"
                        f"{valid_descriptions}")
             status = "error"
