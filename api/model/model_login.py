@@ -101,18 +101,21 @@ class LoginDAO:
 
     def deleteLogin(self, lid):
         cur = self.db.conexion.cursor()
+        message= "Login successfully deleted"
+        success = True
         try:
             query = "DELETE FROM login WHERE lid = %s"
             cur.execute(query, (lid,))
             self.db.conexion.commit()
-            return True
         except Exception as e:
-            print(f"Error al eliminar login: {e}")
+            #print(f"Error al eliminar login: {e}")
             self.db.conexion.rollback()
-            return False
+            message = str(e)
+            success = False
         finally:
             cur.close()
             self.db.close()
+            return success, message
 
     def putLogin(self, lid, eid, username, password):
         cur = self.db.conexion.cursor()

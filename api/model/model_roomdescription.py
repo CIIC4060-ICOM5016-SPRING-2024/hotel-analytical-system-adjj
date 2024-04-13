@@ -66,18 +66,21 @@ class RoomDescriptionDAO:
 
     def deleteRoomDescription(self, rdid):
         cur = self.db.conexion.cursor()
+        message = "Room description successfully removed"
+        success = True
         try:
             query = "DELETE FROM roomdescription WHERE rdid = %s"
             cur.execute(query, (rdid,))
             self.db.conexion.commit()
-            return True
         except Exception as e:
-            print(f"Error al eliminar room description: {e}")
+            #print(f"Error al eliminar room description: {e}")
             self.db.conexion.rollback()
-            return False
+            message = str(e)
+            success = False
         finally:
             cur.close()
             self.db.close()
+            return success,message
 
 
 ###DONE!!!

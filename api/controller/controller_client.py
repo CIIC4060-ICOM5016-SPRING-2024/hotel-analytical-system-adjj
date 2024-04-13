@@ -65,11 +65,11 @@ class ClientContoller:
 
     def deleteClient(self, clid):
         dao = ClientDAO()
-        success = dao.deleteClient(clid)
+        success, message = dao.deleteClient(clid)
         if success:
-            return make_response(jsonify({"message": "Client successfully deleted", "status":"success"}), 200)
+            return make_response(jsonify({"message": message, "status":"success"}), 200)
         else:
-            return make_response(jsonify({"message": "Error deleting client", "status":"error"}), 500)
+            return make_response(jsonify({"message": message, "status":"error"}), 500)
 
     def putClient(self, clid):
         if request.method == 'PUT':

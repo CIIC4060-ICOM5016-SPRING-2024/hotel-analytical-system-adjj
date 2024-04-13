@@ -75,17 +75,15 @@ class RoomUnavailableDAO():
                 cur.execute("SELECT COUNT(*) FROM roomunavailable WHERE ruid = %s", (ruid,))
                 room_count = cur.fetchone()[0]
                 if room_count == 0:
-                    return False, "La habitación no existe"
+                    return False, "The room does not exist"
                 #Si existe, elimina
                 query = "DELETE FROM roomunavailable WHERE ruid = %s"
                 cur.execute(query, (ruid,))
                 self.db.conexion.commit()
-                return True, "La habitacion indisponible eliminada exitosamente"
+                return True, "Unavailable room successfully deleted"
             except Exception as e:
-                print(f"Error el eliminar habitacion indisponible: {e}")
-                return False, "Error al eliminar habitacion indisponible."
-            finally:
-                cur.close()
+                #print(f"Error el eliminar habitacion indisponible: {e}")
+                return False, f"Error when deleting unavailable room: {e}"
 
     def putRoomUnavailable(self, ruid, rid, startdate, enddate):
         # Verifica si la fecha de comienzo es mayor que la fecha de finalizacion

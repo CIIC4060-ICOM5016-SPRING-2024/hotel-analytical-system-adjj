@@ -118,18 +118,21 @@ class ReserveDAO:
         return True
     def deleteReservation(self,id:int) ->bool:
         cur = self.db.conexion.cursor()
+        message = "Reservation Deleted successfully"
+        success = True
         try:
             query = "DELETE FROM reserve WHERE reid=%s"
             cur.execute(query=query,vars=(id,))
             self.db.conexion.commit()
         except Exception as e:
-            print(f"Error deleting chain: {e}")
-            self.db.conexion.rollback()  
-            return False
+            #print(f"Error deleting chain: {e}")
+            self.db.conexion.rollback()
+            message = str(e)
+            success = False
         finally:
             self.db.close()
             cur.close()
-        return True
+            return success, message
 
     def getReserveByPayMethod(self, eid):
         if not self.db.canAccessGlobalStats(eid):

@@ -49,19 +49,21 @@ class ChainsDAO:
     
     def deleteChain(self,id:int):
         cur = self.db.conexion.cursor()
-
+        message = "Chain removed successfully"
+        success = True
         try: 
             query = "DELETE FROM chains WHERE chid = %s"
             cur.execute(query,(id,))
             self.db.conexion.commit()
-            return True
         except Exception as e:
-            print(f"Error al eliminar chain: {e}")
+            #print(f"Error al eliminar chain: {e}")
+            message = str(e)
+            success = False
             self.db.conexion.rollback()
-            return False
         finally:
             cur.close()
             self.db.close()
+            return success, message
 
     def putChain(self, id:int, updated_chain:dict):
         cur = self.db.conexion.cursor()

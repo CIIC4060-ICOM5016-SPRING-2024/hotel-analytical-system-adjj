@@ -61,18 +61,21 @@ class EmployeeDAO:
 
     def deleteEmployee(self, eid):
         cur = self.db.conexion.cursor()
+        message = "Employee successfully removed"
+        success = True
         try:
             query = "DELETE FROM employee WHERE eid = %s"
             cur.execute(query, (eid,))
             self.db.conexion.commit()
-            return True
         except Exception as e:
-            print(f"Error al eliminar empleado: {e}")
+            #print(f"Error al eliminar empleado: {e}")
             self.db.conexion.rollback()
-            return False
+            message = str(e)
+            success = False
         finally:
             cur.close()
             self.db.close()
+            return success, message
 
     def putEmployee(self, eid, hid, fname, lname, age, salary, position):
 

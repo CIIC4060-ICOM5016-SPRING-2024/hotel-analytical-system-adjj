@@ -55,11 +55,11 @@ class RoomDescriptionController():
 
     def deleteRoomDescription(self, rdid):
         dao = RoomDescriptionDAO()
-        success = dao.deleteRoomDescription(rdid)
+        success, message = dao.deleteRoomDescription(rdid)
         if success:
-            return make_response(jsonify({"message": "Room description eliminado exitosamente", "status":"success"}), 200)
+            return make_response(jsonify({"message": message, "status":"success"}), 200)
         else:
-            return make_response(jsonify({"message": "Error al eliminar room description", "status":"error"}), 500)
+            return make_response(jsonify({"message": message, "status":"error"}), 500)
 
 
     def putRoomDescription(self, rdid):
