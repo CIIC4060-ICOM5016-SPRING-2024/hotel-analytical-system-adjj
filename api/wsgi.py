@@ -188,6 +188,10 @@ def create_app(test_config=None):
     def add_login():
         return LoginController().addLogin()
 
+    @app.route('/login/in/frontend', methods=['POST'])
+    def login():
+        return LoginController().login()
+
 
     @app.route('/roomdescription')
     def get_RoomsDescriptions():
@@ -256,6 +260,7 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
     def get_top_5_handicap_reserved_rooms(hid):
         return RoomController().get_top_5_handicap_reserved(hid)
+
 
   
 
