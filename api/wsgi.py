@@ -81,6 +81,10 @@ def create_app(test_config=None):
     def update_employee(eid):
         return EmployeeController().putEmployee(eid)
 
+    @app.route('/employee/<int:eid>/accessible-hotels')
+    def get_hotels_employee_can_access(eid):
+        return EmployeeController().get_hotels_employee_can_access(eid)
+
     @app.route('/hotel')
     def get_hotels():
         return HotelContoller().getAllHotels()

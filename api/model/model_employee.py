@@ -131,3 +131,23 @@ class EmployeeDAO:
         finally:
             cur.close()
             self.db.close()
+
+
+    def getHotelsForSupervisor(self, eid):
+        cur = self.db.conexion.cursor()
+        try:
+            # Primero, obtenemos la chid del hotel donde trabaja el supervisor
+            query_chid = "SELECT h.chid FROM employee e JOIN hotel h ON e.hid = h.hid WHERE e.eid = %s"
+            cur.execute(query_chid, (eid,))
+            chid = cur.fetchone()[0]
+
+            # Luego, buscamos todos los hoteles con esa chid
+            query_hotels = "SELECT hid, chid, hname, hcity FROM hotel WHERE chid = %s"
+            cur.execute(query_hotels, (chid,))
+            hotels = cur.fetchall()
+            return hotels
+        except Exception as e:
+            print(f"Error al obtener los hoteles para el supervisor {eid}: {e}")
+            return None
+        finally:
+            cur.close()
