@@ -68,3 +68,87 @@ class LocalStatsPlots:
             plt.show()
         else:
             print("Error al obtener los datos")
+    def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self,session,hid,json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+
+            # Convertimos los datos a DataFrame
+            df = pd.DataFrame(datos)
+
+            # Creamos la gráfica
+            plt.figure(figsize=(10, 6))
+            plt.barh(df['rname'], df['avg_guest_to_capacity_ratio'], color='teal')
+            plt.xlabel('Average Guest-to-Capacity Ratio')
+            plt.title("Top 3 rooms reserved that had the least guest-to-capacity ratio")
+
+            # Añadiendo los valores exactos en cada barra
+            for bar in plt.barh(df['rname'], df['avg_guest_to_capacity_ratio']):
+                width = bar.get_width()
+                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+
+            plt.tight_layout()
+
+            # Mostramos la gráfica
+            plt.show()
+        else:
+            print("Error al obtener los datos")
+    def graficar_total_reservation_by_room_type(self,session,hid,json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+
+            # Convertimos los datos a DataFrame
+            df = pd.DataFrame(datos)
+
+            # Creamos la gráfica
+            plt.figure(figsize=(10, 6))
+            plt.barh(df['rtype'], df['total_reservations'], color='teal')
+            plt.xlabel('Total Reservations')
+            plt.title("Total reservation by room type.")
+
+            # Añadiendo los valores exactos en cada barra
+            for bar in plt.barh(df['rtype'], df['total_reservations']):
+                width = bar.get_width()
+                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+
+            plt.tight_layout()
+
+            # Mostramos la gráfica
+            plt.show()
+        else:
+            print("Error al obtener los datos")
+    def graficar_top_5_clients_received_the_most_discounts(self,session,hid,json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+
+            # Convertimos los datos a DataFrame
+            df = pd.DataFrame(datos)
+
+            # Creamos la gráfica
+            plt.figure(figsize=(10, 6))
+            plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage'], color='teal')
+            plt.xlabel('Discount')
+            plt.title("Top 5 clients that received the most discounts")
+
+            # Añadiendo los valores exactos en cada barra
+            for bar in plt.barh(df['fname'] + ' ' + df['lname'],df['discount_percentage']):
+                width = bar.get_width()
+                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+
+            plt.tight_layout()
+
+            # Mostramos la gráfica
+            plt.show()
+        else:
+            print("Error al obtener los datos")
+
+
+
