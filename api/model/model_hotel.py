@@ -203,12 +203,15 @@ class HotelDAO:
             Reserve R
         INNER JOIN RoomUnavailable RU ON R.ruid = RU.ruid
         INNER JOIN Room Ro ON RU.rid = Ro.rid
+        INNER JOIN Hotel H ON Ro.hid = H.hid
         INNER JOIN RoomDescription RD ON Ro.rdid = RD.rdid
+        
+        WHERE H.hid = %s
         GROUP BY 
             RD.rtype
         ORDER BY 
             total_reservations DESC;"""
-        cur.execute(query)
+        cur.execute(query,vars=(hid,))
         total_reservations = cur.fetchall()
         self.db.close()
         cur.close()
