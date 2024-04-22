@@ -1,13 +1,12 @@
 from IPython.display import display
 import ipywidgets as widgets
 
-class Functions:
+class HtmlCSS:
     def __init__(self):
         pass
 
     def create_navBar(self, tuple_list):
-        from IPython.display import display
-        import ipywidgets as widgets
+
 
         # Construir los elementos <li> de la lista dinámicamente
         menu_items_html = "".join([f'<li><a href="#{item[0]}">{item[1]}</a></li>' for item in tuple_list])
@@ -96,3 +95,4 @@ class Functions:
         # Combinar el estilo y el HTML, y mostrarlo utilizando un widget HTML
         full_html = section_style + section_html
         display(widgets.HTML(value=full_html))
+
