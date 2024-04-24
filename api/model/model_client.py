@@ -150,20 +150,24 @@ class ClientDAO:
 
             query="""
                 SELECT 
-                    clid, 
-                    fname, 
-                    lname, 
-                    age, 
-                    memberyear,
+                    C.clid, 
+                    C.fname, 
+                    C.lname, 
+                    C.age, 
+                    C.memberyear,
                     CASE 
-                        WHEN memberyear BETWEEN 1 AND 4 THEN 2
-                        WHEN memberyear BETWEEN 5 AND 9 THEN 5
-                        WHEN memberyear BETWEEN 10 AND 14 THEN 8
-                        WHEN memberyear >= 15 THEN 12
+                        WHEN C.memberyear BETWEEN 1 AND 4 THEN 2
+                        WHEN C.memberyear BETWEEN 5 AND 9 THEN 5
+                        WHEN C.memberyear BETWEEN 10 AND 14 THEN 8
+                        WHEN C.memberyear >= 15 THEN 12
                         ELSE 0
                     END AS discount_percentage
                 FROM 
-                    Client
+                    Client C
+                INNER JOIN Reserve Re ON C.clid = Re.clid
+                INNER JOIN RoomUnavailable Ru ON Re.ruid = Ru.ruid
+                INNER JOIN Room R ON Ru.rid = R.rid
+                WHERE R.hid = %s
                 ORDER BY 
                     discount_percentage DESC, 
                     memberyear DESC -- En caso de empates en el descuento, se prioriza al miembro más antiguo

@@ -1,4 +1,6 @@
 from flask import jsonify, request, make_response
+
+from api.controller.controller_employee import EmployeeController
 from api.model.model_login import LoginDAO
 
 
@@ -79,6 +81,34 @@ class LoginController:
                 return make_response(jsonify({"message": "Login actualizado exitosamente"}), 200)
             else:
                 return make_response(jsonify({"error": "Error al actualizar Login"}), 500)
+
+    def login(self):
+        if request.method == 'POST':
+            data = request.get_json()
+            if not all(key in data for key in ['username', 'password']):
+                return make_response(jsonify({"message": "Falta nombre de usuario o contraseña", "status":"error"}), 400)
+
+            dao = LoginDAO()
+            login_list = dao.getAllLogins()
+
+            for login in login_list:
+                # Suponiendo que login es una tupla con (lid, eid, username, password)
+                if login[2] == data['username'] and login[3] == data['password']:
+                    res = EmployeeController().getEmployeeById(login[1])
+                    employee = res.get_json()
+                    res = make_response(jsonify({"message": "Login exitoso", "status":"success"}), 200)
+                    res.set_cookie('eid', str(employee['eid']), secure=False, httponly=False, path='/')
+                    res.set_cookie('hid', str(employee['hid']), secure=False, httponly=False, path='/')
+                    res.set_cookie('fname', str(employee['fname']), secure=False, httponly=False, path='/')
+                    res.set_cookie('lname', str(employee['lname']), secure=False, httponly=False, path='/')
+                    res.set_cookie('position', str(employee['position']), secure=False, httponly=False, path='/')
+                    # res.set_cookie('salary', str(employee['salary']), secure=True, httponly=True)
+                    # res.set_cookie('age', str(employee['age']), secure=True, httponly=True)
+                    return res
+
+            return make_response(jsonify({"message": "Usuario o contraseña incorrectos", "status":"error"}), 401)
+
+
 
 
 

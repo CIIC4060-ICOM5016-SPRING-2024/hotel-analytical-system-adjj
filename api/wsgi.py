@@ -9,6 +9,7 @@ from api.controller.controller_roomunavailable import RoomUnavailableController
 from api.controller.controller_login import LoginController
 from api.controller.controller_roomdescription import RoomDescriptionController
 from api.controller.controller_reserve import ReserveController
+from api.controller.controller_all import AllController
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -80,6 +81,10 @@ def create_app(test_config=None):
     @app.route('/employee/<int:eid>', methods=['PUT'])
     def update_employee(eid):
         return EmployeeController().putEmployee(eid)
+
+    @app.route('/employee/<int:eid>/accessible-hotels')
+    def get_hotels_employee_can_access(eid):
+        return EmployeeController().get_hotels_employee_can_access(eid)
 
     @app.route('/hotel')
     def get_hotels():
@@ -188,6 +193,10 @@ def create_app(test_config=None):
     def add_login():
         return LoginController().addLogin()
 
+    @app.route('/login/in/frontend', methods=['POST'])
+    def login():
+        return LoginController().login()
+
 
     @app.route('/roomdescription')
     def get_RoomsDescriptions():
@@ -256,6 +265,19 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
     def get_top_5_handicap_reserved_rooms(hid):
         return RoomController().get_top_5_handicap_reserved(hid)
+    @app.route('/all/tables')
+    def get_all_tables():
+        return AllController().getAllTables()
+    
+    @app.route('/all/columns/<table>')
+    def get_all_columns(table):
+        return AllController().getColumnNames(table)
+    @app.route('/all/key/<table>')
+    def get_primary_key(table):
+        return AllController().getPrimaryKey(table)
+
+
+
 
   
 

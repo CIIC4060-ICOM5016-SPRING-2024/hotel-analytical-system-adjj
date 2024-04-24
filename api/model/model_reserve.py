@@ -174,6 +174,7 @@ class ReserveDAO:
             INNER JOIN RoomUnavailable RU ON Res.ruid = RU.ruid
             INNER JOIN Room R ON RU.rid = R.rid
             INNER JOIN RoomDescription RD ON R.rdid = RD.rdid
+            WHERE R.hid = %s
             GROUP BY 
                 R.rid, RD.rname
             ORDER BY 
@@ -181,7 +182,7 @@ class ReserveDAO:
             LIMIT 3;
 
             """
-            cur.execute(query)
+            cur.execute(query,(hid,))
             result=cur.fetchall()
             return result
         except Exception as e:

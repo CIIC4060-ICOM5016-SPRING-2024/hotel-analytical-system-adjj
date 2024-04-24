@@ -1,5 +1,6 @@
 # from model.client import ClientDAO
 from api.model.model_employee import EmployeeDAO
+from api.model.model_hotel import HotelDAO
 from flask import jsonify, request, make_response
 
 class EmployeeController:
@@ -114,3 +115,42 @@ class EmployeeController:
         for element in au_dict:
             result.append(self.dicBuild(element))
         return jsonify(result)
+
+
+
+    def get_hotels_employee_can_access(self, eid):
+
+        def dicBuild(row):
+            a_dict = {'hid': row[0],
+                      'chid': row[1],
+                      'hname': row[2],
+                      'hcity': row[3],
+                      }
+            return a_dict
+
+        # Obtener la posición del empleado
+        employee_info = self.getEmployeeById(eid)
+        if not employee_info:
+            return make_response(jsonify({"error": "Empleado no encontrado"}), 404)
+
+        position = employee_info.json['position']
+
+        employee_dao = EmployeeDAO()  # Instancia de HotelDAO
+        hotel_dao = HotelDAO()
+
+        # Lógica para determinar qué hoteles son accesibles basado en la posición
+        if position == 'Regular':
+            hid = self.getEmployeeById(eid).get_json()['hid']
+            hotel = hotel_dao.getHotelById(hid)
+            return make_response(jsonify([dicBuild(hotel)]),200) if hotel else make_response(jsonify(
+                {"error": "No se encontró el hotel para el empleado regular"}), 404)
+        elif position == 'Supervisor':
+            hotels = employee_dao.getHotelsForSupervisor(eid)
+            return make_response(jsonify([dicBuild(h) for h in hotels]), 200) if hotels else make_response(jsonify(
+                {"error": "No se encontraron hoteles para el supervisor"}), 404)
+        elif position == 'Administrator':
+            # Suponiendo que un administrador puede acceder a todos los hoteles
+            hotels = hotel_dao.getAllHotels()
+            return jsonify([dicBuild(h) for h in hotels])
+        else:
+            return make_response(jsonify({"error": "Posición del empleado no reconocida"}), 400)
