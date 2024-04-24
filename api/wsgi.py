@@ -1,11 +1,5 @@
-import requests
 from flask_cors import CORS
-from flask import Flask, request, Response
-from voila.app import Voila
-from tornado.wsgi import WSGIContainer
-from tornado.web import FallbackHandler, Application
-import os
-
+from flask import Flask
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
@@ -26,37 +20,10 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
-    VOILA_URL = "http://localhost:8866" 
-
-    @app.route('/voila/<path:path>', methods=['GET', 'POST'])
-    def proxy(path):
-        global VOILA_URL
-        resp = requests.request(
-            method=request.method,
-            url=f"{VOILA_URL}/{path}",
-            headers={key: value for (key, value) in request.headers if key != 'Host'},
-            data=request.get_data(),
-            cookies=request.cookies,
-            allow_redirects=False)
-
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                if name.lower() not in excluded_headers]
-
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-
-
-   
-
     @app.route('/')
     def hello_world():
         return 'Hello World!'
-    # Add Voila to the existing Flask app
-    # @app.route('/voila/')
-    # def voila_route():
-    #     return next(voila_tornado_app)
-
+    
     @app.route('/chains')
     def get_chains():
         return ChainsContoller().getAllChains()
@@ -310,11 +277,11 @@ def create_app(test_config=None):
     @app.route('/all/key/<table>')
     def get_primary_key(table):
         return AllController().getPrimaryKey(table)
-
     return app
 
 app = create_app()
 
 if __name__ == '__main__':
+
     app.run(debug=True)
 
