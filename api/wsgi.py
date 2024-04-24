@@ -1,5 +1,9 @@
 from flask_cors import CORS
 from flask import Flask
+from voila.app import Voila
+from tornado.wsgi import WSGIContainer
+from tornado.web import FallbackHandler, Application
+
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
@@ -15,9 +19,20 @@ def create_app(test_config=None):
     app = Flask(__name__)
     CORS(app)
 
+    # Create a Voila app
+    voila_app = Voila()
+    voila_app.initialize(['--no-browser', '--template=gridstack', '/frontend/main.ipynb'])
+    voila_tornado_app = Application([
+        (r"/voila/(.*)", FallbackHandler, dict(fallback=WSGIContainer(voila_app.app)))
+    ])
+
     if test_config is not None:
         app.config.update(test_config)
 
+    # Add Voila to the existing Flask app
+    @app.route('/voila/')
+    def voila_route():
+        return next(voila_tornado_app.__iter__())
     @app.route('/')
     def hello_world():
         return 'Hello World!'
