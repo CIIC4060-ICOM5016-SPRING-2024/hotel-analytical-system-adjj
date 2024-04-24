@@ -29,13 +29,13 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
+    @app.route('/')
+    def hello_world():
+        return 'Hello World!'
     # Add Voila to the existing Flask app
     @app.route('/voila/')
     def voila_route():
         return next(voila_tornado_app.__iter__())
-    @app.route('/')
-    def hello_world():
-        return 'Hello World!'
 
     @app.route('/chains')
     def get_chains():
