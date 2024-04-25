@@ -1,9 +1,5 @@
 from flask_cors import CORS
 from flask import Flask
-from voila.app import Voila
-from tornado.wsgi import WSGIContainer
-from tornado.web import FallbackHandler, Application
-
 from api.controller.controller_client import ClientContoller
 from api.controller.controller_employee import EmployeeController
 from api.controller.controller_hotel import HotelContoller
