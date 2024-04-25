@@ -42,7 +42,7 @@ class LocalStatsPlots:
     def graficar_top_3_highest_pais_regular_employees(self, session, json, hid):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/highestpaid'
         # Endpoint y cuerpo de la petición
-        url = f"{heroku_api}/{hid}/highestpaid"
+        url = f"{heroku_api}/hotel/{hid}/highestpaid"
 
 
         # Realizamos la petición al endpoint
@@ -94,7 +94,7 @@ class LocalStatsPlots:
     def graficar_top_5_clientes_jovenes_con_mas_reservaciones(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/mostcreditcard'
         # Suponiendo que puedes pasar eid como un parámetro en la URL
-        url = f"{heroku_api}/{hid}/mostcreditcard"
+        url = f"{heroku_api}/hotel/{hid}/mostcreditcard"
 
         # Realizamos la petición al endpoint
         respuesta = session.get(url, json=json)
@@ -111,8 +111,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self,session,hid,json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
-        url = f"{heroku_api}/{hid}/leastguests"
+        url = f"{heroku_api}/hotel/{hid}/leastguests"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -166,8 +165,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_total_reservation_by_room_type(self,session,hid,json):
-        # url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
-        url = f"{heroku_api}/{hid}/roomtype"
+        url = f"{heroku_api}/hotel/{hid}/roomtype"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -218,8 +216,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_top_5_clients_received_the_most_discounts(self,session,hid,json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
-        url = f"{heroku_api}/{hid}/mostdiscount"
+        url = f"{heroku_api}/hotel/{hid}/mostdiscount"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
