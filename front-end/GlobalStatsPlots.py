@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import plotly.express as px
 
+heroku_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+
 class GlobalStatsPlots:
     def __init__(self):
         pass
@@ -48,8 +50,12 @@ class GlobalStatsPlots:
     #         # print("Error en la respuesta:", response.status_code)
 
     def mostrar_graficos_most_reservation(self, session):
-        url = 'http://127.0.0.1:5000/most/reservation'
-        data = {"eid": 3}
+        # url = 'http://127.0.0.1:5000/most/reservation'
+        # data = {"eid": 3}
+        url = f"{heroku_api}/most/reservation"
+        data = {
+            "eid": 3
+        }
         response = session.get(url, json=data, verify=False)
         if response.status_code == 200:
             data_json = response.json()
@@ -110,7 +116,8 @@ class GlobalStatsPlots:
             print("Error en la respuesta:", response.status_code)
 
     def graficar_payment_method(self, session):
-        url = 'http://127.0.0.1:5000/paymentmethod'
+        # url = 'http://127.0.0.1:5000/paymentmethod'
+        url = f"{heroku_api}/most/capacity"
         data = {
             "eid": 3
         }

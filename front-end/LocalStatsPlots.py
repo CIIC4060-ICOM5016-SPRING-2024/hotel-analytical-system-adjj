@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 
+heroku_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
 class LocalStatsPlots:
     def __init__(self):
         pass
@@ -39,7 +40,12 @@ class LocalStatsPlots:
     #         print("Error al obtener los datos")
 
     def graficar_top_3_highest_pais_regular_employees(self, session, json, hid):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/highestpaid'
+        # url = f'http://127.0.0.1:5000/hotel/{hid}/highestpaid'
+        # Endpoint y cuerpo de la petición
+        url = f"{heroku_api}/{hid}/highestpaid"
+
+
+        # Realizamos la petición al endpoint
         respuesta = session.get(url, json=json)
         if respuesta.status_code == 200:
             datos = respuesta.json()
@@ -86,7 +92,11 @@ class LocalStatsPlots:
     #         print("Error al obtener los datos")
 
     def graficar_top_5_clientes_jovenes_con_mas_reservaciones(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/mostcreditcard'
+        # url = f'http://127.0.0.1:5000/hotel/{hid}/mostcreditcard'
+        # Suponiendo que puedes pasar eid como un parámetro en la URL
+        url = f"{heroku_api}/{hid}/mostcreditcard"
+
+        # Realizamos la petición al endpoint
         respuesta = session.get(url, json=json)
         if respuesta.status_code == 200:
             datos = respuesta.json()
@@ -100,38 +110,13 @@ class LocalStatsPlots:
             fig.show()
         else:
             print("Error al obtener los datos")
-
-    # def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self, session, hid, json):
-    #     url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
-    #     respuesta = session.get(url, json=json)
-    #     # Verificamos si la petición fue exitosa
-    #     if respuesta.status_code == 200:
-    #         datos = respuesta.json()
-    #
-    #         # Convertimos los datos a DataFrame
-    #         df = pd.DataFrame(datos)
-    #
-    #         # Creamos la gráfica
-    #         plt.figure(figsize=(10, 6))
-    #         plt.barh(df['rname'], df['avg_guest_to_capacity_ratio'], color='teal')
-    #         plt.xlabel('Average Guest-to-Capacity Ratio')
-    #         plt.title("Top 3 rooms reserved that had the least guest-to-capacity ratio")
-    #
-    #         # Añadiendo los valores exactos en cada barra
-    #         for bar in plt.barh(df['rname'], df['avg_guest_to_capacity_ratio']):
-    #             width = bar.get_width()
-    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
-    #
-    #         plt.tight_layout()
-    #
-    #         # Mostramos la gráfica
-    #         plt.show()
-    #     else:
-    #         print("Error al obtener los datos")
-
-    def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'  # Adjust the endpoint as necessary
-        response = session.get(url, json=json)
+    def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self,session,hid,json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
+        url = f"{heroku_api}/{hid}/leastguests"
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
 
         if response.status_code == 200:
             data = response.json()
@@ -179,11 +164,14 @@ class LocalStatsPlots:
             # Display the chart
             fig.show()
         else:
-            print("Error fetching data: HTTP Status", response.status_code)
-
-    def graficar_total_reservation_by_room_type(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'  # Adjust the endpoint as necessary
-        response = session.get(url, json=json)
+            print("Error al obtener los datos")
+    def graficar_total_reservation_by_room_type(self,session,hid,json):
+        # url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
+        url = f"{heroku_api}/{hid}/roomtype"
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
 
         if response.status_code == 200:
             data = response.json()
@@ -228,67 +216,14 @@ class LocalStatsPlots:
             # Display the chart
             fig.show()
         else:
-            print("Error fetching data: HTTP Status", response.status_code)
-
-    # def graficar_total_reservation_by_room_type(self, session, hid, json):
-    #     url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
-    #     respuesta = session.get(url, json=json)
-    #     # Verificamos si la petición fue exitosa
-    #     if respuesta.status_code == 200:
-    #         datos = respuesta.json()
-    #
-    #         # Convertimos los datos a DataFrame
-    #         df = pd.DataFrame(datos)
-    #
-    #         # Creamos la gráfica
-    #         plt.figure(figsize=(10, 6))
-    #         plt.barh(df['rtype'], df['total_reservations'], color='teal')
-    #         plt.xlabel('Total Reservations')
-    #         plt.title("Total reservation by room type.")
-    #
-    #         # Añadiendo los valores exactos en cada barra
-    #         for bar in plt.barh(df['rtype'], df['total_reservations']):
-    #             width = bar.get_width()
-    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
-    #
-    #         plt.tight_layout()
-    #
-    #         # Mostramos la gráfica
-    #         plt.show()
-    #     else:
-    #         print("Error al obtener los datos")
-
-    # def graficar_top_5_clients_received_the_most_discounts(self, session, hid, json):
-    #     url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
-    #     respuesta = session.get(url, json=json)
-    #     # Verificamos si la petición fue exitosa
-    #     if respuesta.status_code == 200:
-    #         datos = respuesta.json()
-    #
-    #         # Convertimos los datos a DataFrame
-    #         df = pd.DataFrame(datos)
-    #
-    #         # Creamos la gráfica
-    #         plt.figure(figsize=(10, 6))
-    #         plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage'], color='teal')
-    #         plt.xlabel('Discount')
-    #         plt.title("Top 5 clients that received the most discounts")
-    #
-    #         # Añadiendo los valores exactos en cada barra
-    #         for bar in plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage']):
-    #             width = bar.get_width()
-    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
-    #
-    #         plt.tight_layout()
-    #
-    #         # Mostramos la gráfica
-    #         plt.show()
-    #     else:
-    #         print("Error al obtener los datos")
-
-    def graficar_top_5_clients_received_the_most_discounts(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'  # Adjust the endpoint as necessary
-        response = session.get(url, json=json)
+            print("Error al obtener los datos")
+    def graficar_top_5_clients_received_the_most_discounts(self,session,hid,json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
+        url = f"{heroku_api}/{hid}/mostdiscount"
+        respuesta = session.get(url, json=json)
+        # Verificamos si la petición fue exitosa
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
 
         if response.status_code == 200:
             data = response.json()
