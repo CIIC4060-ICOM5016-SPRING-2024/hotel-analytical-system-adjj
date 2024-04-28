@@ -11,16 +11,10 @@ from api.controller.controller_roomdescription import RoomDescriptionController
 from api.controller.controller_reserve import ReserveController
 from api.controller.controller_all import AllController
 
+
 def create_app(test_config=None):
     app = Flask(__name__)
     CORS(app)
-
-    # Create a Voila app
-    voila_app = Voila()
-    voila_app.initialize(['--no-browser', '--template=gridstack', '/frontend/main.ipynb'])
-    voila_tornado_app = Application([
-        (r"/voila/(.*)", FallbackHandler, dict(fallback=WSGIContainer(voila_app.app)))
-    ])
 
     if test_config is not None:
         app.config.update(test_config)
@@ -28,10 +22,6 @@ def create_app(test_config=None):
     @app.route('/')
     def hello_world():
         return 'Hello World!'
-    # Add Voila to the existing Flask app
-    @app.route('/voila/')
-    def voila_route():
-        return next(voila_tornado_app.__iter__())
 
     @app.route('/chains')
     def get_chains():
@@ -44,6 +34,7 @@ def create_app(test_config=None):
     @app.route('/chains', methods=['POST'])
     def add_chain():
         return ChainsContoller().addChain()
+
     @app.route('/chains/<int:chid>', methods=['DELETE'])
     def delete_chain(chid):
         return ChainsContoller().deleteChain(chid)
@@ -71,7 +62,6 @@ def create_app(test_config=None):
     @app.route('/client/<int:clid>', methods=['PUT'])
     def update_client(clid):
         return ClientContoller().putClient(clid)
-    
 
     @app.route('/employee')
     def get_employees():
@@ -124,8 +114,8 @@ def create_app(test_config=None):
     @app.route('/most/capacity')
     def get_most_capacity():
         return HotelContoller().get_most_capacity()
-    
-    @app.route('/hotel/<int:hid>/roomtype',methods=['GET'])
+
+    @app.route('/hotel/<int:hid>/roomtype', methods=['GET'])
     def get_total_reservations_by_room_type(hid):
         return HotelContoller().get_total_reservations_by_room_type(hid)
 
@@ -136,11 +126,10 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/mostcreditcard')
     def getTop5CreditCardReservations(hid):
         return ClientContoller().getTop5CreditCardReservations(hid)
-    
-    @app.route('/hotel/<int:hid>/mostdiscount',methods=['GET'])
+
+    @app.route('/hotel/<int:hid>/mostdiscount', methods=['GET'])
     def getTop5ClientsMostDiscount(hid):
         return ClientContoller().getTop5ClientsMostDiscount(hid)
-
 
     @app.route('/room')
     def get_rooms():
@@ -182,8 +171,7 @@ def create_app(test_config=None):
     def put_room_unavailable(ruid):
         return RoomUnavailableController().putRoomUnavailable(ruid)
 
-
-##############################################
+    ##############################################
 
     @app.route('/login')
     def get_logins():
@@ -196,6 +184,7 @@ def create_app(test_config=None):
     @app.route('/login/<int:lid>', methods=['PUT'])
     def update_login(lid):
         return LoginController().putLogin(lid)
+
     @app.route('/login/<int:lid>', methods=['DELETE'])
     def delete_login(lid):
         return LoginController().deleteEmployee(lid)
@@ -208,7 +197,6 @@ def create_app(test_config=None):
     def login():
         return LoginController().login()
 
-
     @app.route('/roomdescription')
     def get_RoomsDescriptions():
         return RoomDescriptionController().getAllRoomDescriptions()
@@ -220,10 +208,12 @@ def create_app(test_config=None):
     @app.route('/roomdescription', methods=['POST'])
     def add_roomdescription():
         return RoomDescriptionController().addRoomDescription()
+
     #
     @app.route('/roomdescription/<int:rdid>', methods=['DELETE'])
     def delete_roomdescription(rdid):
         return RoomDescriptionController().deleteRoomDescription(rdid)
+
     @app.route('/roomdescription/<int:rdid>', methods=['PUT'])
     def update_roomdescription(rdid):
         return RoomDescriptionController().putRoomDescription(rdid)
@@ -231,11 +221,12 @@ def create_app(test_config=None):
     @app.route('/reserve')
     def get_all_reservations():
         return ReserveController().getAllReservations()
+
     @app.route('/reserve/<int:reid>')
     def get_reservation(reid):
         return ReserveController().getReservation(reid)
 
-    @app.route('/reserve',methods=['POST'])
+    @app.route('/reserve', methods=['POST'])
     def add_reservation():
         return ReserveController().addReservation()
 
@@ -247,11 +238,10 @@ def create_app(test_config=None):
     def delete_reservation(reid):
         return ReserveController().deleteReservation(id=reid)
 
-
     @app.route('/hotel/<int:hid>/leastreserve', methods=['GET'])
     def get_top_3_rooms_least_unavailable(hid):
         return RoomUnavailableController().getTop3LeastUnavailable(hid)
-    
+
     @app.route('/hotel/<int:hid>/leastguests', methods=['GET'])
     def get_top3_rooms_least_gc_ratio(hid):
         return ReserveController().getTop3RoomsLeastGuestCapacity(hid)
@@ -264,7 +254,6 @@ def create_app(test_config=None):
     def get_most_profit_month():
         return ChainsContoller().getTop3ProfitMonthsByChain()
 
-
     @app.route('/least/rooms')
     def get_chains_least_rooms():
         return ChainsContoller().get_least_rooms_chains()
@@ -276,23 +265,21 @@ def create_app(test_config=None):
     @app.route('/hotel/<int:hid>/handicaproom', methods=['GET'])
     def get_top_5_handicap_reserved_rooms(hid):
         return RoomController().get_top_5_handicap_reserved(hid)
+
     @app.route('/all/tables')
     def get_all_tables():
         return AllController().getAllTables()
-    
+
     @app.route('/all/columns/<table>')
     def get_all_columns(table):
         return AllController().getColumnNames(table)
+
     @app.route('/all/key/<table>')
     def get_primary_key(table):
         return AllController().getPrimaryKey(table)
 
-
-
-
-  
-
     return app
+
 
 app = create_app()
 
