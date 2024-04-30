@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import pandas as pd
+import plotly.express as px
 
 class LocalStatsPlots:
     def __init__(self):
@@ -151,4 +152,41 @@ class LocalStatsPlots:
             print("Error al obtener los datos")
 
 
+    def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
+        url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
+        respuesta = session.get(url, json=json)
 
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+
+            # Verificamos si los datos tienen el formato esperado
+            if not datos or not all('reserved days' in d and 'rid' in d for d in datos):
+                print("Datos incompletos o incorrectos.")
+                return
+
+            # Convertimos los datos a DataFrame
+            df = pd.DataFrame(datos)
+
+            # Creamos la gráfica de barras horizontales
+            fig = px.bar(df, y='rid', x='reserved days', orientation='h',
+                         text='reserved days', title="Habitaciones con Menos Días Reservados",
+                         labels={'rid': 'ID de Habitación', 'reserved days': 'Días Reservados'},
+                         color='reserved days', color_continuous_scale='Tealgrn')
+
+            # Mejoramos el layout
+            fig.update_layout(
+                xaxis_title='Días Reservados',
+                yaxis_title='ID de Habitación',
+                yaxis=dict(type='category'),
+                coloraxis_colorbar=dict(
+                    title='Días Reservados'
+                )
+            )
+
+            # Hacer que los textos se muestren siempre en las barras
+            fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+
+            # Mostramos la gráfica
+            fig.show()
+        else:
+            print("Error al obtener los datos: HTTP Status", respuesta.status_code)

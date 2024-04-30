@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import pandas as pd
+import plotly.express as px
 
 class GlobalStatsPlots:
     def __init__(self):
@@ -75,3 +76,67 @@ class GlobalStatsPlots:
             plt.xticks(rotation=45, ha='right')  # Rotamos las etiquetas para que sean legibles
             plt.tight_layout()  # Ajuste del layout
             plt.show()
+
+    def graficar_payment_method(self, session):
+        url = 'http://127.0.0.1:5000/paymentmethod'
+        data = {
+            "eid": 3
+        }
+        response = session.get(url, json=data, verify=False)
+        # Verifica si la solicitud fue exitosa
+        if response.status_code == 200:
+            # Datos JSON recibidos
+            data_json = response.json()
+            # Convierte los datos JSON en un DataFrame de pandas
+            df = pd.DataFrame(data_json)
+
+            # Gráfico de dona
+            fig = px.pie(df, values='percentage_reservations_pay_method', names='payment',
+                         title='Porcentaje de Reservas por Método de Pago', hole=0.3)
+
+            # Mejora la visualización con las etiquetas
+            fig.update_layout(
+                autosize=False,
+                width=900,  # Ancho del gráfico
+                height=600,  # Altura del gráfico
+                margin=dict(l=50, r=50, b=100, t=100, pad=4)  # Ajuste de márgenes
+            )
+
+            # Muestra el gráfico
+            fig.show()
+        else:
+            print("Error en la respuesta:", response.status_code)
+
+    def graficar_most_profit_month(self, session):
+        url = 'http://127.0.0.1:5000/most/profitmonth'
+        data = {"eid": 3}
+        response = session.get(url, json=data, verify=False)
+
+        if response.status_code == 200:
+            data_json = response.json()
+            df = pd.DataFrame(data_json)
+
+            # Convertimos el mes de número a nombre para una mejor visualización
+            df['month'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%B')
+
+            # La columna 'size' determinará el tamaño de cada burbuja.
+            df['size'] = df['count_reservation']
+
+            # Gráfico de burbujas
+            fig = px.scatter(df, x='month', y='chid', size='size', color='count_reservation',
+                             hover_name='chid', size_max=60,
+                             title='Cantidad de Reservaciones por Mes y CHID')
+
+            # Mejora la visualización con las etiquetas
+            fig.update_layout(
+                xaxis=dict(title='Mes'),
+                yaxis=dict(title='CHID'),
+                autosize=False,
+                width=900,  # Ancho del gráfico
+                height=600,  # Altura del gráfico
+            )
+
+            # Muestra el gráfico
+            fig.show()
+        else:
+            print(f"Error en la respuesta: {response.status_code}")
