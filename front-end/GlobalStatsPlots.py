@@ -140,3 +140,74 @@ class GlobalStatsPlots:
             fig.show()
         else:
             print(f"Error en la respuesta: {response.status_code}")
+
+
+    def graficar_top_3_chain_with_least_rooms(self, session):
+        url = 'http://127.0.0.1:5000/least/rooms'
+        data = {"eid": 3}
+        response = session.get(url, json=data, verify=False)
+
+        if response.status_code == 200:
+            data_json = response.json()
+            df = pd.DataFrame(data_json)
+
+            # Ensure that the data is sorted to get the top 3 chains with the least rooms
+            df = df.nlargest(3, 'room_count', 'all')
+
+            # Create a simple bar plot for visualization
+            fig = px.bar(df, x='chain_name', y='room_count', title='Top 3 Hotel Chains with the Least Rooms',
+                         labels={'chain_name': 'Hotel Chain', 'room_count': 'Number of Rooms'},
+                         color='room_count',  # Continuous color scale based on the number of rooms
+                         color_continuous_scale=px.colors.sequential.Viridis)  # Consistent color palette
+
+            fig.update_layout(
+                autosize=False,
+                width=900,  # Width of the graph
+                height=600,  # Height of the graph
+                xaxis_title="Hotel Chain",
+                yaxis_title="Number of Rooms"
+            )
+
+            # Display the graph
+            fig.show()
+        else:
+            print(f"Error in response: {response.status_code}")
+
+    def graficar_top_3_chains_with_the_highest_total_revenue(self, session):
+        url = 'http://127.0.0.1:5000/most/revenue'  # Endpoint for fetching top 3 chains by revenue
+        data = {"eid": 3}
+        response = session.get(url, json=data, verify=False)
+
+        if response.status_code == 200:
+            data_json = response.json()
+            df = pd.DataFrame(data_json)
+
+            # Assuming the JSON returns more than 3, we sort and take the top 3 entries
+            df = df.nlargest(3, 'total_revenue')
+
+            # Calculate the percentage of total revenue
+            total = df['total_revenue'].sum()
+            df['percentage_revenue'] = (df['total_revenue'] / total) * 100
+
+            # Gráfico de dona
+            fig = px.pie(df, values='percentage_revenue', names='chain_name',
+                         title='Top 3 Hotel Chains with the Highest Total Revenue', hole=0.3,
+                         hover_data={'total_revenue': ':,.2f'},  # Custom hover text with formatted revenue
+                         labels={'percentage_revenue': 'Revenue Share'})
+
+            # Custom hover template to show both percentage and exact revenue
+            fig.update_traces(
+                hovertemplate='%{label}: <br>Revenue Share: %{percent}<br>Total Revenue: $%{customdata[0]:,}')
+
+            # Mejora la visualización con las etiquetas
+            fig.update_layout(
+                autosize=False,
+                width=900,  # Ancho del gráfico
+                height=600,  # Altura del gráfico
+                margin=dict(l=50, r=50, b=100, t=100, pad=4)  # Ajuste de márgenes
+            )
+
+            # Muestra el gráfico
+            fig.show()
+        else:
+            print("Error en la respuesta:", response.status_code)
