@@ -118,7 +118,7 @@ class GlobalStatsPlots:
 
     def graficar_payment_method(self, session):
         # url = 'http://127.0.0.1:5000/paymentmethod'
-        url = f"{heroku_api}/most/capacity"
+        url = f"{heroku_api}/paymentmethod"
         data = {
             "eid": 3
         }
@@ -148,7 +148,9 @@ class GlobalStatsPlots:
             print("Error en la respuesta:", response.status_code)
 
     def graficar_most_profit_month(self, session):
-        url = 'http://127.0.0.1:5000/most/profitmonth'
+        # url = 'http://127.0.0.1:5000/most/profitmonth'
+        url = f"{heroku_api}/most/profitmonth"
+
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
 
@@ -183,7 +185,8 @@ class GlobalStatsPlots:
 
 
     def graficar_top_3_chain_with_least_rooms(self, session):
-        url = 'http://127.0.0.1:5000/least/rooms'
+        # url = 'http://127.0.0.1:5000/least/rooms'
+        url = f"{heroku_api}/least/rooms"
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
 
@@ -214,7 +217,8 @@ class GlobalStatsPlots:
             print(f"Error in response: {response.status_code}")
 
     def graficar_top_3_chains_with_the_highest_total_revenue(self, session):
-        url = 'http://127.0.0.1:5000/most/revenue'  # Endpoint for fetching top 3 chains by revenue
+        # url = 'http://127.0.0.1:5000/most/revenue'  # Endpoint for fetching top 3 chains by revenue
+        url = f"{heroku_api}/most/revenue"  # Endpoint for fetching top 3 chains by revenue
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
 
