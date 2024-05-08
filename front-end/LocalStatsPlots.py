@@ -268,7 +268,8 @@ class LocalStatsPlots:
             print("Error fetching data: HTTP Status", response.status_code)
 
     def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
+        # url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
+        url = f'{heroku_api}/hotel/{hid}/leastreserve'
         respuesta = session.get(url, json=json)
 
         if respuesta.status_code == 200:
@@ -307,7 +308,9 @@ class LocalStatsPlots:
             print("Error al obtener los datos: HTTP Status", respuesta.status_code)
 
     def graficar_top_5_handicap_rooms_most_reserved(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
+        # url = f'http://127.0.0.1:5000/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
+        url = f'{heroku_api}/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
+
         response = session.get(url, json=json)
 
         if response.status_code == 200:
