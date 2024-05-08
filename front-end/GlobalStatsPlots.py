@@ -100,7 +100,8 @@ class GlobalStatsPlots:
     #         plt.show()
 
     def graficar_capacidad_hoteles(self, session):
-        url = 'http://127.0.0.1:5000/most/capacity'
+        url = f"{heroku_api}/most/capacity"
+        # url = 'http://127.0.0.1:5000/most/capacity'
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
         if response.status_code == 200:
