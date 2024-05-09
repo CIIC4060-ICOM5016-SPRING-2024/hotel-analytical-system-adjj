@@ -197,6 +197,10 @@ def create_app(test_config=None):
     def login():
         return LoginController().login()
 
+    @app.route('/register/in/frontend', methods=['POST'])
+    def registerEmployee():
+        return EmployeeController().addEmployee()
+
     @app.route('/roomdescription')
     def get_RoomsDescriptions():
         return RoomDescriptionController().getAllRoomDescriptions()
