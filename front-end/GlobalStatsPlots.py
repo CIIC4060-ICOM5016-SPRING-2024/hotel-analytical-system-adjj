@@ -17,7 +17,7 @@ if (env == 'development'):
 elif(env == 'production'):
     api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
 
-print("API: ", api)
+# print("API: ", api)
 
 class GlobalStatsPlots:
     def __init__(self):
