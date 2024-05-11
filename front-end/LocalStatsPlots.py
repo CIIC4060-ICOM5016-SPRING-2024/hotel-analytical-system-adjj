@@ -3,7 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 
-heroku_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+
+
+url_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+
 class LocalStatsPlots:
     def __init__(self):
         pass
@@ -42,7 +45,7 @@ class LocalStatsPlots:
     def graficar_top_3_highest_pais_regular_employees(self, session, json, hid):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/highestpaid'
         # Endpoint y cuerpo de la petición
-        url = f"{heroku_api}/hotel/{hid}/highestpaid"
+        url = f"{url_api}/hotel/{hid}/highestpaid"
 
 
         # Realizamos la petición al endpoint
@@ -94,7 +97,7 @@ class LocalStatsPlots:
     def graficar_top_5_clientes_jovenes_con_mas_reservaciones(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/mostcreditcard'
         # Suponiendo que puedes pasar eid como un parámetro en la URL
-        url = f"{heroku_api}/hotel/{hid}/mostcreditcard"
+        url = f"{url_api}/hotel/{hid}/mostcreditcard"
 
         # Realizamos la petición al endpoint
         respuesta = session.get(url, json=json)
@@ -111,61 +114,38 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self,session,hid,json):
-        url = f"{heroku_api}/hotel/{hid}/leastguests"
+        url = f"{url_api}/hotel/{hid}/leastguests"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
             datos = respuesta.json()
-
-        if response.status_code == 200:
-            data = response.json()
-
-            # Print the data for debugging
-            # print("Data received:", data)
-
             # Verify if data has the expected format
-            if not data or not all('rname' in d and 'avg_guest_to_capacity_ratio' in d for d in data):
+            if not datos or not all('avg_guest_to_capacity_ratio' in d and 'rid' in d for d in datos):
                 print("Incomplete or incorrect data.")
                 return
+            # Convertimos los datos a DataFrame
+            df = pd.DataFrame(datos)
 
-            df = pd.DataFrame(data)
-
-            # Creating a horizontal bar chart
-            fig = px.bar(df, y='rname', x='avg_guest_to_capacity_ratio', orientation='h',
-                         text='avg_guest_to_capacity_ratio',
-                         title="Top 3 Rooms Reserved with the Least Guest-to-Capacity Ratio",
-                         labels={'rname': 'Room Name',
-                                 'avg_guest_to_capacity_ratio': 'Average Guest-to-Capacity Ratio'},
-                         color='avg_guest_to_capacity_ratio',
-                         color_continuous_scale='Tealgrn')  # Use a teal-green color scale
-
-            # Customizing hover data to show more details
-            fig.update_traces(
-                hovertemplate="<br>".join([
-                    "Room Name: %{y}",
-                    "Avg. Guest-to-Capacity Ratio: %{x:.2f}"
-                ])
-            )
-
-            # Enhance the layout
+            fig = px.bar(df, x=df['rname'],y=df['avg_guest_to_capacity_ratio'], orientation='v',
+                         labels={'rname': 'Room Name', 'avg_guest_to_capacity_ratio': 'Average Guest to Capacity Ratio'},
+                        color='rname',color_continuous_scale=px.colors.sequential.Teal)
+            # Creamos la gráfica
+            fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
+            fig.update_layout(autosize=False, width=800, height=600, yaxis_type="linear")
+             # Enhance the layout
             fig.update_layout(
-                xaxis_title='Average Guest-to-Capacity Ratio',
-                yaxis_title='Room Name',
-                yaxis=dict(type='category'),
+                xaxis_title='Room Name',
+                yaxis_title='Average Guest to Capacity Ratio',
+                title="Top 3 Rooms Reserved with less Guest to Capacity Ratio",
                 coloraxis_colorbar=dict(
-                    title='GTC Ratio'
+                    title='Top 3 rooms reserved that had the least guest-to-capacity ratio'
                 )
             )
-
-            # Ensure text is always displayed on the bars
-            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
-
-            # Display the chart
             fig.show()
         else:
             print("Error al obtener los datos")
     def graficar_total_reservation_by_room_type(self,session,hid,json):
-        url = f"{heroku_api}/hotel/{hid}/roomtype"
+        url = f"{url_api}/hotel/{hid}/roomtype"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -174,49 +154,19 @@ class LocalStatsPlots:
         if response.status_code == 200:
             data = response.json()
 
-            # Print the data for debugging
-            # print("Data received:", data)
-
-            # Verify if data has the expected format
-            if not data or not all('total_reservations' in d and 'rtype' in d for d in data):
-                print("Incomplete or incorrect data.")
-                return
-
-            df = pd.DataFrame(data)
-
-            # Creating a horizontal bar chart
-            fig = px.bar(df, y='rtype', x='total_reservations', orientation='h',
-                         text='total_reservations', title="Total Reservations by Room Type",
-                         labels={'rtype': 'Room Type', 'total_reservations': 'Total Reservations'},
-                         color='total_reservations', color_continuous_scale='Tealgrn')  # Use a teal-green color scale
-
-            # Customizing hover data to show more details
-            fig.update_traces(
-                hovertemplate="<br>".join([
-                    "Room Type: %{y}",
-                    "Total Reservations: %{x}"
-                ])
-            )
-
-            # Enhance the layout
-            fig.update_layout(
-                xaxis_title='Total Reservations',
-                yaxis_title='Room Type',
-                yaxis=dict(type='category'),
-                coloraxis_colorbar=dict(
-                    title='Total Reservations'
-                )
-            )
-
-            # Ensure text is always displayed on the bars
-            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
-
-            # Display the chart
+            fig = px.bar(df, x='rtype',y='total_reservations', orientation='v',
+                         title='Total reservation by room type.',
+                         labels={'total_reservations':'Total Reservations', 'rtype':'Room Type'},
+                         color='total_reservations', color_continuous_scale='Tealgrn')
+            # Creamos la gráfica
+            fig.update_traces(texttemplate='%{y:.2f}', textposition='outside')
+            fig.update_layout(autosize=False, width=800, height=600)
             fig.show()
+ 
         else:
             print("Error al obtener los datos")
     def graficar_top_5_clients_received_the_most_discounts(self,session,hid,json):
-        url = f"{heroku_api}/hotel/{hid}/mostdiscount"
+        url = f"{url_api}/hotel/{hid}/mostdiscount"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -225,51 +175,23 @@ class LocalStatsPlots:
         if response.status_code == 200:
             data = response.json()
 
-            # Print the data for debugging
-            # print("Data received:", data)
 
-            # Verify if data has the expected format
-            if not data or not all('discount_percentage' in d and 'fname' in d and 'lname' in d for d in data):
-                print("Incomplete or incorrect data.")
-                return
+            # Creamos la gráfica
 
-            df = pd.DataFrame(data)
-
-            # Creating a horizontal bar chart
-            fig = px.bar(df, y=df['fname'] + ' ' + df['lname'], x='discount_percentage', orientation='h',
-                         text='discount_percentage', title="Top 5 Clients That Received the Most Discounts",
-                         labels={'fname lname': 'Client Name', 'discount_percentage': 'Discount'},
-                         color='discount_percentage', color_continuous_scale='Tealgrn')  # Use a teal-green color scale
-
-            # Customizing hover data to show more details
-            fig.update_traces(
-                hovertemplate="<br>".join([
-                    "Client Name: %{y}",
-                    "Discount Percentage: %{x}%"
-                ])
-            )
-
-            # Enhance the layout
-            fig.update_layout(
-                xaxis_title='Discount Percentage',
-                yaxis_title='Client Name',
-                yaxis=dict(type='category'),
-                coloraxis_colorbar=dict(
-                    title='Discount'
-                )
-            )
-
-            # Ensure text is always displayed on the bars
-            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
-
-            # Display the chart
+            fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='discount_percentage', orientation='v',
+                         title='Top 5 clients that received the most discounts',
+                         labels={'x':'Name','discount_percentage':'Discount Percentage'},
+                         color='discount_percentage', color_continuous_scale=px.colors.sequential.Teal)
+            fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
+            fig.update_layout(autosize=False, width=800, height=600)
+            fig.update_yaxes(range=[0,50])
             fig.show()
         else:
             print("Error fetching data: HTTP Status", response.status_code)
 
     def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
-        url = f'{heroku_api}/hotel/{hid}/leastreserve'
+        url = f'{url_api}/hotel/{hid}/leastreserve'
         respuesta = session.get(url, json=json)
 
         if respuesta.status_code == 200:
@@ -309,7 +231,7 @@ class LocalStatsPlots:
 
     def graficar_top_5_handicap_rooms_most_reserved(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
-        url = f'{heroku_api}/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
+        url = f'{url_api}/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
 
         response = session.get(url, json=json)
 
@@ -325,6 +247,8 @@ class LocalStatsPlots:
                 return
 
             df = pd.DataFrame(data)
+
+
 
             # Creating a horizontal bar chart
             fig = px.bar(df, y='room_id', x='reservation_count', orientation='h',
@@ -361,3 +285,4 @@ class LocalStatsPlots:
             fig.show()
         else:
             print("Error fetching data: HTTP Status", response.status_code)
+
