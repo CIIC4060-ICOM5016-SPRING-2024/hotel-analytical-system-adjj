@@ -1,11 +1,23 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 import plotly.express as px
+import os
+from dotenv import load_dotenv
+import requests
 
+load_dotenv()
 
+env = os.getenv('ENV')
+# print("Environment:",env)
 
+session = requests.Session()
 
-url_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+if (env == 'development'):
+    api = "http://127.0.0.1:5000"
+elif(env == 'production'):
+    api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+
+print("API: ", api)
 
 class LocalStatsPlots:
     def __init__(self):
@@ -45,7 +57,7 @@ class LocalStatsPlots:
     def graficar_top_3_highest_pais_regular_employees(self, session, json, hid):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/highestpaid'
         # Endpoint y cuerpo de la petición
-        url = f"{url_api}/hotel/{hid}/highestpaid"
+        url = f"{api}/hotel/{hid}/highestpaid"
 
 
         # Realizamos la petición al endpoint
@@ -97,7 +109,7 @@ class LocalStatsPlots:
     def graficar_top_5_clientes_jovenes_con_mas_reservaciones(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/mostcreditcard'
         # Suponiendo que puedes pasar eid como un parámetro en la URL
-        url = f"{url_api}/hotel/{hid}/mostcreditcard"
+        url = f"{api}/hotel/{hid}/mostcreditcard"
 
         # Realizamos la petición al endpoint
         respuesta = session.get(url, json=json)
@@ -114,7 +126,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self,session,hid,json):
-        url = f"{url_api}/hotel/{hid}/leastguests"
+        url = f"{api}/hotel/{hid}/leastguests"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -145,7 +157,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_total_reservation_by_room_type(self,session,hid,json):
-        url = f"{url_api}/hotel/{hid}/roomtype"
+        url = f"{api}/hotel/{hid}/roomtype"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -166,7 +178,7 @@ class LocalStatsPlots:
         else:
             print("Error al obtener los datos")
     def graficar_top_5_clients_received_the_most_discounts(self,session,hid,json):
-        url = f"{url_api}/hotel/{hid}/mostdiscount"
+        url = f"{api}/hotel/{hid}/mostdiscount"
         respuesta = session.get(url, json=json)
         # Verificamos si la petición fue exitosa
         if respuesta.status_code == 200:
@@ -191,7 +203,7 @@ class LocalStatsPlots:
 
     def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
-        url = f'{url_api}/hotel/{hid}/leastreserve'
+        url = f'{api}/hotel/{hid}/leastreserve'
         respuesta = session.get(url, json=json)
 
         if respuesta.status_code == 200:
@@ -231,7 +243,7 @@ class LocalStatsPlots:
 
     def graficar_top_5_handicap_rooms_most_reserved(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
-        url = f'{url_api}/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
+        url = f'{api}/hotel/{hid}/handicaproom'  # Adjust the endpoint as necessary
 
         response = session.get(url, json=json)
 

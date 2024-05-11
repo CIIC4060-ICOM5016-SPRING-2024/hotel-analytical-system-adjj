@@ -1,8 +1,23 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 import plotly.express as px
+import os
+from dotenv import load_dotenv
+import requests
 
-heroku_api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+load_dotenv()
+
+env = os.getenv('ENV')
+# print("Environment:",env)
+
+session = requests.Session()
+
+if (env == 'development'):
+    api = "http://127.0.0.1:5000"
+elif(env == 'production'):
+    api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+
+print("API: ", api)
 
 class GlobalStatsPlots:
     def __init__(self):
@@ -52,7 +67,7 @@ class GlobalStatsPlots:
     def mostrar_graficos_most_reservation(self, session):
         # url = 'http://127.0.0.1:5000/most/reservation'
         # data = {"eid": 3}
-        url = f"{heroku_api}/most/reservation"
+        url = f"{api}/most/reservation"
         data = {
             "eid": 3
         }
@@ -100,7 +115,7 @@ class GlobalStatsPlots:
     #         plt.show()
 
     def graficar_capacidad_hoteles(self, session):
-        url = f"{heroku_api}/most/capacity"
+        url = f"{api}/most/capacity"
         # url = 'http://127.0.0.1:5000/most/capacity'
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
@@ -118,7 +133,7 @@ class GlobalStatsPlots:
 
     def graficar_payment_method(self, session):
         # url = 'http://127.0.0.1:5000/paymentmethod'
-        url = f"{heroku_api}/paymentmethod"
+        url = f"{api}/paymentmethod"
         data = {
             "eid": 3
         }
@@ -149,7 +164,7 @@ class GlobalStatsPlots:
 
     def graficar_most_profit_month(self, session):
         # url = 'http://127.0.0.1:5000/most/profitmonth'
-        url = f"{heroku_api}/most/profitmonth"
+        url = f"{api}/most/profitmonth"
 
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
@@ -186,7 +201,7 @@ class GlobalStatsPlots:
 
     def graficar_top_3_chain_with_least_rooms(self, session):
         # url = 'http://127.0.0.1:5000/least/rooms'
-        url = f"{heroku_api}/least/rooms"
+        url = f"{api}/least/rooms"
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
 
@@ -218,7 +233,7 @@ class GlobalStatsPlots:
 
     def graficar_top_3_chains_with_the_highest_total_revenue(self, session):
         # url = 'http://127.0.0.1:5000/most/revenue'  # Endpoint for fetching top 3 chains by revenue
-        url = f"{heroku_api}/most/revenue"  # Endpoint for fetching top 3 chains by revenue
+        url = f"{api}/most/revenue"  # Endpoint for fetching top 3 chains by revenue
         data = {"eid": 3}
         response = session.get(url, json=data, verify=False)
 
