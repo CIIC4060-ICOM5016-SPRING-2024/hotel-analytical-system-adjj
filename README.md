@@ -5,6 +5,7 @@
 # DB-ADJJ Database credentials
 
 REST API HOSTNAME: https://postgres-app1-075e5eddc52e.herokuapp.com
+
 FRONTEND HOSTNAME: https://dashboard.heroku.com/apps/voila-app/deploy/github
 
 Host: ceu9lmqblp8t3q.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
