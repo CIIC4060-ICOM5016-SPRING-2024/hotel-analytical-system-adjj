@@ -87,34 +87,33 @@ class ChainsDAO:
         cur = self.db.conexion.cursor()
         try:
             query = """
-                        WITH MonthlyReservations AS (
-                            SELECT
-                                chid,
-                                EXTRACT(MONTH FROM startdate) AS Month,
-                                COUNT(*) AS count_reservation
-                             FROM
-                                chains NATURAL INNER JOIN hotel NATURAL INNER JOIN room
-                                NATURAL INNER JOIN roomunavailable
-                            GROUP BY
-                                chid, Month),
-                        RankedMonths AS (
-                            SELECT
-                                chid,
-                                Month,
-                                count_reservation,
-                                ROW_NUMBER() OVER(PARTITION BY chid ORDER BY count_reservation DESC) AS month_rank
-                                FROM
-                                MonthlyReservations)
+                    WITH RankedReservations AS (
                         SELECT
-                            chid,
-                        Month,
-                            count_reservation
+                            c.chid AS Chain_ID,
+                            EXTRACT(MONTH FROM ru.startdate) AS Reservation_Month,
+                            COUNT(r.reid) AS Total_Reservations,
+                            ROW_NUMBER() OVER (PARTITION BY c.chid ORDER BY COUNT(r.reid) DESC) AS Rank
                         FROM
-                            RankedMonths
-                        WHERE
-                            month_rank <= 3
+                            Chains c
+                            JOIN Hotel h ON c.chid = h.chid
+                            JOIN Room ro ON h.hid = ro.hid
+                            JOIN RoomUnavailable ru ON ro.rid = ru.rid
+                            JOIN Reserve r ON ru.ruid = r.ruid
+                        GROUP BY
+                            c.chid,
+                            EXTRACT(MONTH FROM ru.startdate)
+                    )
+                    SELECT
+                        Chain_ID,
+                        Reservation_Month,
+                        Total_Reservations
+                    FROM
+                        RankedReservations
+                    WHERE
+                        Rank <= 3
                     ORDER BY
-                            chid, month_rank;
+                        Chain_ID, Rank;
+
                         """
             cur.execute(query)
             most_profit_list = cur.fetchall()
@@ -143,11 +142,14 @@ class ChainsDAO:
                         Chains C
                         LEFT JOIN Hotel H ON C.chid = H.chid
                         LEFT JOIN Room RO ON H.hid = RO.hid
+                    WHERE
+                        C.chid <> -1
                     GROUP BY
                         C.chid, C.cname
                     ORDER BY
                         Room_Count ASC
                     LIMIT 3;
+
                     """
             cur.execute(query)
             chains_list = cur.fetchall()
