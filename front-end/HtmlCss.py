@@ -6,85 +6,77 @@ class HtmlCSS:
         pass
 
     def create_navBar(self, tuple_list):
-
-
-        # Construir los elementos <li> de la lista dinámicamente
+        # Construct the list items dynamically
         menu_items_html = "".join([f'<li><a href="#{item[0]}">{item[1]}</a></li>' for item in tuple_list])
 
-        # Definir el HTML y CSS para la barra de navegación
+        # Define the HTML and CSS for the navigation bar
         navbar_html = f"""
         <style>
             #navbar {{
-              background-color: #FF5733; /* Color de fondo de la barra de navegación */
-              color: white;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              padding: 10px;
+                background-color: #34495E; /* Dark blue background */
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
             }}
             #navbar .logo {{
-              font-weight: bold;
-              font-size: 24px;
+                font-weight: bold;
+                font-size: 24px;
             }}
             #navbar .menu {{
-              list-style-type: none;
-              margin: 0;
-              padding: 0;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
             }}
-
             #navbar .menu li {{
-              display: inline;
-              margin-right: 20px;
-              font-weight: bold;
-              font-size: 18px;
+                display: inline;
+                margin-right: 20px;
+                font-weight: bold;
+                font-size: 18px;
             }}
-
             #navbar .menu li a {{
-              color: white; /* Color del texto de los enlaces */
-              text-decoration: none;
-              padding: 8px 12px;
+                color: white; /* Text color for links */
+                text-decoration: none;
+                padding: 8px 12px;
             }}
-
             #navbar .menu li a:hover {{
-              background-color: #C7460E; /* Color de fondo de los enlaces al pasar el mouse */
-              border-radius: 4px;
+                background-color: #1ABC9C; /* Turquoise background on hover */
+                border-radius: 4px;
             }}
         </style>
 
         <div id="navbar">
-          <div class="logo">hotel-analytical-system</div>
-          <ul class="menu">
-            {menu_items_html}
-          </ul>
+            <div class="logo">Hotel Analytics Systems</div>
+            <ul class="menu">
+                {menu_items_html}
+            </ul>
         </div>
         """
 
-        # Crear el widget HTML con el contenido definido
+        # Create an HTML widget with the defined content and display it
         navbar_widget = widgets.HTML(value=navbar_html)
-
-        # Mostrar el widget HTML
         display(navbar_widget)
 
-    def create_styled_section(self, section_id, title, background_color="#FF5733", text_color="white"):
-        # Construir el CSS específico para esta sección
+    def create_styled_section(self, section_id, title, background_color="#34495E", text_color="white"):
+        # Build specific CSS for this section
         section_style = f"""
         <style>
         #{section_id} {{
-          color: {text_color}; /* Cambia el color del texto */
-          font-weight: bold; /* Hace el texto en negrita */
+            color: {text_color};
+            font-weight: bold;
         }}
-
-        /* Para dar estilo al título que viene después del ancla */
         #{section_id} + h1 {{
-          background-color: {background_color}; /* Color de fondo */
-          color: {text_color}; /* Color del texto */
-          padding: 10px; /* Espaciado interno */
-          border-radius: 5px; /* Bordes redondeados */
+            background-color: {background_color};
+            color: {text_color};
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px; /* Add spacing above the title */
         }}
         </style>
         """
 
-        # Construir el HTML de la sección con el ancla y el título
+        # Build the HTML for the section with the anchor and title
         section_html = f"""
         <div id="{section_id}">
             <a id="{section_id}"></a>
@@ -92,7 +84,6 @@ class HtmlCSS:
         </div>
         """
 
-        # Combinar el estilo y el HTML, y mostrarlo utilizando un widget HTML
+        # Combine the style and HTML, and display it using an HTML widget
         full_html = section_style + section_html
         display(widgets.HTML(value=full_html))
-
