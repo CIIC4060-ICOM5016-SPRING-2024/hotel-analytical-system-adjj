@@ -170,6 +170,7 @@ class ClientDAO:
                             ELSE 0
                         END AS discount_points
                     ) AS D
+                WHERE R.hid = %s
                 GROUP BY
                     C.clid, C.fname, C.lname, D.discount_points
                 ORDER BY
