@@ -163,8 +163,10 @@ class LocalStatsPlots:
         if respuesta.status_code == 200:
             datos = respuesta.json()
 
-        if response.status_code == 200:
-            data = response.json()
+        if respuesta.status_code == 200:
+            data = respuesta.json()
+
+            df = pd.DataFrame(data)
 
             fig = px.bar(df, x='rtype',y='total_reservations', orientation='v',
                          title='Total reservation by room type.',
@@ -184,10 +186,10 @@ class LocalStatsPlots:
         if respuesta.status_code == 200:
             datos = respuesta.json()
 
-        if response.status_code == 200:
-            data = response.json()
+        if respuesta.status_code == 200:
+            data = respuesta.json()
 
-
+            df = pd.DataFrame(data)
             # Creamos la gráfica
 
             fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='total_discount_points', orientation='v',
@@ -199,7 +201,7 @@ class LocalStatsPlots:
             # fig.update_yaxes(range=[0,50])
             fig.show()
         else:
-            print("Error fetching data: HTTP Status", response.status_code)
+            print("Error fetching data: HTTP Status", respuesta.status_code)
 
     def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
         # url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'
