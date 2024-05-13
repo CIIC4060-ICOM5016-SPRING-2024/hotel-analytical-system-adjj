@@ -28,6 +28,11 @@ When you pull the code, you will need to create a .env file. This will be inside
 
 ![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/1f76cac4-7948-4c05-b247-bd2678cd985f)
 
+### .env file with env variable
+When you pull the code, to run voila frontend locally, inside the frontend folder create a .env file with the following variable.
+```
+ENV=development
+```
 
 ### It may be necessary to add a path in the system environment variables.
 From what I understood when configuring the project, this has to do with importing the python packages. Adding your project's root path to the system's PYTHONPATH is a common practice for solving module import problems in Python, especially in complex projects with a deep directory structure or when working with modules that need to import between subdirectories. If I'm not mistaken, this is not the best solution since it can cause complications when taking the application to production. However, to work locally developing the project logic it is an acceptable solution.
