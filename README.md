@@ -31,7 +31,8 @@ When you pull the code, you will need to create a .env file. This will be inside
 ### .env file with env variable
 When you pull the code, to run voila frontend locally, inside the frontend folder create a .env file with the following variable.
 ```
-ENV=development
+ENV=development # if running with local version of the database
+ENV=production # if running with heroku database
 ```
 
 ### It may be necessary to add a path in the system environment variables.
