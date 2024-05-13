@@ -210,7 +210,7 @@ class LocalStatsPlots:
                          title='Top 5 clients that received the most discounts',
                          labels={'x':'Name','discount_percentage':'Discount Percentage'},
                          color='discount_percentage', color_continuous_scale='Tealgrn')
-            fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
+            fig.update_traces(texttemplate='%{y:.2f}', textposition='outside')
             fig.update_layout(autosize=False, width=800, height=600)
             # fig.update_yaxes(range=[0,50])
             fig.show()
