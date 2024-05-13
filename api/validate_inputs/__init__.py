@@ -14,7 +14,7 @@ def employee_inputs_are_correct(position, salary):
     }
 
     min_salary, max_salary = salary_rules[position]
-    if not (min_salary <= salary <= max_salary):
+    if not (int(min_salary) <= int(salary) <= int(max_salary)):
         #print(f"Error: El salario {salary} no cumple con las reglas para la posición {position}.")
         message = f"Error: Salary {salary} does not comply with the rules for position {position}. The salaries are as follows: {salary_rules}"
         return False, message
