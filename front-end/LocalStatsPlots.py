@@ -258,33 +258,82 @@ class LocalStatsPlots:
     #     else:
     #         print("Error al obtener los datos")
 
+    # def graficar_top_5_clients_received_the_most_discounts(self, session, hid, json):
+    #     url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
+    #     respuesta = session.get(url, json=json)
+    #     # Verificamos si la petición fue exitosa
+    #     if respuesta.status_code == 200:
+    #         datos = respuesta.json()
+    #
+    #         # Convertimos los datos a DataFrame
+    #         df = pd.DataFrame(datos)
+    #
+    #         # Creamos la gráfica
+    #         plt.figure(figsize=(10, 6))
+    #         plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage'], color='teal')
+    #         plt.xlabel('Discount')
+    #         plt.title("Top 5 clients that received the most discounts")
+    #
+    #         # Añadiendo los valores exactos en cada barra
+    #         for bar in plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage']):
+    #             width = bar.get_width()
+    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+    #
+    #         plt.tight_layout()
+    #
+    #         # Mostramos la gráfica
+    #         plt.show()
+    #     else:
+    #         print("Error al obtener los datos")
+
     def graficar_top_5_clients_received_the_most_discounts(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
-        respuesta = session.get(url, json=json)
-        # Verificamos si la petición fue exitosa
-        if respuesta.status_code == 200:
-            datos = respuesta.json()
+        url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'  # Adjust the endpoint as necessary
+        response = session.get(url, json=json)
 
-            # Convertimos los datos a DataFrame
-            df = pd.DataFrame(datos)
+        if response.status_code == 200:
+            data = response.json()
 
-            # Creamos la gráfica
-            plt.figure(figsize=(10, 6))
-            plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage'], color='teal')
-            plt.xlabel('Discount')
-            plt.title("Top 5 clients that received the most discounts")
+            # Print the data for debugging
+            # print("Data received:", data)
 
-            # Añadiendo los valores exactos en cada barra
-            for bar in plt.barh(df['fname'] + ' ' + df['lname'], df['discount_percentage']):
-                width = bar.get_width()
-                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+            # Verify if data has the expected format
+            if not data or not all('discount_percentage' in d and 'fname' in d and 'lname' in d for d in data):
+                print("Incomplete or incorrect data.")
+                return
 
-            plt.tight_layout()
+            df = pd.DataFrame(data)
 
-            # Mostramos la gráfica
-            plt.show()
+            # Creating a horizontal bar chart
+            fig = px.bar(df, y=df['fname'] + ' ' + df['lname'], x='discount_percentage', orientation='h',
+                         text='discount_percentage', title="Top 5 Clients That Received the Most Discounts",
+                         labels={'fname lname': 'Client Name', 'discount_percentage': 'Discount'},
+                         color='discount_percentage', color_continuous_scale='Tealgrn')  # Use a teal-green color scale
+
+            # Customizing hover data to show more details
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "Client Name: %{y}",
+                    "Discount Percentage: %{x}%"
+                ])
+            )
+
+            # Enhance the layout
+            fig.update_layout(
+                xaxis_title='Discount Percentage',
+                yaxis_title='Client Name',
+                yaxis=dict(type='category'),
+                coloraxis_colorbar=dict(
+                    title='Discount'
+                )
+            )
+
+            # Ensure text is always displayed on the bars
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
+
+            # Display the chart
+            fig.show()
         else:
-            print("Error al obtener los datos")
+            print("Error fetching data: HTTP Status", response.status_code)
 
     def graficar_top_3_rooms_with_least_reservation(self, session, hid, json):
         url = f'http://127.0.0.1:5000/hotel/{hid}/leastreserve'

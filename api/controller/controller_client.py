@@ -125,7 +125,7 @@ class ClientContoller:
                 'lname': row[2],
                 'age': row[3],
                 'memberyear':row[4],
-                'total_discount_points':row[5]
+                'discount_percentage':row[5]
             }
             return dict
         data = request.get_json()

@@ -149,33 +149,45 @@ class ClientDAO:
             cur = self.db.conexion.cursor()
 
             query="""
-                SELECT
-                    C.clid,
-                    C.fname,
-                    C.lname,
-                    C.age,
-                    C.memberyear,
-                    COUNT(*) * discount_points AS total_discount_points
-                FROM
-                    Reserve R
-                INNER JOIN
-                    Client C ON R.clid = C.clid
-                CROSS JOIN
-                    LATERAL (
-                        SELECT CASE
-                            WHEN C.memberyear BETWEEN 1 AND 4 THEN 2
-                            WHEN C.memberyear BETWEEN 5 AND 9 THEN 5
-                            WHEN C.memberyear BETWEEN 10 AND 14 THEN 8
-                            WHEN C.memberyear >= 15 THEN 12
-                            ELSE 0
-                        END AS discount_points
-                    ) AS D
-                WHERE R.hid = %s
-                GROUP BY
-                    C.clid, C.fname, C.lname, D.discount_points
-                ORDER BY
-                    total_discount_points DESC
-                LIMIT 5;
+SELECT
+
+
+    c.clid,
+    c.fname,
+    c.lname,
+    c.age,
+    c.memberyear,
+
+    SUM(((ro.rprice * (ru.enddate - ru.startdate) *
+        CASE
+            WHEN EXTRACT(MONTH FROM ru.startdate) IN (3, 4, 5) THEN ch.springmkup
+            WHEN EXTRACT(MONTH FROM ru.startdate) IN (6, 7, 8) THEN ch.summermkup
+            WHEN EXTRACT(MONTH FROM ru.startdate) IN (9, 10, 11) THEN ch.fallmkup
+            WHEN EXTRACT(MONTH FROM ru.startdate) IN (12, 1, 2) THEN ch.wintermkup
+        END) *
+        CASE
+            WHEN (EXTRACT(YEAR FROM CURRENT_DATE) - c.memberyear) >= 15 THEN 0.12
+            WHEN (EXTRACT(YEAR FROM CURRENT_DATE) - c.memberyear) BETWEEN 10 AND 14 THEN 0.08
+            WHEN (EXTRACT(YEAR FROM CURRENT_DATE) - c.memberyear) BETWEEN 5 AND 9 THEN 0.05
+            WHEN (EXTRACT(YEAR FROM CURRENT_DATE) - c.memberyear) BETWEEN 1 AND 4 THEN 0.02
+            ELSE 0
+        END)) AS discount_percentage
+FROM
+    Reserve r
+JOIN Client c ON r.clid = c.clid
+JOIN RoomUnavailable ru ON r.ruid = ru.ruid
+JOIN Room ro ON ru.rid = ro.rid
+JOIN Hotel h ON ro.hid = h.hid
+JOIN Chains ch ON h.chid = ch.chid
+WHERE
+    ro.hid = %s and c.memberyear >= 15
+
+
+GROUP BY
+    c.clid, c.fname, c.lname, c.memberyear
+ORDER BY
+    discount_percentage DESC
+limit 5;
             """
             cur.execute(query, (hid,))
             top_clients = cur.fetchall()
@@ -187,4 +199,3 @@ class ClientDAO:
         finally:
             self.db.close()
             cur.close()
-            
