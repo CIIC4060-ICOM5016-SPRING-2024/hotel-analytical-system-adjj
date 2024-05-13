@@ -153,6 +153,7 @@ class ClientDAO:
                     C.clid,
                     C.fname,
                     C.lname,
+                    C.age,
                     C.memberyear,
                     COUNT(*) * discount_points AS total_discount_points
                 FROM
