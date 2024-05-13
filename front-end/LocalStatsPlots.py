@@ -66,8 +66,8 @@ class LocalStatsPlots:
             datos = respuesta.json()
             df = pd.DataFrame(datos)
             fig = px.bar(df, x='salary', y=df['fname'] + ' ' + df['lname'], orientation='h',
-                         title='Top 3 highest paid regular employees.', labels={'x': 'Salary', 'y': 'Name'},
-                         color='salary',  color_continuous_scale='Tealgrn')
+                         title='Top 3 Empleados Regulares Mejor Pagados', labels={'x': 'Salario', 'y': 'Nombre'},
+                         color='salary', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
             fig.update_layout(autosize=False, width=900, height=600)
             fig.show()
@@ -117,8 +117,8 @@ class LocalStatsPlots:
             datos = respuesta.json()
             df = pd.DataFrame(datos)
             fig = px.bar(df, x='reservation_count', y=df['fname'] + ' ' + df['lname'], orientation='h',
-                         title='Top 5 clients under 30 years old that made the most reservation with a credit card',
-                         labels={'x': 'Cantidad de Reservaciones', 'y': 'Name'},
+                         title='Top 5 Clientes Menores de 30 Años con Más Reservaciones con Tarjeta de Crédito',
+                         labels={'x': 'Cantidad de Reservaciones', 'y': 'Nombre'},
                          color='reservation_count', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
             fig.update_layout(autosize=False, width=900, height=600)
@@ -140,7 +140,7 @@ class LocalStatsPlots:
 
             fig = px.bar(df, x=df['rname'],y=df['avg_guest_to_capacity_ratio'], orientation='v',
                          labels={'rname': 'Room Name', 'avg_guest_to_capacity_ratio': 'Average Guest to Capacity Ratio'},
-                        color='rname',color_continuous_scale=px.colors.sequential.Teal)
+                        color='rname',color_continuous_scale='Tealgrn')
             # Creamos la gráfica
             fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
             fig.update_layout(autosize=False, width=800, height=600, yaxis_type="linear")
@@ -193,7 +193,7 @@ class LocalStatsPlots:
             fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='discount_percentage', orientation='v',
                          title='Top 5 clients that received the most discounts',
                          labels={'x':'Name','discount_percentage':'Discount Percentage'},
-                         color='discount_percentage', color_continuous_scale=px.colors.sequential.Teal)
+                         color='discount_percentage', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
             fig.update_layout(autosize=False, width=800, height=600)
             fig.update_yaxes(range=[0,50])
