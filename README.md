@@ -6,7 +6,7 @@
 
 REST API HOSTNAME: https://postgres-app1-075e5eddc52e.herokuapp.com
 
-FRONTEND HOSTNAME: https://dashboard.heroku.com/apps/voila-app/deploy/github
+FRONTEND HOSTNAME: https://voila-app-84c489d66ea3.herokuapp.com
 
 Host: ceu9lmqblp8t3q.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
 
