@@ -138,21 +138,35 @@ class LocalStatsPlots:
             # Convertimos los datos a DataFrame
             df = pd.DataFrame(datos)
 
-            fig = px.bar(df, x=df['rname'],y=df['avg_guest_to_capacity_ratio'], orientation='v',
-                         labels={'rname': 'Room Name', 'avg_guest_to_capacity_ratio': 'Average Guest to Capacity Ratio'},
-                        color='rname',color_continuous_scale='Tealgrn')
-            # Creamos la gráfica
-            fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
-            fig.update_layout(autosize=False, width=800, height=600, yaxis_type="linear")
-             # Enhance the layout
+            fig = px.bar(df, y='rname', x='avg_guest_to_capacity_ratio', orientation='h',
+                         text='avg_guest_to_capacity_ratio',
+                         title="Top 3 Rooms Reserved with the Least Guest-to-Capacity Ratio",
+                         labels={'rname': 'Room Name',
+                                 'avg_guest_to_capacity_ratio': 'Average Guest-to-Capacity Ratio'},
+                         color='avg_guest_to_capacity_ratio',
+                         color_continuous_scale='Tealgrn')  # Use a teal-green color scale
+
+            # Customizing hover data to show more details
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "Room Name: %{y}",
+                    "Avg. Guest-to-Capacity Ratio: %{x:.2f}"
+                ])
+            )
+
+            # Enhance the layout
             fig.update_layout(
-                xaxis_title='Room Name',
-                yaxis_title='Average Guest to Capacity Ratio',
-                title="Top 3 Rooms Reserved with less Guest to Capacity Ratio",
+                xaxis_title='Average Guest-to-Capacity Ratio',
+                yaxis_title='Room Name',
+                yaxis=dict(type='category'),
                 coloraxis_colorbar=dict(
-                    title='Top 3 rooms reserved that had the least guest-to-capacity ratio'
+                    title='GTC Ratio'
                 )
             )
+
+            # Ensure text is always displayed on the bars
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
+
             fig.show()
         else:
             print("Error al obtener los datos")
