@@ -190,10 +190,10 @@ class LocalStatsPlots:
 
             # Creamos la gráfica
 
-            fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='discount_percentage', orientation='v',
+            fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='total_discount_points', orientation='v',
                          title='Top 5 clients that received the most discounts',
                          labels={'x':'Name','discount_percentage':'Discount Percentage'},
-                         color='discount_percentage', color_continuous_scale='Tealgrn')
+                         color='total_discount_points', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
             fig.update_layout(autosize=False, width=800, height=600)
             fig.update_yaxes(range=[0,50])
