@@ -254,21 +254,28 @@ class GlobalStatsPlots:
             #              hover_data={'total_revenue': ':,.2f'},  # Custom hover text with formatted revenue
             #              labels={'percentage_revenue': 'Revenue Share'})
 
-            fig = px.bar(df, x='chain_name', y='total_revenue', title='Top 3 Hotel Chains with the Least Rooms',
-                         labels={'chain_name': 'Hotel Chain', 'room_count': 'Number of Rooms'},
+            fig = px.bar(df, x='chain_name', y='total_revenue', title='Top 3 Hotel Chains with the Highest Total Revenue',
+                         labels={'chain_name': 'Hotel Chain', 'total_revenue': 'Total Revenue'},
                          color='total_revenue',  # Continuous color scale based on the number of rooms
                          color_continuous_scale=px.colors.sequential.Viridis)  # Consistent color palette
-            # Custom hover template to show both percentage and exact revenue
-            fig.update_traces(
-                hovertemplate='%{label}: <br>Revenue Share: %{percent}<br>Total Revenue: $%{customdata[0]:,}')
-
-            # Mejora la visualización con las etiquetas
             fig.update_layout(
                 autosize=False,
-                width=900,  # Ancho del gráfico
-                height=600,  # Altura del gráfico
-                margin=dict(l=50, r=50, b=100, t=100, pad=4)  # Ajuste de márgenes
+                width=900,  # Width of the graph
+                height=600,  # Height of the graph
+                xaxis_title="Hotel Chain",
+                yaxis_title="Total Revenue"
             )
+            # Custom hover template to show both percentage and exact revenue
+            # fig.update_traces(
+            #     hovertemplate='%{label}: <br>Revenue Share: %{percent}<br>Total Revenue: $%{customdata[0]:,}')
+
+            # # Mejora la visualización con las etiquetas
+            # fig.update_layout(
+            #     autosize=False,
+            #     width=900,  # Ancho del gráfico
+            #     height=600,  # Altura del gráfico
+            #     margin=dict(l=50, r=50, b=100, t=100, pad=4)  # Ajuste de márgenes
+            # )
 
             # Muestra el gráfico
             fig.show()
