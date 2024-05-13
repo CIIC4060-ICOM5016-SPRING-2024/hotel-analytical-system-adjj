@@ -149,28 +149,29 @@ class ClientDAO:
             cur = self.db.conexion.cursor()
 
             query="""
-                SELECT 
-                    C.clid, 
-                    C.fname, 
-                    C.lname, 
-                    C.age, 
-                    C.memberyear,
-                    CASE 
-                        WHEN C.memberyear BETWEEN 1 AND 4 THEN 2
-                        WHEN C.memberyear BETWEEN 5 AND 9 THEN 5
-                        WHEN C.memberyear BETWEEN 10 AND 14 THEN 8
-                        WHEN C.memberyear >= 15 THEN 12
-                        ELSE 0
-                    END AS discount_percentage
-                FROM 
-                    Client C
-                INNER JOIN Reserve Re ON C.clid = Re.clid
-                INNER JOIN RoomUnavailable Ru ON Re.ruid = Ru.ruid
-                INNER JOIN Room R ON Ru.rid = R.rid
-                WHERE R.hid = %s
-                ORDER BY 
-                    discount_percentage DESC, 
-                    memberyear DESC -- En caso de empates en el descuento, se prioriza al miembro más antiguo
+                SELECT
+                    C.clid,
+                    C.fname,
+                    C.lname,
+                    COUNT(*) * discount_points AS total_discount_points
+                FROM
+                    Reserve R
+                INNER JOIN
+                    Client C ON R.clid = C.clid
+                CROSS JOIN
+                    LATERAL (
+                        SELECT CASE
+                            WHEN C.memberyear BETWEEN 1 AND 4 THEN 2
+                            WHEN C.memberyear BETWEEN 5 AND 9 THEN 5
+                            WHEN C.memberyear BETWEEN 10 AND 14 THEN 8
+                            WHEN C.memberyear >= 15 THEN 12
+                            ELSE 0
+                        END AS discount_points
+                    ) AS D
+                GROUP BY
+                    C.clid, C.fname, C.lname, D.discount_points
+                ORDER BY
+                    total_discount_points DESC
                 LIMIT 5;
             """
             cur.execute(query, (hid,))
