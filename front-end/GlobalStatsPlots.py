@@ -249,11 +249,15 @@ class GlobalStatsPlots:
             df['percentage_revenue'] = (df['total_revenue'] / total) * 100
 
             # Gráfico de dona
-            fig = px.pie(df, values='percentage_revenue', names='chain_name',
-                         title='Top 3 Hotel Chains with the Highest Total Revenue', hole=0.3,
-                         hover_data={'total_revenue': ':,.2f'},  # Custom hover text with formatted revenue
-                         labels={'percentage_revenue': 'Revenue Share'})
+            # fig = px.pie(df, values='percentage_revenue', names='chain_name',
+            #              title='Top 3 Hotel Chains with the Highest Total Revenue', hole=0.3,
+            #              hover_data={'total_revenue': ':,.2f'},  # Custom hover text with formatted revenue
+            #              labels={'percentage_revenue': 'Revenue Share'})
 
+            fig = px.bar(df, x='chain_name', y='total_revenue', title='Top 3 Hotel Chains with the Least Rooms',
+                         labels={'chain_name': 'Hotel Chain', 'room_count': 'Number of Rooms'},
+                         color='total_revenue',  # Continuous color scale based on the number of rooms
+                         color_continuous_scale=px.colors.sequential.Viridis)  # Consistent color palette
             # Custom hover template to show both percentage and exact revenue
             fig.update_traces(
                 hovertemplate='%{label}: <br>Revenue Share: %{percent}<br>Total Revenue: $%{customdata[0]:,}')
