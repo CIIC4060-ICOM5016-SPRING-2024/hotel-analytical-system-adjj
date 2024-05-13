@@ -203,15 +203,39 @@ class LocalStatsPlots:
         if respuesta.status_code == 200:
             data = respuesta.json()
 
-            df = pd.DataFrame(data)
-            # Creamos la gráfica
+            if not data or not all('discount_percentage' in d and 'fname' in d and 'lname' in d for d in data):
+                print("Incomplete or incorrect data.")
+                return
 
-            fig = px.bar(df, x=df['fname'] + ' ' + df['lname'],y='discount_percentage', orientation='v',
-                         title='Top 5 clients that received the most discounts',
-                         labels={'x':'Name','discount_percentage':'Discount Percentage'},
-                         color='discount_percentage', color_continuous_scale='Tealgrn')
-            fig.update_traces(texttemplate='%{y:.2f}', textposition='outside')
-            fig.update_layout(autosize=False, width=800, height=600)
+            df = pd.DataFrame(data)
+
+            # Creating a horizontal bar chart
+            fig = px.bar(df, y=df['fname'] + ' ' + df['lname'], x='discount_percentage', orientation='h',
+                         text='discount_percentage', title="Top 5 Clients That Received the Most Discounts",
+                         labels={'fname lname': 'Client Name', 'discount_percentage': 'Discount'},
+                         color='discount_percentage', color_continuous_scale='Tealgrn')  # Use a teal-green color scale
+             # Customizing hover data to show more details
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "Client Name: %{y}",
+                    "Discount Percentage: %{x}%"
+                ])
+            )
+
+            # Enhance the layout
+            fig.update_layout(
+                xaxis_title='Discount Percentage',
+                yaxis_title='Client Name',
+                yaxis=dict(type='category'),
+                coloraxis_colorbar=dict(
+                    title='Discount'
+                )
+            )
+
+            # Ensure text is always displayed on the bars
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
+
+
             # fig.update_yaxes(range=[0,50])
             fig.show()
         else:
