@@ -196,7 +196,7 @@ class LocalStatsPlots:
                          color='total_discount_points', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{y:.2f}%', textposition='outside')
             fig.update_layout(autosize=False, width=800, height=600)
-            fig.update_yaxes(range=[0,50])
+            # fig.update_yaxes(range=[0,50])
             fig.show()
         else:
             print("Error fetching data: HTTP Status", response.status_code)
