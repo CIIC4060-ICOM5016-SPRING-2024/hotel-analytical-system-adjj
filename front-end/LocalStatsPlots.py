@@ -138,7 +138,7 @@ class LocalStatsPlots:
             # Convertimos los datos a DataFrame
             df = pd.DataFrame(datos)
 
-            fig = px.bar(df, y='rname', x='avg_guest_to_capacity_ratio', orientation='h',
+            fig = px.bar(df, y='rid', x='avg_guest_to_capacity_ratio', orientation='h',
                          text='avg_guest_to_capacity_ratio',
                          title="Top 3 Rooms Reserved with the Least Guest-to-Capacity Ratio",
                          labels={'rname': 'Room Name',
