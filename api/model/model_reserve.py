@@ -165,21 +165,21 @@ class ReserveDAO:
         cur = self.db.conexion.cursor()
         try:
             query="""
-            SELECT 
-                R.rid,
-                RD.rname,
-                ROUND(AVG(Res.guests::decimal / RD.capacity) * 100, 2) AS avg_guest_to_capacity_ratio
-            FROM 
-                Reserve Res
-            INNER JOIN RoomUnavailable RU ON Res.ruid = RU.ruid
-            INNER JOIN Room R ON RU.rid = R.rid
-            INNER JOIN RoomDescription RD ON R.rdid = RD.rdid
-            WHERE R.hid = %s
-            GROUP BY 
-                R.rid, RD.rname
-            ORDER BY 
-                avg_guest_to_capacity_ratio ASC
-            LIMIT 3;
+SELECT
+    r.rid,
+    rd.rname,
+    (AVG(re.guests) / rd.capacity::FLOAT) AS guest_to_capacity_ratio
+FROM
+    Room r
+INNER JOIN RoomDescription rd ON r.rdid = rd.rdid
+INNER JOIN RoomUnavailable ru ON ru.rid = r.rid
+INNER JOIN Reserve re ON re.ruid = ru.ruid
+WHERE r.hid = %s
+GROUP BY
+    r.rid, rd.capacity, rd.rname
+ORDER BY
+    guest_to_capacity_ratio ASC
+LIMIT 3;
 
             """
             cur.execute(query,(hid,))

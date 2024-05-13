@@ -45,8 +45,8 @@ class LocalStatsPlots:
             datos = respuesta.json()
             df = pd.DataFrame(datos)
             fig = px.bar(df, x='salary', y=df['fname'] + ' ' + df['lname'], orientation='h',
-                         title='Top 3 Empleados Regulares Mejor Pagados', labels={'x': 'Salario', 'y': 'Nombre'},
-                         color='salary', color_continuous_scale=px.colors.sequential.Viridis)
+                         title='Top 3 highest paid regular employees.', labels={'x': 'Salary', 'y': 'Name'},
+                         color='salary',  color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
             fig.update_layout(autosize=False, width=900, height=600)
             fig.show()
@@ -92,42 +92,94 @@ class LocalStatsPlots:
             datos = respuesta.json()
             df = pd.DataFrame(datos)
             fig = px.bar(df, x='reservation_count', y=df['fname'] + ' ' + df['lname'], orientation='h',
-                         title='Top 5 Clientes Menores de 30 Años con Más Reservaciones con Tarjeta de Crédito',
-                         labels={'x': 'Cantidad de Reservaciones', 'y': 'Nombre'},
-                         color='reservation_count', color_continuous_scale=px.colors.sequential.Teal)
+                         title='Top 5 clients under 30 years old that made the most reservation with a credit card',
+                         labels={'x': 'Cantidad de Reservaciones', 'y': 'Name'},
+                         color='reservation_count', color_continuous_scale='Tealgrn')
             fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
             fig.update_layout(autosize=False, width=900, height=600)
             fig.show()
         else:
             print("Error al obtener los datos")
 
+    # def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self, session, hid, json):
+    #     url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
+    #     respuesta = session.get(url, json=json)
+    #     # Verificamos si la petición fue exitosa
+    #     if respuesta.status_code == 200:
+    #         datos = respuesta.json()
+    #
+    #         # Convertimos los datos a DataFrame
+    #         df = pd.DataFrame(datos)
+    #
+    #         # Creamos la gráfica
+    #         plt.figure(figsize=(10, 6))
+    #         plt.barh(df['rname'], df['avg_guest_to_capacity_ratio'], color='teal')
+    #         plt.xlabel('Average Guest-to-Capacity Ratio')
+    #         plt.title("Top 3 rooms reserved that had the least guest-to-capacity ratio")
+    #
+    #         # Añadiendo los valores exactos en cada barra
+    #         for bar in plt.barh(df['rname'], df['avg_guest_to_capacity_ratio']):
+    #             width = bar.get_width()
+    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+    #
+    #         plt.tight_layout()
+    #
+    #         # Mostramos la gráfica
+    #         plt.show()
+    #     else:
+    #         print("Error al obtener los datos")
+
     def graficar_top_3_cuartos_reservados_con_menos_gtc_ratio(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'
-        respuesta = session.get(url, json=json)
-        # Verificamos si la petición fue exitosa
-        if respuesta.status_code == 200:
-            datos = respuesta.json()
+        url = f'http://127.0.0.1:5000/hotel/{hid}/leastguests'  # Adjust the endpoint as necessary
+        response = session.get(url, json=json)
 
-            # Convertimos los datos a DataFrame
-            df = pd.DataFrame(datos)
+        if response.status_code == 200:
+            data = response.json()
 
-            # Creamos la gráfica
-            plt.figure(figsize=(10, 6))
-            plt.barh(df['rname'], df['avg_guest_to_capacity_ratio'], color='teal')
-            plt.xlabel('Average Guest-to-Capacity Ratio')
-            plt.title("Top 3 rooms reserved that had the least guest-to-capacity ratio")
+            # Print the data for debugging
+            # print("Data received:", data)
 
-            # Añadiendo los valores exactos en cada barra
-            for bar in plt.barh(df['rname'], df['avg_guest_to_capacity_ratio']):
-                width = bar.get_width()
-                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+            # Verify if data has the expected format
+            if not data or not all('rname' in d and 'avg_guest_to_capacity_ratio' in d for d in data):
+                print("Incomplete or incorrect data.")
+                return
 
-            plt.tight_layout()
+            df = pd.DataFrame(data)
 
-            # Mostramos la gráfica
-            plt.show()
+            # Creating a horizontal bar chart
+            fig = px.bar(df, y='rname', x='avg_guest_to_capacity_ratio', orientation='h',
+                         text='avg_guest_to_capacity_ratio',
+                         title="Top 3 Rooms Reserved with the Least Guest-to-Capacity Ratio",
+                         labels={'rname': 'Room Name',
+                                 'avg_guest_to_capacity_ratio': 'Average Guest-to-Capacity Ratio'},
+                         color='avg_guest_to_capacity_ratio',
+                         color_continuous_scale='Tealgrn')  # Use a teal-green color scale
+
+            # Customizing hover data to show more details
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "Room Name: %{y}",
+                    "Avg. Guest-to-Capacity Ratio: %{x:.2f}"
+                ])
+            )
+
+            # Enhance the layout
+            fig.update_layout(
+                xaxis_title='Average Guest-to-Capacity Ratio',
+                yaxis_title='Room Name',
+                yaxis=dict(type='category'),
+                coloraxis_colorbar=dict(
+                    title='GTC Ratio'
+                )
+            )
+
+            # Ensure text is always displayed on the bars
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
+
+            # Display the chart
+            fig.show()
         else:
-            print("Error al obtener los datos")
+            print("Error fetching data: HTTP Status", response.status_code)
 
     def graficar_total_reservation_by_room_type(self, session, hid, json):
         url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
@@ -202,17 +254,17 @@ class LocalStatsPlots:
 
             # Creamos la gráfica de barras horizontales
             fig = px.bar(df, y='rid', x='reserved days', orientation='h',
-                         text='reserved days', title="Habitaciones con Menos Días Reservados",
-                         labels={'rid': 'ID de Habitación', 'reserved days': 'Días Reservados'},
+                         text='reserved days', title="Top 3 rooms that were the least time unavailable.",
+                         labels={'rid': 'Room ID', 'reserved days': 'Reserved Days'},
                          color='reserved days', color_continuous_scale='Tealgrn')
 
             # Mejoramos el layout
             fig.update_layout(
-                xaxis_title='Días Reservados',
-                yaxis_title='ID de Habitación',
+                xaxis_title='Reserved Days',
+                yaxis_title='Room ID',
                 yaxis=dict(type='category'),
                 coloraxis_colorbar=dict(
-                    title='Días Reservados'
+                    title='Reserved Days'
                 )
             )
 
