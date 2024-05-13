@@ -182,32 +182,81 @@ class LocalStatsPlots:
             print("Error fetching data: HTTP Status", response.status_code)
 
     def graficar_total_reservation_by_room_type(self, session, hid, json):
-        url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
-        respuesta = session.get(url, json=json)
-        # Verificamos si la petición fue exitosa
-        if respuesta.status_code == 200:
-            datos = respuesta.json()
+        url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'  # Adjust the endpoint as necessary
+        response = session.get(url, json=json)
 
-            # Convertimos los datos a DataFrame
-            df = pd.DataFrame(datos)
+        if response.status_code == 200:
+            data = response.json()
 
-            # Creamos la gráfica
-            plt.figure(figsize=(10, 6))
-            plt.barh(df['rtype'], df['total_reservations'], color='teal')
-            plt.xlabel('Total Reservations')
-            plt.title("Total reservation by room type.")
+            # Print the data for debugging
+            # print("Data received:", data)
 
-            # Añadiendo los valores exactos en cada barra
-            for bar in plt.barh(df['rtype'], df['total_reservations']):
-                width = bar.get_width()
-                plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+            # Verify if data has the expected format
+            if not data or not all('total_reservations' in d and 'rtype' in d for d in data):
+                print("Incomplete or incorrect data.")
+                return
 
-            plt.tight_layout()
+            df = pd.DataFrame(data)
 
-            # Mostramos la gráfica
-            plt.show()
+            # Creating a horizontal bar chart
+            fig = px.bar(df, y='rtype', x='total_reservations', orientation='h',
+                         text='total_reservations', title="Total Reservations by Room Type",
+                         labels={'rtype': 'Room Type', 'total_reservations': 'Total Reservations'},
+                         color='total_reservations', color_continuous_scale='Tealgrn')  # Use a teal-green color scale
+
+            # Customizing hover data to show more details
+            fig.update_traces(
+                hovertemplate="<br>".join([
+                    "Room Type: %{y}",
+                    "Total Reservations: %{x}"
+                ])
+            )
+
+            # Enhance the layout
+            fig.update_layout(
+                xaxis_title='Total Reservations',
+                yaxis_title='Room Type',
+                yaxis=dict(type='category'),
+                coloraxis_colorbar=dict(
+                    title='Total Reservations'
+                )
+            )
+
+            # Ensure text is always displayed on the bars
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
+
+            # Display the chart
+            fig.show()
         else:
-            print("Error al obtener los datos")
+            print("Error fetching data: HTTP Status", response.status_code)
+
+    # def graficar_total_reservation_by_room_type(self, session, hid, json):
+    #     url = f'http://127.0.0.1:5000/hotel/{hid}/roomtype'
+    #     respuesta = session.get(url, json=json)
+    #     # Verificamos si la petición fue exitosa
+    #     if respuesta.status_code == 200:
+    #         datos = respuesta.json()
+    #
+    #         # Convertimos los datos a DataFrame
+    #         df = pd.DataFrame(datos)
+    #
+    #         # Creamos la gráfica
+    #         plt.figure(figsize=(10, 6))
+    #         plt.barh(df['rtype'], df['total_reservations'], color='teal')
+    #         plt.xlabel('Total Reservations')
+    #         plt.title("Total reservation by room type.")
+    #
+    #         # Añadiendo los valores exactos en cada barra
+    #         for bar in plt.barh(df['rtype'], df['total_reservations']):
+    #             width = bar.get_width()
+    #             plt.text(width, bar.get_y() + bar.get_height() / 2, f'{int(width)}', va='center')
+    #
+    #         plt.tight_layout()
+    #
+    #         # Mostramos la gráfica
+    #         plt.show()
+    #     else:
+    #         print("Error al obtener los datos")
 
     def graficar_top_5_clients_received_the_most_discounts(self, session, hid, json):
         url = f'http://127.0.0.1:5000/hotel/{hid}/mostdiscount'
@@ -269,7 +318,7 @@ class LocalStatsPlots:
             )
 
             # Hacer que los textos se muestren siempre en las barras
-            fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
 
             # Mostramos la gráfica
             fig.show()
@@ -322,7 +371,7 @@ class LocalStatsPlots:
             )
 
             # Ensure text is always displayed on the bars
-            fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+            fig.update_traces(texttemplate='%{x:.2f}', textposition='outside')
 
             # Display the chart
             fig.show()
