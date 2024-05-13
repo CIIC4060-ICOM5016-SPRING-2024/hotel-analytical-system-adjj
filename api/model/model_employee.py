@@ -37,6 +37,7 @@ class EmployeeDAO:
         validInput, validMessage = employee_inputs_are_correct(position, salary)
         if not (validInput):
             status = "error"
+            message = validMessage
             return eid, message, status
 
         cur = self.db.conexion.cursor()  # Asumiendo que esto abre el cursor correctamente.
