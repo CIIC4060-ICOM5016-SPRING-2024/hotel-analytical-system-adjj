@@ -173,21 +173,27 @@ class GlobalStatsPlots:
             data_json = response.json()
             df = pd.DataFrame(data_json)
 
-            # Convertimos el mes de número a nombre para una mejor visualización
+            # Convertimos el mes de número a nombre
             df['month'] = pd.to_datetime(df['month'], format='%m').dt.strftime('%B')
 
-            # La columna 'size' determinará el tamaño de cada burbuja.
-            df['size'] = df['count_reservation']
+            # Meses en orden
+            df['month'] = pd.Categorical(df['month'], categories=[
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'], ordered=True)
+            # Ordenamos el DataFrame por el mes
+            df = df.sort_values('month')
 
-            # Gráfico de burbujas
-            fig = px.scatter(df, x='month', y='chid', size='size', color='count_reservation',
-                             hover_name='chid', size_max=60,
-                             title='Cantidad de Reservaciones por Mes y CHID')
+            df['chid'] = df['chid'].astype(str)
+            df['chid'] = pd.Categorical(df['chid'])
+
+            # Gráfico de barras
+            fig = px.bar(df, x='month', y='count_reservation', color='chid',
+                         title='Cantidad de Reservaciones por Mes y CHID')
 
             # Mejora la visualización con las etiquetas
             fig.update_layout(
                 xaxis=dict(title='Mes'),
-                yaxis=dict(title='CHID'),
+                yaxis=dict(title='Cantidad de Reservaciones'),
                 autosize=False,
                 width=900,  # Ancho del gráfico
                 height=600,  # Altura del gráfico
