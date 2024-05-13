@@ -218,13 +218,13 @@ class LocalStatsPlots:
             fig.update_traces(
                 hovertemplate="<br>".join([
                     "Client Name: %{y}",
-                    "Discount Percentage: %{x}%"
+                    "Discount Percentage: %{x}"
                 ])
             )
 
             # Enhance the layout
             fig.update_layout(
-                xaxis_title='Discount Percentage',
+                xaxis_title='Discount',
                 yaxis_title='Client Name',
                 yaxis=dict(type='category'),
                 coloraxis_colorbar=dict(
