@@ -15,7 +15,7 @@ session = requests.Session()
 if (env == 'development'):
     api = "http://127.0.0.1:5000"
 elif(env == 'production'):
-    api = "https://postgres-app1-075e5eddc52e.herokuapp.com"
+    api = env = os.getenv('API')
 
 # print("API: ", api)
 
