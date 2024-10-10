@@ -1,110 +1,64 @@
-# [Postman URL](https://jjad-heroku-db.postman.co/workspace/e5f355e3-f951-426b-bd5a-5c48b0992560/request/33934176-5c192629-d700-4598-afe2-905a253068ca)
-# [Postman URL without limit of members in the workspace (14-day free trial, ends 4/25/2024)](https://jjad-heroku-db.postman.co/workspace/e5f355e3-f951-426b-bd5a-5c48b0992560/request/33934176-5c192629-d700-4598-afe2-905a253068ca)
+## **Hotel Analytical System** 🏨📊
 
+### Deployment 🌐
 
+The **Hotel Analytical System** is deployed on Heroku and can be accessed through the following URLs:
 
+- [Frontend](https://hotel-analytical-system-05e4799de509.herokuapp.com/)
+- [Backend (API)](https://hotel-analytical-system-api-c1d8171276c0.herokuapp.com/)
 
-REST API HOSTNAME: https://postgres-app1-075e5eddc52e.herokuapp.com
+### Project Description 📋
 
-FRONTEND HOSTNAME: https://voila-app-84c489d66ea3.herokuapp.com
+The **Hotel Analytical System** is a platform designed to analyze and manage data related to hotel management. This system allows managers to view global statistics between hotels of the same franchise, local statistics for each individual hotel, manage employees, rooms, clients and reservations, and perform updates and deletions of records efficiently.
 
-# DB-ADJJ Database credentials
-```
-Host: ceu9lmqblp8t3q.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
+### Main Features ✨
 
-Database: ddna4sdma3l2nj
+- **Interactive Dashboard**: Display interactive statistics and graphs using `Voila`.
+- **Session Security**: Implementation of a login system with sessions.
+- **Role-based content**: The content you can see on the dashboard is based on the roles that the employee has at the time of logging in, which are regular employee, supervisor and administrator.
+- **Reservation Management**: Manage reservations, including creation, update and cancellation.
+- **Database Connection**: Integrates a PostgreSQL database hosted on Heroku.
 
-User: u1rgtufv8k5u6r
+### Technologies Used 💻
 
-Port: 5432
+- **Backend**:
+  - `Flask` as the main framework for the API.
 
-Password: p8ddbe35503faf38bad49b9b4847d89cec84b1a019dc2141d016d801ad2d96d50
+- **Frontend**:
+  - `Voila` to turn Jupyter Notebooks into interactive web applications.
+  - `Jupyter Widgets` to create an interactive interface with charts and forms.
 
-URI: postgres://u1rgtufv8k5u6r:p8ddbe35503faf38bad49b9b4847d89cec84b1a019dc2141d016d801ad2d96d50@ceu9lmqblp8t3q.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/ddna4sdma3l2nj
+- **Database**:
+  - `PostgreSQL`, managed through Heroku.
 
-Heroku CLI: heroku pg:psql postgresql-objective-43160 --app postgres-app1
-```
+### Concepts Learned During the Project 📚
 
+During the completion of this project, several key concepts in web development, database management, and software architecture were learned and applied. Some of the main ones are listed below:
 
-# Project Setup
-### .env file with database credentials
-When you pull the code, you will need to create a .env file. This will be inside the api folder. Inside the file you will put your local database credentials as follows:
+1. **Database Design and Entity-Relationship Diagram (ERD)**:
+   - Design of an **Entity-Relationship Diagram (ERD)** to model the relationships between entities such as customers, employees, reservations, rooms, etc.
+   - Creation of **normalized database schemas** in PostgreSQL, guaranteeing consistency and integrity in the data.
+   - Use of primary and foreign keys to define relationships between tables and ensure referential integrity.
 
-![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/1f76cac4-7948-4c05-b247-bd2678cd985f)
+2. **Management of Endpoints in the API**:
+   - Creation of **RESTful endpoints** with Flask to perform CRUD operations (Create, Read, Update, Delete) on the data.
+   - **GET**: Retrieve data on customers, employees, reservations, and more.
+   - **POST**: Add new records such as customers, employees, or reservations.
+   - **DELETE**: Delete records, such as deleting customers or canceling reservations.
+   - **PUT**: Update existing information, such as modifying reservation details or updating an employee's salary.
 
-### .env file with env variable
-When you pull the code, to run voila frontend locally, inside the frontend folder create a .env file with the following variable.
-```
-ENV=development # if running with local version of the database
-ENV=production # if running with heroku database
-```
+3. **Statistics and Report Generation**:
+   - Use of advanced SQL queries to extract data and generate reports, such as hotel occupancy statistics, revenue per customer or room, and average length of stay.
+   - Application of aggregate functions such as **SUM(), AVG(), COUNT()** to perform calculations directly in the database.
 
-### It may be necessary to add a path in the system environment variables.
-From what I understood when configuring the project, this has to do with importing the python packages. Adding your project's root path to the system's PYTHONPATH is a common practice for solving module import problems in Python, especially in complex projects with a deep directory structure or when working with modules that need to import between subdirectories. If I'm not mistaken, this is not the best solution since it can cause complications when taking the application to production. However, to work locally developing the project logic it is an acceptable solution.
+4. **Frontend and Backend Integration**:
+   - Using **Voila** to turn notebooks into interactive graphical interfaces.
+   - Communication between the **frontend (Jupyter Widgets)** and the **backend (Flask API)** through HTTP requests (using `requests`).
+   - Validating inputs in the frontend and handling responses from the backend, displaying success or error messages as needed.
 
-![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/907459be-68ce-4952-abf6-e402785a148d)
+5. **Cloud Deployment**:
+   - **Configuration and deployment** of the application on **Heroku**, both the frontend (Voila) and the backend (Flask and PostgreSQL).
+   - Using **Git** to control versions and upload changes to the corresponding remotes (GitHub and Heroku).
+   - Setting up **environment variables** on Heroku to protect sensitive credentials and customize the behavior of the application.
 
-In the name variable you are going to put 'PYTHONPATH' and in the value variable you are going to put the path where your project is located.
-![image](https://github.com/CIIC4060-ICOM5016-SPRING-2024/hotel-analytical-system-adjj/assets/95184925/5e6bfaf3-7ce2-4973-97aa-46a3a74ba905)
-
-
-
-# Test Driven Development (TDD)
-In this project we adopted the TDD (Test-Driven Development) methodology to ensure high code quality and facilitate long-term maintenance. This helps so that with each code update, it can be safely monitored that difficult-to-detect problems or total malfunctions of features have not been caused. Here is how to follow this methodology:
-
-## Step 1: Write the Test
-First, before writing any new code for our getAllClients functionality, we start by writing a test that defines what we expect from this functionality. For example, our initial test for getAllClients may look like this:
-
-```python
-# tests/test_client_features.py
-
-def test_get_all_clients_initial(client):
-    response = client.get('/client')
-    assert response.status_code == 200
-    assert isinstance(response.get_json(), list)
-
-```
-
-## Step 2: Write the Minimum Necessary Code
-With the test written, the next step is to write the minimum necessary code in our application to make this test pass. At this point, we don't care about implementing all the getAllClients logic, we just want the test to pass.
-```python
-# app.py o en el archivo correspondiente donde se define el endpoint
-
-@app.route('/client')
-def get_all_clients():
-    return jsonify([]), 200
-
-```
-## Step 3: Implement the Feature and Update the Test
-Now that we have a passing test, the next step is to implement the full functionality of getAllClients and, in parallel, update our test to reflect the final requirements for this functionality.
-```python
-# Implementación final de getAllClients
-@app.route('/client')
-def get_all_clients():
-    clients = ClientDAO.getAllClients()  # Suponiendo que esto devuelve una lista de clientes
-    return jsonify(clients), 200
-
-```
-And we update our test to verify the structure and data expected from clients:
-```python
-# Actualización de la prueba para verificar la estructura de los datos
-def test_get_all_clients(client):
-    response = client.get('/client')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert isinstance(data, list)
-    if data:
-        # Verifica que los campos esperados existan en el primer cliente
-        expected_fields = ['age', 'clid', 'fname', 'lname', 'memberyear']
-        for field in expected_fields:
-            assert field in data[0]
-        # Verifica los tipos de datos de los campos
-        assert isinstance(data[0]['age'], int)
-        assert isinstance(data[0]['clid'], int)
-        assert isinstance(data[0]['fname'], str)
-        assert isinstance(data[0]['lname'], str)
-        assert isinstance(data[0]['memberyear'], int)
-
-```
-
-
+This project was an excellent opportunity to practice and delve deeper into full stack web development, database management, and cloud application deployment.
